@@ -1,0 +1,11 @@
+{
+  "name": "kelimesavaslari",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "server": "cd ./backend && npm run start",
+    "start": "cd ./frontend && npm run dev"
+  },
+  "author": "",
+  "license": "ISC"
+}
