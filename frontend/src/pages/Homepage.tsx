@@ -1,16 +1,23 @@
 import { GameBoard } from "../components/GameBoard";
 import { io } from "socket.io-client";
+import { useAppDispatch } from "../lib/redux/hooks";
+import { set } from "../lib/redux/slices/globalErrorSlice";
 
 export const socket = io(import.meta.env.VITE_FRONTEND_URL, {
   autoConnect: false,
 });
-socket.connect();
 
 socket.onAny((event, ...args) => {
   console.log(event, args);
 });
 
 export const Homepage = () => {
+  const dispatch = useAppDispatch();
+  socket.on("connect_error", (err) => {
+    const error: string = `Connection failed due to ${err.message}`;
+    dispatch(set(error));
+  });
+
   return (
     <div className="container mx-auto flex">
       <GameBoard />

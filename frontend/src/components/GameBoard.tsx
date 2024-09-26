@@ -1,19 +1,34 @@
 import { boardSizes } from "../lib/commonVariables";
 import { BottomPanel } from "./BottomPanel";
+import { Modal } from "./Modal";
+import { socket } from "../pages/Homepage";
 
 export const GameBoard = () => {
+  const findGame = () => {
+    socket.connect();
+  };
+
   return (
     <div className="w-2/3 flex flex-col items-center">
-      <Cells />
+      <div className="relative">
+        <Modal>
+          <button
+            onClick={findGame}
+            className="bg-primary text-white focus:ring-4 font-medium rounded-lg px-5 py-2.5"
+          >
+            Oyun bul
+          </button>
+        </Modal>
+        <Cells />
+      </div>
       <BottomPanel />
     </div>
   );
 };
 
 const Cells = () => {
-  let i = 0;
   return (
-    <>
+    <div className="mt-1 ml-1 ">
       {[...Array(boardSizes.width)].map((e, i1) => {
         const row = i1 + 1;
 
@@ -29,7 +44,7 @@ const Cells = () => {
           </div>
         );
       })}
-    </>
+    </div>
   );
 };
 

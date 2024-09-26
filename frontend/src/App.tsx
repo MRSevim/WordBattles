@@ -1,17 +1,20 @@
 import { Header } from "./components/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { DndContext } from "@dnd-kit/core";
 import { Homepage } from "./pages/Homepage";
+import { Provider } from "react-redux";
+import { store } from "./lib/redux/store";
+import { GlobalError } from "./components/GlobalError";
 
 function App() {
   return (
     <BrowserRouter>
-      <DndContext>
+      <Provider store={store}>
+        <GlobalError />
         <Header />
         <Routes>
           <Route path="/" element={<Homepage />}></Route>
         </Routes>
-      </DndContext>
+      </Provider>
     </BrowserRouter>
   );
 }
