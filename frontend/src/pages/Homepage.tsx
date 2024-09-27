@@ -14,7 +14,7 @@ socket.onAny((event, ...args) => {
 export const Homepage = () => {
   const dispatch = useAppDispatch();
   socket.on("connect_error", (err) => {
-    const error: string = `Connection failed due to ${err.message}`;
+    const error: string = `Bağlantı başarısız: ${err.message}`;
     dispatch(set(error));
   });
 
