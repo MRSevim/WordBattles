@@ -7,8 +7,20 @@ interface Letter {
   letter: string;
   point: number;
   amount: number;
+  drawn?: boolean;
 }
-type LettersArray = Letter[];
+
+export type LettersArray = Letter[];
+
+interface PlayerStatus {
+  players: LettersArray[];
+  startingPlayer: number;
+}
+
+export interface Game {
+  playerStatus: PlayerStatus;
+  roomId: string;
+}
 
 const letters: LettersArray = [
   { letter: "A", point: 1, amount: 12 },
@@ -48,10 +60,71 @@ const generateLetterPool = (array: LettersArray): LettersArray => {
 
   array.forEach((letter) => {
     for (let i = 0; i < letter.amount; i++) {
-      newArr.push(letter);
+      newArr.push({ ...letter, drawn: false });
     }
   });
   return newArr;
 };
 
-export const letterPool = generateLetterPool(letters);
+export const letterPool: LettersArray = generateLetterPool(letters);
+
+export const generateGame = (letterPool: LettersArray) => {
+  const players: LettersArray[] = [[], []]; // Two players
+  const usedLetters = new Set();
+
+  // Distribute letters, one by one to each player until both have 7 tiles
+  for (let i = 0; i < 7; i++) {
+    players.forEach((player) => {
+      let drawn = false;
+      while (!drawn) {
+        const randomIndex = Math.floor(Math.random() * letterPool.length);
+        const letter = letterPool[randomIndex];
+        if (!usedLetters.has(randomIndex)) {
+          player.push(letter);
+          usedLetters.add(randomIndex);
+          drawn = true;
+        }
+      }
+    });
+  }
+
+  // Function to determine the distance of a letter from "A"
+  const getLetterDistance = (letter: string) => {
+    if (letter === "empty") return Infinity;
+    return Math.abs(letter.charCodeAt(0) - "A".charCodeAt(0));
+  };
+
+  const getPlayersClosest = (player: LettersArray) =>
+    player.reduce(
+      (closest, letter) =>
+        getLetterDistance(letter.letter) < getLetterDistance(closest.letter)
+          ? letter
+          : closest,
+      player[0]
+    );
+  // Get the closest letter to "A" for each player
+  const player1Closest = getPlayersClosest(players[0]);
+
+  const player2Closest = getPlayersClosest(players[1]);
+
+  // Determine who starts
+  let startingPlayer;
+  if (
+    getLetterDistance(player1Closest.letter) <
+    getLetterDistance(player2Closest.letter)
+  ) {
+    startingPlayer = 1; // Player 1 starts
+  } else if (
+    getLetterDistance(player1Closest.letter) >
+    getLetterDistance(player2Closest.letter)
+  ) {
+    startingPlayer = 2; // Player 2 starts
+  } else {
+    startingPlayer = Math.random() < 0.5 ? 1 : 2; // 50-50 if the closest letters are equal
+  }
+
+  return {
+    players,
+    startingPlayer,
+  };
+};

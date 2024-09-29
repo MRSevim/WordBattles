@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 const http = require("http");
 const dotenv = require("dotenv");
 const { Server } = require("socket.io");
+const { runSocketLogic } = require("./socketLogic");
 dotenv.config();
 
 const app = express();
@@ -18,9 +19,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Bu Kelime savaşları backendidir.");
 });
 
-io.on("connection", (socket: any) => {
-  console.log("a user connected");
-});
+runSocketLogic(io);
 
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

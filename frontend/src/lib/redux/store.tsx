@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import globalErrorSlice from "./slices/globalErrorSlice";
+import gameSlice from "./slices/gameSlice";
 
 export const store = configureStore({
   reducer: {
     globalError: globalErrorSlice,
+    game: gameSlice,
   },
 });
 

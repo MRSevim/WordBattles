@@ -1,24 +1,20 @@
 import { boardSizes } from "../lib/commonVariables";
+import { useAppSelector } from "../lib/redux/hooks";
+import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";
+import { FindGame } from "./FindGame";
 import { Modal } from "./Modal";
-import { socket } from "../pages/Homepage";
 
 export const GameBoard = () => {
-  const findGame = () => {
-    socket.connect();
-  };
-
+  const game = useAppSelector((state: RootState) => state.game);
   return (
     <div className="w-2/3 flex flex-col items-center">
       <div className="relative">
-        <Modal>
-          <button
-            onClick={findGame}
-            className="bg-primary text-white focus:ring-4 font-medium rounded-lg px-5 py-2.5"
-          >
-            Oyun bul
-          </button>
-        </Modal>
+        {!game.game && (
+          <Modal>
+            <FindGame />
+          </Modal>
+        )}
         <Cells />
       </div>
       <BottomPanel />
