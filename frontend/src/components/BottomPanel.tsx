@@ -1,16 +1,48 @@
+import { LettersArray } from "../lib/commonVariables";
+import { useAppSelector } from "../lib/redux/hooks";
+import { RootState } from "../lib/redux/store";
+import { Letter } from "./Letter";
+
 export const BottomPanel = () => {
+  const playerHand: LettersArray =
+    useAppSelector((state: RootState) => state.game.game?.playerHand) ?? [];
+
+  if (playerHand.length) {
+    return (
+      <div className="p-4 bg-slate-500 w-full flex justify-between">
+        <div className="flex gap-2">
+          <Button classes="bi bi-archive" title="Harf Havuzu" />
+          <Button classes="bi bi-arrow-down-up" title="Değiştir" />
+          <Button classes="bi bi-arrow-left-right" title="Karıştır" />
+        </div>
+        <div className="flex gap-2">
+          {playerHand.map((letter, i) => {
+            return <Letter letter={letter} key={i} />;
+          })}
+        </div>
+        <div className="flex gap-2">
+          <Button classes="bi bi-arrow-right" title="Geç" />{" "}
+          <Button classes="bi bi-arrow-right-square" title="Gönder" />
+        </div>
+      </div>
+    );
+  }
+};
+
+export const Button = ({
+  classes,
+  title,
+}: {
+  classes: string;
+  title: string;
+}) => {
   return (
-    <div className="p-4 bg-slate-500 gap-2 w-full flex">
-      <div className="w-8 h-8 bg-orange-900 rounded-lg">
-        <p className="flex items-center justify-center h-full text-lg text-white ">
-          K
-        </p>
-      </div>
-      <div className="w-8 h-8 bg-orange-900	rounded-lg">
-        <p className="flex items-center justify-center h-full text-lg text-white ">
-          Z
-        </p>
-      </div>
-    </div>
+    <i
+      title={title}
+      className={
+        "bg-orange-900 rounded-lg w-9 h-9 text-center leading-9 text-white cursor-pointer " +
+        classes
+      }
+    ></i>
   );
 };

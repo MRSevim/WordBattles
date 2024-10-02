@@ -1,3 +1,4 @@
+const { v6: uuidv6 } = require("uuid");
 interface Letter {
   letter: string;
   point: number;
@@ -21,24 +22,20 @@ export const runSocketLogic = (io: any) => {
   io.on("connection", (socket: any) => {
     console.log("a user connected");
 
-    let user = 1;
-
     for (let [id, _socket] of io.of("/").sockets) {
-      console.log("user:" + user + ",id:" + id);
-      user++;
-      if (!socket.full && socket.id !== id) {
-        _socket.join(socket.id);
-        console.log("Game found", socket.id);
-        socket.broadcast
-          .to(socket.id)
-          .emit("Generate Game", { roomId: socket.id });
+      if (!_socket.full && socket.id !== id) {
+        const roomId = uuidv6();
+        _socket.join(roomId);
+        socket.join(roomId);
+        console.log("Game found", roomId);
+        socket.to(roomId).emit("Generate Game", roomId);
+        _socket.full = true;
         socket.full = true;
       }
     }
 
     socket.on("Generated Game", ({ playerStatus, roomId }: Game) => {
-      console.log("generated");
-      socket.to(roomId).emit("Start Game", { playerStatus, roomId });
+      io.to(roomId).emit("Start Game", { playerStatus, roomId }, socket.id);
     });
   });
 };

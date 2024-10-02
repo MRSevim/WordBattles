@@ -2,13 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { LettersArray } from "../../commonVariables";
 
+interface Game {
+  playerHand: LettersArray;
+  startingPlayer: number;
+  roomId: string;
+}
+
 interface gameState {
   findingGame: boolean;
-  game: {
-    playerHand: LettersArray;
-    startingPlayer: number;
-    roomId: string;
-  } | null;
+  game: Game | null;
 }
 
 const initialState: gameState = { findingGame: false, game: null };
@@ -20,21 +22,14 @@ export const gameSlice = createSlice({
     setFindingGame: (state) => {
       state.findingGame = true;
     },
-    setPlayerHand: (state, action: PayloadAction<LettersArray>) => {
+    setGame: (state, action: PayloadAction<Game>) => {
       state.findingGame = false;
-      state.game!.playerHand = action.payload;
-    },
-    setStartingPlayer: (state, action: PayloadAction<number>) => {
-      state.game!.startingPlayer = action.payload;
-    },
-    setRoomId: (state, action: PayloadAction<string>) => {
-      state.game!.roomId = action.payload;
+      state.game = action.payload;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setFindingGame, setPlayerHand, setStartingPlayer, setRoomId } =
-  gameSlice.actions;
+export const { setFindingGame, setGame } = gameSlice.actions;
 
 export default gameSlice.reducer;

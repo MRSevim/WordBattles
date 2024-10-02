@@ -4,7 +4,7 @@ import { useAppDispatch } from "../lib/redux/hooks";
 import { set } from "../lib/redux/slices/globalErrorSlice";
 
 export const socket = io(import.meta.env.VITE_FRONTEND_URL, {
-  autoConnect: false,
+  autoConnect: true,
 });
 
 socket.onAny((event, ...args) => {

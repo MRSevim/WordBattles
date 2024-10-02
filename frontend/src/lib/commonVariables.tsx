@@ -3,7 +3,7 @@ export const boardSizes = {
   height: 15,
 };
 
-interface Letter {
+export interface Letter {
   letter: string;
   point: number;
   amount: number;
@@ -81,6 +81,7 @@ export const generateGame = (letterPool: LettersArray) => {
         const letter = letterPool[randomIndex];
         if (!usedLetters.has(randomIndex)) {
           player.push(letter);
+          letterPool[randomIndex].drawn = true;
           usedLetters.add(randomIndex);
           drawn = true;
         }

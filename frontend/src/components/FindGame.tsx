@@ -1,12 +1,7 @@
 import { RootState } from "../lib/redux/store";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { socket } from "../pages/Homepage";
-import {
-  setFindingGame,
-  setPlayerHand,
-  setRoomId,
-  setStartingPlayer,
-} from "../lib/redux/slices/gameSlice";
+import { setFindingGame, setGame } from "../lib/redux/slices/gameSlice";
 import { Game, generateGame, letterPool } from "../lib/commonVariables";
 
 export const FindGame = () => {
@@ -24,19 +19,20 @@ export const FindGame = () => {
       playerStatus,
       roomId,
     });
-    console.log("generating game");
   });
 
-  socket.on("Start Game", ({ playerStatus, roomId }: Game) => {
-    console.log("game starting");
+  socket.on("Start Game", ({ playerStatus, roomId }: Game, socketId) => {
     const startingPlayer = playerStatus.startingPlayer;
-    if (socket.id === roomId) {
-      dispatch(setPlayerHand(playerStatus.players[0]));
+
+    if (socket.id === socketId) {
+      dispatch(
+        setGame({ playerHand: playerStatus.players[0], startingPlayer, roomId })
+      );
     } else {
-      dispatch(setPlayerHand(playerStatus.players[1]));
+      dispatch(
+        setGame({ playerHand: playerStatus.players[1], startingPlayer, roomId })
+      );
     }
-    dispatch(setStartingPlayer(startingPlayer));
-    dispatch(setRoomId(roomId));
   });
 
   if (game.findingGame) {
