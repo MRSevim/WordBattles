@@ -2,9 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { LettersArray } from "../../commonVariables";
 
-interface Game {
-  playerHand: LettersArray;
-  startingPlayer: number;
+export interface Player {
+  hand: LettersArray;
+  username: string;
+  turn: boolean;
+  socketId: string;
+}
+
+interface Players {
+  player1: Player;
+  player2: Player;
+}
+
+export interface Game {
+  players: Players;
+  undrawnLetterPool: LettersArray[];
   roomId: string;
 }
 

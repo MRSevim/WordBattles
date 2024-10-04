@@ -1,8 +1,34 @@
 import { RootState } from "../lib/redux/store";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
-import { socket } from "../pages/Homepage";
+import { socket } from "../lib/socketio";
 import { setFindingGame, setGame } from "../lib/redux/slices/gameSlice";
-import { Game, generateGame, letterPool } from "../lib/commonVariables";
+import { generateGame, letterPool } from "../lib/commonVariables";
+import { Game } from "../lib/redux/slices/gameSlice";
+
+socket.on("Generate Game", ({ roomId, players }) => {
+  const playersStatus = generateGame(letterPool);
+
+  const _players = {
+    player1: {
+      hand: playersStatus.players[0],
+      username: players.player1.username,
+      turn: playersStatus.startingPlayer === 1,
+      socketId: players.player1.socketId,
+    },
+    player2: {
+      hand: playersStatus.players[1],
+      username: players.player2.username,
+      turn: playersStatus.startingPlayer === 2,
+      socketId: players.player1.socketId,
+    },
+  };
+
+  socket.emit("Generated Game", {
+    players: _players,
+    undrawnLetterPool: playersStatus.undrawnletterPool,
+    roomId,
+  });
+});
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
@@ -13,26 +39,8 @@ export const FindGame = () => {
     dispatch(setFindingGame());
   };
 
-  socket.on("Generate Game", (roomId) => {
-    const playerStatus = generateGame(letterPool);
-    socket.emit("Generated Game", {
-      playerStatus,
-      roomId,
-    });
-  });
-
-  socket.on("Start Game", ({ playerStatus, roomId }: Game, socketId) => {
-    const startingPlayer = playerStatus.startingPlayer;
-
-    if (socket.id === socketId) {
-      dispatch(
-        setGame({ playerHand: playerStatus.players[0], startingPlayer, roomId })
-      );
-    } else {
-      dispatch(
-        setGame({ playerHand: playerStatus.players[1], startingPlayer, roomId })
-      );
-    }
+  socket.on("Start Game", ({ players, undrawnLetterPool, roomId }: Game) => {
+    dispatch(setGame({ players, undrawnLetterPool, roomId }));
   });
 
   if (game.findingGame) {

@@ -12,16 +12,6 @@ export interface Letter {
 
 export type LettersArray = Letter[];
 
-interface PlayerStatus {
-  players: LettersArray[];
-  startingPlayer: number;
-}
-
-export interface Game {
-  playerStatus: PlayerStatus;
-  roomId: string;
-}
-
 const letters: LettersArray = [
   { letter: "A", point: 1, amount: 12 },
   { letter: "B", point: 3, amount: 2 },
@@ -89,6 +79,8 @@ export const generateGame = (letterPool: LettersArray) => {
     });
   }
 
+  const undrawnletterPool = letterPool.filter((letter) => !letter.drawn);
+
   // Function to determine the distance of a letter from "A"
   const getLetterDistance = (letter: string) => {
     if (letter === "empty") return Infinity;
@@ -127,5 +119,6 @@ export const generateGame = (letterPool: LettersArray) => {
   return {
     players,
     startingPlayer,
+    undrawnletterPool,
   };
 };

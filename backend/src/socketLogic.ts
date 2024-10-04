@@ -8,13 +8,20 @@ interface Letter {
 
 type LettersArray = Letter[];
 
-interface PlayerStatus {
-  players: LettersArray[];
-  startingPlayer: number;
+interface Player {
+  hand: LettersArray[];
+  username: string;
+  turn: boolean;
+  socketId: string;
+}
+
+interface Players {
+  players: { player1: Player; player2: Player };
 }
 
 interface Game {
-  playerStatus: PlayerStatus;
+  players: Players;
+  undrawnLetterPool: LettersArray[];
   roomId: string;
 }
 
@@ -28,14 +35,27 @@ export const runSocketLogic = (io: any) => {
         _socket.join(roomId);
         socket.join(roomId);
         console.log("Game found", roomId);
-        socket.to(roomId).emit("Generate Game", roomId);
+        socket.to(roomId).emit("Generate Game", {
+          roomId,
+          players: {
+            player1: { username: "guest", socketId: _socket.id },
+            player2: { username: "guest", socketId: id },
+          },
+        });
         _socket.full = true;
         socket.full = true;
       }
     }
 
-    socket.on("Generated Game", ({ playerStatus, roomId }: Game) => {
-      io.to(roomId).emit("Start Game", { playerStatus, roomId }, socket.id);
-    });
+    socket.on(
+      "Generated Game",
+      ({ players, undrawnLetterPool, roomId }: Game) => {
+        io.to(roomId).emit("Start Game", {
+          players,
+          undrawnLetterPool,
+          roomId,
+        });
+      }
+    );
   });
 };

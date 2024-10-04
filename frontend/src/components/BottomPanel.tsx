@@ -2,10 +2,18 @@ import { LettersArray } from "../lib/commonVariables";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
+import { socket } from "../lib/socketio";
 
 export const BottomPanel = () => {
   const playerHand: LettersArray =
-    useAppSelector((state: RootState) => state.game.game?.playerHand) ?? [];
+    useAppSelector((state: RootState) => {
+      let id = socket.id;
+      if (id === state.game.game?.players.player1.socketId) {
+        return state.game.game?.players.player1.hand;
+      } else {
+        return state.game.game?.players.player2.hand;
+      }
+    }) ?? [];
 
   if (playerHand.length) {
     return (
@@ -17,7 +25,7 @@ export const BottomPanel = () => {
         </div>
         <div className="flex gap-2">
           {playerHand.map((letter, i) => {
-            return <Letter letter={letter} key={i} />;
+            return <Letter letter={letter} key={i} hand={true} />;
           })}
         </div>
         <div className="flex gap-2">
