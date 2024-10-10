@@ -8,11 +8,10 @@ export const BottomPanel = () => {
   const playerHand: LettersArray =
     useAppSelector((state: RootState) => {
       let id = socket.id;
-      if (id === state.game.game?.players.player1.socketId) {
-        return state.game.game?.players.player1.hand;
-      } else {
-        return state.game.game?.players.player2.hand;
-      }
+      const player = state.game?.game?.players.find((player) => {
+        return player.socketId === id;
+      });
+      return player?.hand;
     }) ?? [];
 
   if (playerHand.length) {
@@ -25,7 +24,7 @@ export const BottomPanel = () => {
         </div>
         <div className="flex gap-2">
           {playerHand.map((letter, i) => {
-            return <Letter letter={letter} key={i} hand={true} />;
+            return <Letter letter={letter} key={i} hand={true} i={i} />;
           })}
         </div>
         <div className="flex gap-2">

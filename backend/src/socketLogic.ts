@@ -15,12 +15,8 @@ interface Player {
   socketId: string;
 }
 
-interface Players {
-  players: { player1: Player; player2: Player };
-}
-
 interface Game {
-  players: Players;
+  players: Player[];
   undrawnLetterPool: LettersArray[];
   roomId: string;
 }
@@ -38,7 +34,7 @@ export const runSocketLogic = (io: any) => {
         socket.to(roomId).emit("Generate Game", {
           roomId,
           players: {
-            player1: { username: "guest", socketId: _socket.id },
+            player1: { username: "guest", socketId: socket.id },
             player2: { username: "guest", socketId: id },
           },
         });

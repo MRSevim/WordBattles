@@ -8,21 +8,20 @@ import { Game } from "../lib/redux/slices/gameSlice";
 socket.on("Generate Game", ({ roomId, players }) => {
   const playersStatus = generateGame(letterPool);
 
-  const _players = {
-    player1: {
+  const _players = [
+    {
       hand: playersStatus.players[0],
       username: players.player1.username,
       turn: playersStatus.startingPlayer === 1,
       socketId: players.player1.socketId,
     },
-    player2: {
+    {
       hand: playersStatus.players[1],
       username: players.player2.username,
       turn: playersStatus.startingPlayer === 2,
-      socketId: players.player1.socketId,
+      socketId: players.player2.socketId,
     },
-  };
-
+  ];
   socket.emit("Generated Game", {
     players: _players,
     undrawnLetterPool: playersStatus.undrawnletterPool,

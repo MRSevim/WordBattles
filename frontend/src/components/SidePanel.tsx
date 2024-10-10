@@ -10,8 +10,8 @@ export const SidePanel = () => {
       {game && (
         <>
           <div className="flex align-center justify-around my-8">
-            <PlayerContainer player={game?.players.player1} />
-            <PlayerContainer player={game?.players.player2} />
+            <PlayerContainer player={game?.players[0]} />
+            <PlayerContainer player={game?.players[1]} />
           </div>
           <div>Game History</div>
         </>
@@ -24,8 +24,8 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   return (
     <div
       className={
-        "flex flex-col text-center border-solid border-2 border-sky-50 rounded p-4 " +
-        (player?.turn && "border-orange-900")
+        "flex flex-col text-center border-solid border-2 rounded p-4 " +
+        (player?.turn ? "border-amber-300" : "")
       }
     >
       <p>{player?.username}</p>
