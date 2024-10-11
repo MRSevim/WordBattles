@@ -4,6 +4,7 @@ import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";
 import { FindGame } from "./FindGame";
 import { Modal } from "./Modal";
+import { useDroppable } from "@dnd-kit/core";
 
 export const GameBoard = () => {
   const game = useAppSelector((state: RootState) => state.game);
@@ -50,6 +51,11 @@ interface CellProps {
 }
 
 const Cell = ({ row, col }: CellProps) => {
+  const { setNodeRef } = useDroppable({
+    id: `${row}-${col}`,
+    data: { row, col },
+  });
+
   let cls = "";
   if (row === 1 || row === 8 || row === 15) {
     if (col === 1 || col === 8 || col === 15)
@@ -116,6 +122,9 @@ const Cell = ({ row, col }: CellProps) => {
   });
   return (
     <div
+      ref={(el) => {
+        setNodeRef(el);
+      }}
       className={
         "-mt-1 -ml-1 w-10 h-10 bg-amber-300 border-4 border-black relative " +
         cls

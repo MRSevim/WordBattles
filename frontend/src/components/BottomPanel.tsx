@@ -22,11 +22,13 @@ export const BottomPanel = () => {
           <Button classes="bi bi-arrow-down-up" title="Değiştir" />
           <Button classes="bi bi-arrow-left-right" title="Karıştır" />
         </div>
+
         <div className="flex gap-2">
           {playerHand.map((letter, i) => {
             return <Letter letter={letter} key={i} hand={true} i={i} />;
           })}
         </div>
+
         <div className="flex gap-2">
           <Button classes="bi bi-arrow-right" title="Geç" />{" "}
           <Button classes="bi bi-arrow-right-square" title="Gönder" />

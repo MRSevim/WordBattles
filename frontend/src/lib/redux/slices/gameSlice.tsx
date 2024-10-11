@@ -66,21 +66,6 @@ export const gameSlice = createSlice({
         state.prevHand = player.hand;
       }
     },
-    optimisticMoveInHand: (state, action: PayloadAction<moveAction>) => {
-      const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
-      });
-
-      if (player) {
-        const { movedIndex, targetIndex } = action.payload;
-
-        // Remove the letter from the movedIndex
-        const [movedElem] = player.hand.splice(movedIndex, 1);
-
-        // Insert it into the targetIndex
-        player.hand.splice(targetIndex, 0, movedElem);
-      }
-    },
   },
 });
 
