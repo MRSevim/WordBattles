@@ -2,7 +2,7 @@ import { RootState } from "../lib/redux/store";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { socket } from "../lib/socketio";
 import { setFindingGame, setGame } from "../lib/redux/slices/gameSlice";
-import { generateGame, letterPool } from "../lib/commonVariables";
+import { generateGame, letterPool } from "../lib/helpers";
 import { Game } from "../lib/redux/slices/gameSlice";
 
 socket.on("Generate Game", ({ roomId, players }) => {

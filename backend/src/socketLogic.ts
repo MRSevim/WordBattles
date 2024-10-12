@@ -34,8 +34,8 @@ export const runSocketLogic = (io: any) => {
         socket.to(roomId).emit("Generate Game", {
           roomId,
           players: {
-            player1: { username: "guest", socketId: socket.id },
-            player2: { username: "guest", socketId: id },
+            player1: { username: "konuk", socketId: socket.id },
+            player2: { username: "konuk", socketId: id },
           },
         });
         _socket.full = true;

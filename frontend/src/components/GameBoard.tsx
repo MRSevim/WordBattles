@@ -1,4 +1,4 @@
-import { boardSizes } from "../lib/commonVariables";
+import { boardSizes } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";

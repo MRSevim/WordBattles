@@ -1,39 +1,91 @@
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { Letter as LetterType } from "../lib/commonVariables";
+import { Letter as LetterType } from "../lib/helpers";
 import { CSS } from "@dnd-kit/utilities";
+import { Dispatch, useEffect } from "react";
+import { DraggingValues } from "./BottomPanel";
 
 interface props {
   letter: LetterType;
-  hand: boolean;
+  draggable: boolean;
+  droppable: boolean;
+  draggingValues: DraggingValues;
+  setDraggingValues: Dispatch<React.SetStateAction<DraggingValues>>;
   i: number;
 }
 
-export const Letter = ({ letter, hand, i }: props) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+export const Letter = ({
+  letter,
+  droppable,
+  draggable,
+  draggingValues,
+  setDraggingValues,
+  i,
+}: props) => {
+  const { active, attributes, listeners, setNodeRef, transform } = useDraggable(
+    {
+      id: i + 1,
+      data: { target: i },
+      disabled: !draggable,
+    }
+  );
+
+  const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
     id: i + 1,
-    data: { target: i },
+    disabled: !droppable,
   });
 
-  const {
-    over,
-    isOver,
-    setNodeRef: setDroppableNodeRef,
-  } = useDroppable({
-    id: i,
-  });
+  useEffect(() => {
+    if (isOver) {
+      setDraggingValues((prev) => {
+        return { ...prev, over: i };
+      });
+    }
+    if (active) {
+      setDraggingValues((prev) => {
+        return { ...prev, active: +active.id - 1 };
+      });
+    } else {
+      setDraggingValues({
+        over: null,
+        active: null,
+      });
+    }
+  }, [isOver, active]);
 
-  const otherElementIsOver = over && i !== over?.id && isOver;
+  let translateValue = 0,
+    draggingActive = draggingValues.active,
+    draggingOver = draggingValues.over;
 
-  console.log(over?.id, isOver);
-
+  if (
+    draggingActive !== null &&
+    draggingOver !== null &&
+    draggingActive !== i
+  ) {
+    if (
+      draggingOver > draggingActive &&
+      i <= draggingOver &&
+      draggingActive < i
+    ) {
+      translateValue = -1;
+    } else if (
+      draggingOver < draggingActive &&
+      draggingOver <= i &&
+      i < draggingActive
+    ) {
+      translateValue = 1;
+    }
+  }
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform:
+      CSS.Transform.toString(transform) ||
+      `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem))`,
+    zIndex: draggingActive === i ? 51 : 50,
   };
 
   return (
-    <div className="relative flex">
+    <div className="relative">
       <div ref={setDroppableNodeRef} className={`w-9 h-9 absolute`}></div>
-      {otherElementIsOver && <div className="w-9 h-9"></div>}
+
       <div
         ref={setNodeRef}
         style={style}

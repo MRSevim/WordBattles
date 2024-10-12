@@ -4,9 +4,10 @@ import { Homepage } from "./pages/Homepage";
 import { Provider } from "react-redux";
 import { store } from "./lib/redux/store";
 import { closestCenter, DndContext } from "@dnd-kit/core";
-import { GlobalError } from "./components/GlobalError";
 import { handleDragEnd } from "./lib/helpers";
 import { useAppDispatch } from "./lib/redux/hooks";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ const InnerApp = () => {
       collisionDetection={closestCenter}
       onDragEnd={(e) => handleDragEnd(e, dispatch)}
     >
-      <GlobalError />
+      <ToastContainer />
       <Header />
       <Routes>
         <Route path="/" element={<Homepage />}></Route>

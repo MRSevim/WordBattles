@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { LettersArray } from "../../commonVariables";
+import { LettersArray } from "../../helpers";
 import { socket } from "../../socketio";
 
 export interface Player {

@@ -13,7 +13,7 @@ export const SidePanel = () => {
             <PlayerContainer player={game?.players[0]} />
             <PlayerContainer player={game?.players[1]} />
           </div>
-          <div>Game History</div>
+          <div>Oyun Geçmişi</div>
         </>
       )}
     </div>
@@ -29,8 +29,8 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
       }
     >
       <p>{player?.username}</p>
-      <p>rank:xx</p>
-      Points: 0
+      <p>Derece:xx</p>
+      Puan: 0
     </div>
   );
 };

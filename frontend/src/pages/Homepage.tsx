@@ -1,14 +1,12 @@
 import { GameBoard } from "../components/GameBoard";
 import { socket } from "../lib/socketio";
-import { useAppDispatch } from "../lib/redux/hooks";
-import { set } from "../lib/redux/slices/globalErrorSlice";
 import { SidePanel } from "../components/SidePanel";
+import { toast } from "react-toastify";
 
 export const Homepage = () => {
-  const dispatch = useAppDispatch();
   socket.on("connect_error", (err) => {
     const error: string = `Bağlantı başarısız: ${err.message}`;
-    dispatch(set(error));
+    toast.error(error);
   });
 
   return (

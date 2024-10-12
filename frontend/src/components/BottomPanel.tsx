@@ -1,8 +1,14 @@
-import { LettersArray } from "../lib/commonVariables";
+import { LettersArray } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
 import { socket } from "../lib/socketio";
+import { useState } from "react";
+
+export interface DraggingValues {
+  active: number | null;
+  over: number | null;
+}
 
 export const BottomPanel = () => {
   const playerHand: LettersArray =
@@ -13,6 +19,11 @@ export const BottomPanel = () => {
       });
       return player?.hand;
     }) ?? [];
+
+  const [draggingValues, setDraggingValues] = useState<DraggingValues>({
+    active: null,
+    over: null,
+  });
 
   if (playerHand.length) {
     return (
@@ -25,7 +36,17 @@ export const BottomPanel = () => {
 
         <div className="flex gap-2">
           {playerHand.map((letter, i) => {
-            return <Letter letter={letter} key={i} hand={true} i={i} />;
+            return (
+              <Letter
+                draggingValues={draggingValues}
+                setDraggingValues={setDraggingValues}
+                letter={letter}
+                key={i}
+                draggable={true}
+                droppable={true}
+                i={i}
+              />
+            );
           })}
         </div>
 
