@@ -25,7 +25,7 @@ export const BottomPanel = () => {
     over: null,
   });
 
-  if (playerHand.length) {
+  if (playerHand) {
     return (
       <div className="p-4 bg-slate-500 w-full flex justify-between">
         <div className="flex gap-2">

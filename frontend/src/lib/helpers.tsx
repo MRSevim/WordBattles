@@ -1,6 +1,6 @@
 import { DragEndEvent } from "@dnd-kit/core";
 import { AppDispatch } from "./redux/store";
-import { moveInHand } from "./redux/slices/gameSlice";
+import { moveLetter } from "./redux/slices/gameSlice";
 
 export const boardSizes = {
   width: 15,
@@ -133,6 +133,18 @@ export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
   if (active && over) {
     const activeId = +active.id - 1;
     const overId = +over?.id - 1;
-    dispatch(moveInHand({ targetIndex: overId, movedIndex: activeId }));
+
+    const activeData = {
+      id: activeId,
+      coordinates: active.data.current?.coordinates,
+      letter: active.data.current?.letter,
+    };
+    let targetData = {
+      id: overId,
+      coordinates: over.data.current?.coordinates,
+      class: over.data.current?.class,
+    };
+
+    dispatch(moveLetter({ targetData, activeData }));
   }
 };

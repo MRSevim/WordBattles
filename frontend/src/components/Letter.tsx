@@ -3,63 +3,82 @@ import { Letter as LetterType } from "../lib/helpers";
 import { CSS } from "@dnd-kit/utilities";
 import { Dispatch, useEffect } from "react";
 import { DraggingValues } from "./BottomPanel";
+import { Coordinates } from "../lib/redux/slices/gameSlice";
 
 interface props {
   letter: LetterType;
   draggable: boolean;
   droppable: boolean;
-  draggingValues: DraggingValues;
-  setDraggingValues: Dispatch<React.SetStateAction<DraggingValues>>;
-  i: number;
+  coordinates?: Coordinates;
+  draggingValues?: DraggingValues;
+  setDraggingValues?: Dispatch<React.SetStateAction<DraggingValues>>;
+  i?: number;
 }
 
 export const Letter = ({
   letter,
   droppable,
+  coordinates,
   draggable,
   draggingValues,
   setDraggingValues,
   i,
 }: props) => {
+  let id: number | string = 0;
+
+  if (i !== undefined) {
+    id = i + 1;
+  } else if (coordinates) {
+    id = `${coordinates.row}-${coordinates.col}`;
+  }
+
   const { active, attributes, listeners, setNodeRef, transform } = useDraggable(
     {
-      id: i + 1,
-      data: { target: i },
+      id,
+      data: { letter, coordinates },
       disabled: !draggable,
     }
   );
 
   const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
-    id: i + 1,
+    id,
     disabled: !droppable,
   });
 
   useEffect(() => {
-    if (isOver) {
+    if (setDraggingValues) {
       setDraggingValues((prev) => {
-        return { ...prev, over: i };
+        if (isOver) {
+          return { ...prev, over: i !== undefined ? i : null };
+        }
+        if (prev.over && prev.over === i && !isOver) {
+          return { ...prev, over: null };
+        }
+        return { ...prev };
       });
-    }
-    if (active) {
-      setDraggingValues((prev) => {
-        return { ...prev, active: +active.id - 1 };
-      });
-    } else {
-      setDraggingValues({
-        over: null,
-        active: null,
-      });
+
+      if (active) {
+        setDraggingValues((prev) => {
+          return { ...prev, active: +active.id - 1 };
+        });
+      } else {
+        setDraggingValues({
+          over: null,
+          active: null,
+        });
+      }
     }
   }, [isOver, active]);
 
   let translateValue = 0,
-    draggingActive = draggingValues.active,
-    draggingOver = draggingValues.over;
+    draggingActive = draggingValues ? draggingValues.active : null,
+    draggingOver = draggingValues ? draggingValues.over : null;
 
   if (
     draggingActive !== null &&
     draggingOver !== null &&
-    draggingActive !== i
+    draggingActive !== i &&
+    i !== undefined
   ) {
     if (
       draggingOver > draggingActive &&

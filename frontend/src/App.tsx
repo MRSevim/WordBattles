@@ -24,10 +24,7 @@ export default App;
 const InnerApp = () => {
   const dispatch = useAppDispatch();
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      onDragEnd={(e) => handleDragEnd(e, dispatch)}
-    >
+    <DndContext onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />
       <Header />
       <Routes>

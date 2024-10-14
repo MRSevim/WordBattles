@@ -3,6 +3,7 @@ import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";
 import { FindGame } from "./FindGame";
+import { Letter } from "./Letter";
 import { Modal } from "./Modal";
 import { useDroppable } from "@dnd-kit/core";
 
@@ -51,11 +52,6 @@ interface CellProps {
 }
 
 const Cell = ({ row, col }: CellProps) => {
-  const { setNodeRef } = useDroppable({
-    id: `${row}-${col}`,
-    data: { row, col },
-  });
-
   let cls = "";
   if (row === 1 || row === 8 || row === 15) {
     if (col === 1 || col === 8 || col === 15)
@@ -120,15 +116,38 @@ const Cell = ({ row, col }: CellProps) => {
       cls = "triple-letter";
     }
   });
+  const coordinates = { row, col };
+
+  const letter = useAppSelector(
+    (state: RootState) => state.game.board[row - 1][col - 1]
+  );
+
+  const { setNodeRef } = useDroppable({
+    id: `${row}-${col}`,
+    data: { coordinates, class: cls },
+    disabled: letter?.fixed || false,
+  });
+
   return (
     <div
       ref={(el) => {
         setNodeRef(el);
       }}
       className={
-        "-mt-1 -ml-1 w-10 h-10 bg-amber-300 border-4 border-black relative " +
+        "-mt-1 -ml-1 w-11 h-11 bg-amber-300 border-4 border-black relative " +
         cls
       }
-    ></div>
+    >
+      {letter && (
+        <div className="absolute">
+          <Letter
+            letter={letter}
+            droppable={false}
+            draggable={!letter.fixed}
+            coordinates={coordinates}
+          />
+        </div>
+      )}
+    </div>
   );
 };

@@ -1,7 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { LettersArray } from "../../helpers";
+import { Letter, LettersArray } from "../../helpers";
 import { socket } from "../../socketio";
+
+interface extendedLetter extends Letter {
+  fixed: boolean;
+  class?: string;
+}
+
+type Board = (extendedLetter | null)[][];
+
+const initialBoard: Board = Array.from({ length: 15 }, () =>
+  Array(15).fill(null)
+);
 
 export interface Player {
   hand: LettersArray;
@@ -19,18 +30,29 @@ export interface Game {
 interface gameState {
   findingGame: boolean;
   game: Game | null;
-  prevHand: LettersArray | null;
+  board: Board;
+}
+export interface Coordinates {
+  row: number;
+  col: number;
+}
+
+interface moveData {
+  id: number;
+  coordinates: Coordinates;
+  letter?: Letter;
+  class?: string;
 }
 
 interface moveAction {
-  targetIndex: number;
-  movedIndex: number;
+  targetData: moveData;
+  activeData: moveData;
 }
 
 const initialState: gameState = {
   findingGame: false,
   game: null,
-  prevHand: null,
+  board: initialBoard,
 };
 
 export const gameSlice = createSlice({
@@ -43,33 +65,66 @@ export const gameSlice = createSlice({
     setGame: (state, action: PayloadAction<Game>) => {
       state.findingGame = false;
       state.game = action.payload;
-      const player = action.payload.players.find((player) => {
-        return player.socketId === socket.id;
-      });
-      state.prevHand = player?.hand || null;
     },
 
-    moveInHand: (state, action: PayloadAction<moveAction>) => {
+    moveLetter: (state, action: PayloadAction<moveAction>) => {
       const player = state.game?.players.find((player) => {
         return player.socketId === socket.id;
       });
 
       if (player) {
-        const { movedIndex, targetIndex } = action.payload;
+        const { activeData, targetData } = action.payload;
 
-        // Remove the letter from the movedIndex
-        const [movedElem] = player.hand.splice(movedIndex, 1);
+        if (activeData.coordinates && targetData.coordinates) {
+          const letter = activeData.letter;
 
-        // Insert it into the targetIndex
-        player.hand.splice(targetIndex, 0, movedElem);
+          state.board[activeData.coordinates.row - 1][
+            activeData.coordinates.col - 1
+          ] = null;
 
-        state.prevHand = player.hand;
+          state.board[targetData.coordinates.row - 1][
+            targetData.coordinates.col - 1
+          ] = letter
+            ? { ...letter, fixed: false, class: targetData.class }
+            : null;
+        } else if (!activeData.coordinates && targetData.coordinates) {
+          // Remove the letter from the hand
+          player.hand.splice(activeData.id, 1);
+
+          const letter = activeData.letter;
+
+          state.board[targetData.coordinates.row - 1][
+            targetData.coordinates.col - 1
+          ] = letter
+            ? { ...letter, fixed: false, class: targetData.class }
+            : null;
+        } else if (activeData.coordinates && !targetData.coordinates) {
+          const letter = activeData.letter;
+
+          state.board[activeData.coordinates.row - 1][
+            activeData.coordinates.col - 1
+          ] = null;
+          if (letter) {
+            // Insert it into the target
+            player.hand.splice(targetData.id, 0, letter);
+          }
+        } else if (
+          !activeData.coordinates &&
+          !targetData.coordinates &&
+          targetData.id !== null
+        ) {
+          // Remove the letter from the hand
+          const [movedElem] = player.hand.splice(activeData.id, 1);
+
+          // Insert it into the target
+          player.hand.splice(targetData.id, 0, movedElem);
+        }
       }
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setFindingGame, setGame, moveInHand } = gameSlice.actions;
+export const { setFindingGame, setGame, moveLetter } = gameSlice.actions;
 
 export default gameSlice.reducer;
