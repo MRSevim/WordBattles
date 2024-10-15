@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Letter, LettersArray } from "../../helpers";
+import { Letter, LettersArray, shuffle } from "../../helpers";
 import { socket } from "../../socketio";
 
 interface extendedLetter extends Letter {
@@ -113,6 +113,7 @@ export const gameSlice = createSlice({
           !targetData.coordinates &&
           targetData.id !== null
         ) {
+          if (targetData.id === 7) return;
           // Remove the letter from the hand
           const [movedElem] = player.hand.splice(activeData.id, 1);
 
@@ -121,10 +122,19 @@ export const gameSlice = createSlice({
         }
       }
     },
+    shuffleHand: (state) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+      if (player) {
+        shuffle(player.hand);
+      }
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setFindingGame, setGame, moveLetter } = gameSlice.actions;
+export const { setFindingGame, setGame, moveLetter, shuffleHand } =
+  gameSlice.actions;
 
 export default gameSlice.reducer;

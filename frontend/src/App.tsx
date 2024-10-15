@@ -3,7 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Homepage } from "./pages/Homepage";
 import { Provider } from "react-redux";
 import { store } from "./lib/redux/store";
-import { closestCenter, DndContext } from "@dnd-kit/core";
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { handleDragEnd } from "./lib/helpers";
 import { useAppDispatch } from "./lib/redux/hooks";
 import { ToastContainer } from "react-toastify";
@@ -23,8 +29,9 @@ export default App;
 
 const InnerApp = () => {
   const dispatch = useAppDispatch();
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
   return (
-    <DndContext onDragEnd={(e) => handleDragEnd(e, dispatch)}>
+    <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />
       <Header />
       <Routes>

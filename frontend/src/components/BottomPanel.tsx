@@ -1,16 +1,16 @@
 import { LettersArray } from "../lib/helpers";
-import { useAppSelector } from "../lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
 import { socket } from "../lib/socketio";
-import { useState } from "react";
+import { shuffleHand } from "../lib/redux/slices/gameSlice";
 
-export interface DraggingValues {
-  active: number | null;
-  over: number | null;
-}
-
-export const BottomPanel = () => {
+export const BottomPanel = ({
+  setLetterPoolOpen,
+}: {
+  setLetterPoolOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const dispatch = useAppDispatch();
   const playerHand: LettersArray =
     useAppSelector((state: RootState) => {
       let id = socket.id;
@@ -20,26 +20,32 @@ export const BottomPanel = () => {
       return player?.hand;
     }) ?? [];
 
-  const [draggingValues, setDraggingValues] = useState<DraggingValues>({
-    active: null,
-    over: null,
-  });
-
   if (playerHand) {
     return (
       <div className="p-4 bg-slate-500 w-full flex justify-between">
         <div className="flex gap-2">
-          <Button classes="bi bi-archive" title="Harf Havuzu" />
+          <Button
+            classes="bi bi-archive"
+            title="Harf Havuzu"
+            onClick={() => {
+              setLetterPoolOpen((prev) => !prev);
+            }}
+          />
           <Button classes="bi bi-arrow-down-up" title="Değiştir" />
-          <Button classes="bi bi-arrow-left-right" title="Karıştır" />
+          <Button
+            classes="bi bi-arrow-left-right"
+            title="Karıştır"
+            onClick={() => {
+              dispatch(shuffleHand());
+            }}
+          />
         </div>
 
         <div className="flex gap-2">
           {playerHand.map((letter, i) => {
             return (
               <Letter
-                draggingValues={draggingValues}
-                setDraggingValues={setDraggingValues}
+                handLength={playerHand.length}
                 letter={letter}
                 key={i}
                 draggable={true}
@@ -60,14 +66,17 @@ export const BottomPanel = () => {
 };
 
 export const Button = ({
+  onClick,
   classes,
   title,
 }: {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   classes: string;
   title: string;
 }) => {
   return (
     <i
+      onClick={onClick}
       title={title}
       className={
         "bg-orange-900 rounded-lg w-9 h-9 text-center leading-9 text-white cursor-pointer " +

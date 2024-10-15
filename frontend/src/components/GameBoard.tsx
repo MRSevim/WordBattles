@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { boardSizes } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -6,9 +7,11 @@ import { FindGame } from "./FindGame";
 import { Letter } from "./Letter";
 import { Modal } from "./Modal";
 import { useDroppable } from "@dnd-kit/core";
+import { LetterPool } from "./LetterPool";
 
 export const GameBoard = () => {
   const game = useAppSelector((state: RootState) => state.game);
+  const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
   return (
     <div className="w-2/3 flex flex-col items-center">
       <div className="relative">
@@ -17,9 +20,14 @@ export const GameBoard = () => {
             <FindGame />
           </Modal>
         )}
+        {letterPoolOpen && (
+          <Modal>
+            <LetterPool />
+          </Modal>
+        )}
         <Cells />
       </div>
-      <BottomPanel />
+      <BottomPanel setLetterPoolOpen={setLetterPoolOpen} />
     </div>
   );
 };
@@ -125,7 +133,7 @@ const Cell = ({ row, col }: CellProps) => {
   const { setNodeRef } = useDroppable({
     id: `${row}-${col}`,
     data: { coordinates, class: cls },
-    disabled: letter?.fixed || false,
+    disabled: !!letter,
   });
 
   return (

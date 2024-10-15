@@ -1,37 +1,42 @@
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Letter as LetterType } from "../lib/helpers";
 import { CSS } from "@dnd-kit/utilities";
-import { Dispatch, useEffect } from "react";
-import { DraggingValues } from "./BottomPanel";
+import { useEffect } from "react";
 import { Coordinates } from "../lib/redux/slices/gameSlice";
+import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import { RootState } from "../lib/redux/store";
+import { setDraggingValues } from "../lib/redux/slices/dragSlice";
 
 interface props {
   letter: LetterType;
   draggable: boolean;
   droppable: boolean;
+  handLength?: number;
   coordinates?: Coordinates;
-  draggingValues?: DraggingValues;
-  setDraggingValues?: Dispatch<React.SetStateAction<DraggingValues>>;
   i?: number;
 }
 
 export const Letter = ({
+  handLength,
   letter,
   droppable,
   coordinates,
   draggable,
-  draggingValues,
-  setDraggingValues,
   i,
 }: props) => {
   let id: number | string = 0;
 
+  const draggingValues = useAppSelector(
+    (state: RootState) => state.draggingValues
+  );
+  const dispatch = useAppDispatch();
   if (i !== undefined) {
     id = i + 1;
   } else if (coordinates) {
-    id = `${coordinates.row}-${coordinates.col}`;
+    id = `letter-${coordinates.row}-${coordinates.col}`;
   }
-
+  const lastElem =
+    i !== undefined && handLength !== undefined && i === handLength - 1;
   const { active, attributes, listeners, setNodeRef, transform } = useDraggable(
     {
       id,
@@ -45,30 +50,30 @@ export const Letter = ({
     disabled: !droppable,
   });
 
-  useEffect(() => {
-    if (setDraggingValues) {
-      setDraggingValues((prev) => {
-        if (isOver) {
-          return { ...prev, over: i !== undefined ? i : null };
-        }
-        if (prev.over && prev.over === i && !isOver) {
-          return { ...prev, over: null };
-        }
-        return { ...prev };
-      });
+  const { setNodeRef: setLastDroppableNodeRef } = useDroppable({
+    id: handLength ? handLength + 1 : "last",
+    disabled: !lastElem,
+  });
 
-      if (active) {
-        setDraggingValues((prev) => {
-          return { ...prev, active: +active.id - 1 };
-        });
-      } else {
+  useEffect(() => {
+    if (draggingValues.over === i && !isOver) {
+      dispatch(setDraggingValues({ over: null }));
+    }
+    if (isOver) {
+      dispatch(setDraggingValues({ over: i !== undefined ? i : null }));
+    }
+
+    if (active) {
+      dispatch(setDraggingValues({ active: +active.id - 1 }));
+    } else {
+      dispatch(
         setDraggingValues({
           over: null,
           active: null,
-        });
-      }
+        })
+      );
     }
-  }, [isOver, active]);
+  }, [isOver, active, dispatch, i, draggingValues.over]);
 
   let translateValue = 0,
     draggingActive = draggingValues ? draggingValues.active : null,
@@ -94,11 +99,22 @@ export const Letter = ({
       translateValue = 1;
     }
   }
+
+  if (
+    Number.isNaN(draggingActive) &&
+    draggingOver !== null &&
+    i !== undefined &&
+    draggingOver <= i
+  ) {
+    translateValue = 1;
+  }
+
   const style = {
     transform:
-      CSS.Transform.toString(transform) ||
+      CSS.Translate.toString(transform) ||
       `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem))`,
-    zIndex: draggingActive === i ? 51 : 50,
+    zIndex: draggingActive === i ? 11 : 10,
+    touchAction: "none",
   };
 
   return (
@@ -110,7 +126,7 @@ export const Letter = ({
         style={style}
         {...attributes}
         {...listeners}
-        className="w-9 h-9 bg-orange-900 rounded-lg relative cursor-pointer z-50"
+        className="w-9 h-9 bg-orange-900 rounded-lg relative z-10"
       >
         <p className="flex items-center justify-center h-full text-lg text-white">
           {letter.letter === "empty" ? <></> : <>{letter.letter}</>}
@@ -119,6 +135,12 @@ export const Letter = ({
           {letter.point}
         </div>
       </div>
+      {lastElem && (
+        <div
+          ref={setLastDroppableNodeRef}
+          className="w-9 h-9 absolute -right-11"
+        ></div>
+      )}
     </div>
   );
 };

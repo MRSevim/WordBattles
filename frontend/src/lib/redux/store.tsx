@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameSlice from "./slices/gameSlice";
+import dragSlice from "./slices/dragSlice";
 
 export const store = configureStore({
   reducer: {
     game: gameSlice,
+    draggingValues: dragSlice,
   },
 });
 
