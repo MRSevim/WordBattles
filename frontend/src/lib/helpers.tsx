@@ -12,6 +12,8 @@ export interface Letter {
   point: number;
   amount: number;
   drawn?: boolean;
+  fixed?: boolean;
+  class?: string;
 }
 
 export type LettersArray = Letter[];
@@ -46,8 +48,12 @@ const letters: LettersArray = [
   { letter: "V", point: 7, amount: 1 },
   { letter: "Y", point: 3, amount: 2 },
   { letter: "Z", point: 4, amount: 2 },
-  { letter: "empty", point: 0, amount: 2 },
+  { letter: "", point: 0, amount: 2 },
 ];
+
+export const validTurkishLetters: string[] = letters
+  .filter((letter) => letter.letter !== "")
+  .map((letter) => letter.letter);
 
 const generateLetterPool = (array: LettersArray): LettersArray => {
   let newArr: LettersArray = [];
@@ -87,7 +93,7 @@ export const generateGame = (letterPool: LettersArray) => {
 
   // Function to determine the distance of a letter from "A"
   const getLetterDistance = (letter: string) => {
-    if (letter === "empty") return Infinity;
+    if (letter === "") return Infinity;
     return Math.abs(letter.charCodeAt(0) - "A".charCodeAt(0));
   };
 

@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
 import { socket } from "../lib/socketio";
-import { shuffleHand } from "../lib/redux/slices/gameSlice";
+import { makePlay, shuffleHand } from "../lib/redux/slices/gameSlice";
 
 export const BottomPanel = ({
   setLetterPoolOpen,
@@ -11,14 +11,14 @@ export const BottomPanel = ({
   setLetterPoolOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const dispatch = useAppDispatch();
-  const playerHand: LettersArray =
+  const playerHand: LettersArray | null =
     useAppSelector((state: RootState) => {
       let id = socket.id;
       const player = state.game?.game?.players.find((player) => {
         return player.socketId === id;
       });
       return player?.hand;
-    }) ?? [];
+    }) ?? null;
 
   if (playerHand) {
     return (
@@ -58,7 +58,13 @@ export const BottomPanel = ({
 
         <div className="flex gap-2">
           <Button classes="bi bi-arrow-right" title="Geç" />{" "}
-          <Button classes="bi bi-arrow-right-square" title="Gönder" />
+          <Button
+            classes="bi bi-arrow-right-square"
+            title="Gönder"
+            onClick={() => {
+              dispatch(makePlay());
+            }}
+          />
         </div>
       </div>
     );

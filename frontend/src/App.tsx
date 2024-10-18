@@ -29,7 +29,18 @@ export default App;
 
 const InnerApp = () => {
   const dispatch = useAppDispatch();
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 1,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 1,
+      },
+    })
+  );
   return (
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />

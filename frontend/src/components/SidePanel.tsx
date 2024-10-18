@@ -1,6 +1,7 @@
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Player } from "../lib/redux/slices/gameSlice";
+import { socket } from "../lib/socketio";
 
 export const SidePanel = () => {
   const game = useAppSelector((state: RootState) => state.game.game);
@@ -30,7 +31,7 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
     >
       <p>{player?.username}</p>
       <p>Derece:xx</p>
-      Puan: 0
+      Puan: 0<p>{player?.socketId === socket.id && "Siz"}</p>
     </div>
   );
 };

@@ -1,11 +1,12 @@
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { Letter as LetterType } from "../lib/helpers";
+import { Letter as LetterType, validTurkishLetters } from "../lib/helpers";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect } from "react";
-import { Coordinates } from "../lib/redux/slices/gameSlice";
+import { useEffect, useState } from "react";
+import { changeEmptyLetter, Coordinates } from "../lib/redux/slices/gameSlice";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { setDraggingValues } from "../lib/redux/slices/dragSlice";
+import { toast } from "react-toastify";
 
 interface props {
   letter: LetterType;
@@ -37,6 +38,7 @@ export const Letter = ({
   }
   const lastElem =
     i !== undefined && handLength !== undefined && i === handLength - 1;
+
   const { active, attributes, listeners, setNodeRef, transform } = useDraggable(
     {
       id,
@@ -116,6 +118,13 @@ export const Letter = ({
     zIndex: draggingActive === i ? 11 : 10,
     touchAction: "none",
   };
+  const [activeInput, setActiveInput] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (letter.letter === "" && !letter.fixed) {
+      setActiveInput(true);
+    }
+  }, []);
 
   return (
     <div className="relative">
@@ -128,9 +137,34 @@ export const Letter = ({
         {...listeners}
         className="w-9 h-9 bg-orange-900 rounded-lg relative z-10"
       >
-        <p className="flex items-center justify-center h-full text-lg text-white">
-          {letter.letter === "empty" ? <></> : <>{letter.letter}</>}
-        </p>
+        <div className="flex items-center justify-center h-full text-lg text-white">
+          {activeInput ? (
+            <input
+              type="text"
+              maxLength={1}
+              className="w-full h-full bg-transparent text-center text-white"
+              value={letter.letter}
+              onChange={(e) => {
+                const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
+
+                if (
+                  !validTurkishLetters.includes(newLetter) &&
+                  newLetter !== ""
+                ) {
+                  toast.error("Lütfen geçerli bir türkçe harf giriniz");
+                }
+                dispatch(
+                  changeEmptyLetter({
+                    newLetter,
+                    target: { coordinates, i },
+                  })
+                );
+              }}
+            />
+          ) : (
+            <>{letter.letter}</>
+          )}
+        </div>
         <div className="absolute bottom-0 right-0.5 text-xxs text-white">
           {letter.point}
         </div>

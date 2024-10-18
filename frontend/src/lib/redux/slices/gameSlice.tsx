@@ -2,13 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Letter, LettersArray, shuffle } from "../../helpers";
 import { socket } from "../../socketio";
+import { toast } from "react-toastify";
+import { validTurkishLetters } from "../../helpers";
 
-interface extendedLetter extends Letter {
-  fixed: boolean;
-  class?: string;
-}
-
-type Board = (extendedLetter | null)[][];
+type Board = (Letter | null)[][];
 
 const initialBoard: Board = Array.from({ length: 15 }, () =>
   Array(15).fill(null)
@@ -73,6 +70,9 @@ export const gameSlice = createSlice({
       });
 
       if (player) {
+        const playersTurn = checkPlayersTurn(player);
+        if (!playersTurn) return;
+
         const { activeData, targetData } = action.payload;
 
         if (activeData.coordinates && targetData.coordinates) {
@@ -130,11 +130,86 @@ export const gameSlice = createSlice({
         shuffle(player.hand);
       }
     },
+    makePlay: (state) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+
+      const playersTurn = checkPlayersTurn(player);
+      if (!playersTurn) return;
+
+      if (state.board[7][7] === null) {
+        toast.error("Lütfen merkez hücreyi kullanınız");
+        return;
+      }
+      const invalidLetter = state.board.some((row) =>
+        row.some(
+          (letter) => letter && !validTurkishLetters.includes(letter.letter)
+        )
+      );
+      if (invalidLetter) {
+        toast.error("Lütfen boş harfler için geçerli bir Türkçe harf giriniz");
+        return;
+      }
+      socket.emit("Play", {
+        board: state.board,
+        roomId: state.game?.roomId,
+      });
+    },
+    changeEmptyLetter: (
+      state,
+      action: PayloadAction<{
+        newLetter: string;
+        target: {
+          coordinates?: Coordinates;
+          i?: number;
+        };
+      }>
+    ) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+
+      const { newLetter } = action.payload;
+
+      if (player) {
+        if (action.payload.target.i !== undefined) {
+          const { i } = action.payload.target;
+          player.hand[i].letter = newLetter;
+        } else if (action.payload.target.coordinates) {
+          const { coordinates } = action.payload.target;
+          const targetCell =
+            state.board[coordinates.row - 1]?.[coordinates.col - 1];
+          if (targetCell && typeof targetCell !== "number") {
+            targetCell.letter = newLetter;
+          }
+        }
+      }
+    },
   },
 });
 
+const checkPlayersTurn = (player: Player | undefined) => {
+  if (player) {
+    if (!player.turn) {
+      toast.error("Sizin sıranız değil");
+      return false;
+    } else return true;
+  }
+};
+
+socket.on("Game Error", ({ error }: { error: string }) => {
+  toast.error(error);
+});
+
 // Action creators are generated for each case reducer function
-export const { setFindingGame, setGame, moveLetter, shuffleHand } =
-  gameSlice.actions;
+export const {
+  setFindingGame,
+  setGame,
+  moveLetter,
+  shuffleHand,
+  makePlay,
+  changeEmptyLetter,
+} = gameSlice.actions;
 
 export default gameSlice.reducer;
