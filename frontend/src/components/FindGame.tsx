@@ -2,32 +2,7 @@ import { RootState } from "../lib/redux/store";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { socket } from "../lib/socketio";
 import { setFindingGame, setGame } from "../lib/redux/slices/gameSlice";
-import { generateGame, letterPool } from "../lib/helpers";
 import { Game } from "../lib/redux/slices/gameSlice";
-
-socket.on("Generate Game", ({ roomId, players }) => {
-  const playersStatus = generateGame(letterPool);
-
-  const _players = [
-    {
-      hand: playersStatus.players[0],
-      username: players.player1.username,
-      turn: playersStatus.startingPlayer === 1,
-      socketId: players.player1.socketId,
-    },
-    {
-      hand: playersStatus.players[1],
-      username: players.player2.username,
-      turn: playersStatus.startingPlayer === 2,
-      socketId: players.player2.socketId,
-    },
-  ];
-  socket.emit("Generated Game", {
-    players: _players,
-    undrawnLetterPool: playersStatus.undrawnletterPool,
-    roomId,
-  });
-});
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
@@ -38,8 +13,8 @@ export const FindGame = () => {
     dispatch(setFindingGame());
   };
 
-  socket.on("Start Game", ({ players, undrawnLetterPool, roomId }: Game) => {
-    dispatch(setGame({ players, undrawnLetterPool, roomId }));
+  socket.on("Start Game", (game: Game) => {
+    dispatch(setGame(game));
   });
 
   if (game.findingGame) {

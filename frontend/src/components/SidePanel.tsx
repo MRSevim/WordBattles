@@ -31,7 +31,8 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
     >
       <p>{player?.username}</p>
       <p>Derece:xx</p>
-      Puan: 0<p>{player?.socketId === socket.id && "Siz"}</p>
+      Puan: {player?.score}
+      <p>{player?.socketId === socket.id && "Siz"}</p>
     </div>
   );
 };

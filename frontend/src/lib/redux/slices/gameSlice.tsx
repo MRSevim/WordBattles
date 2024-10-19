@@ -16,6 +16,7 @@ export interface Player {
   username: string;
   turn: boolean;
   socketId: string;
+  score: number;
 }
 
 export interface Game {
@@ -23,18 +24,26 @@ export interface Game {
   undrawnLetterPool: LettersArray;
   roomId: string;
 }
+interface Word {
+  word: string;
+  meanings: string[];
+}
 
-interface gameState {
+export interface GameState {
   findingGame: boolean;
   game: Game | null;
   board: Board;
+  history: {
+    playerSocketId: string;
+    words: Word[];
+  }[];
 }
 export interface Coordinates {
   row: number;
   col: number;
 }
 
-interface moveData {
+interface MoveData {
   id: number;
   coordinates: Coordinates;
   letter?: Letter;
@@ -42,19 +51,20 @@ interface moveData {
 }
 
 interface moveAction {
-  targetData: moveData;
-  activeData: moveData;
+  targetData: MoveData;
+  activeData: MoveData;
 }
 
-const initialState: gameState = {
+const initialState: GameState = {
   findingGame: false,
   game: null,
   board: initialBoard,
+  history: [],
 };
 
 export const gameSlice = createSlice({
   name: "game",
-  initialState: initialState as gameState,
+  initialState: initialState as GameState,
   reducers: {
     setFindingGame: (state) => {
       state.findingGame = true;
@@ -63,7 +73,9 @@ export const gameSlice = createSlice({
       state.findingGame = false;
       state.game = action.payload;
     },
-
+    setGameState: (state, action: PayloadAction<GameState>) => {
+      return action.payload;
+    },
     moveLetter: (state, action: PayloadAction<moveAction>) => {
       const player = state.game?.players.find((player) => {
         return player.socketId === socket.id;
@@ -152,8 +164,7 @@ export const gameSlice = createSlice({
         return;
       }
       socket.emit("Play", {
-        board: state.board,
-        roomId: state.game?.roomId,
+        state,
       });
     },
     changeEmptyLetter: (
@@ -210,6 +221,7 @@ export const {
   shuffleHand,
   makePlay,
   changeEmptyLetter,
+  setGameState,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
