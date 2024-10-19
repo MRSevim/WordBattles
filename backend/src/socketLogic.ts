@@ -227,7 +227,7 @@ export const runSocketLogic = (io: any) => {
 // Helper function for validating words using Promise.all
 const validateWords = async (words: string[]): Promise<CheckedWords> => {
   const fetches = words.map((word) =>
-    fetch(`https://sozluk.gov.tr/gts?ara=${word}`)
+    fetch(`https://sozluk.gov.tr/gts?ara=${word.toLowerCase()}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
