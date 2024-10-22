@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
 import { socket } from "../lib/socketio";
-import { makePlay, shuffleHand } from "../lib/redux/slices/gameSlice";
+import { _switch, makePlay, shuffleHand } from "../lib/redux/slices/gameSlice";
+import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 
 export const BottomPanel = ({
   setLetterPoolOpen,
@@ -19,7 +20,12 @@ export const BottomPanel = ({
       });
       return player?.hand;
     }) ?? null;
-
+  const switching = useAppSelector(
+    (state: RootState) => state.switch.switching
+  );
+  const switchValues = useAppSelector(
+    (state: RootState) => state.switch.switchValues
+  );
   if (playerHand) {
     return (
       <div className="p-4 bg-slate-500 w-full flex justify-between">
@@ -31,7 +37,13 @@ export const BottomPanel = ({
               setLetterPoolOpen((prev) => !prev);
             }}
           />
-          <Button classes="bi bi-arrow-down-up" title="Değiştir" />
+          <Button
+            classes="bi bi-arrow-down-up"
+            title="Değiştir"
+            onClick={() => {
+              dispatch(toggleSwitching(playerHand));
+            }}
+          />
           <Button
             classes="bi bi-arrow-left-right"
             title="Karıştır"
@@ -62,7 +74,12 @@ export const BottomPanel = ({
             classes="bi bi-arrow-right-square"
             title="Gönder"
             onClick={() => {
-              dispatch(makePlay());
+              if (switching) {
+                dispatch(_switch(switchValues));
+                dispatch(toggleSwitching(playerHand));
+              } else {
+                dispatch(makePlay());
+              }
             }}
           />
         </div>

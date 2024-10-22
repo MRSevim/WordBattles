@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameSlice from "./slices/gameSlice";
 import dragSlice from "./slices/dragSlice";
+import switchSlice from "./slices/switchSlice";
 
 export const store = configureStore({
   reducer: {
     game: gameSlice,
     draggingValues: dragSlice,
+    switch: switchSlice,
   },
 });
 

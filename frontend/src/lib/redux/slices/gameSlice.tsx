@@ -36,6 +36,7 @@ export interface GameState {
   history: {
     playerSocketId: string;
     words: Word[];
+    playerPoints: number;
   }[];
 }
 export interface Coordinates {
@@ -82,10 +83,12 @@ export const gameSlice = createSlice({
       });
 
       if (player) {
-        const playersTurn = checkPlayersTurn(player);
-        if (!playersTurn) return;
-
         const { activeData, targetData } = action.payload;
+
+        if (activeData.coordinates || targetData.coordinates) {
+          const playersTurn = checkPlayersTurn(player);
+          if (!playersTurn) return;
+        }
 
         if (activeData.coordinates && targetData.coordinates) {
           const letter = activeData.letter;
@@ -140,6 +143,40 @@ export const gameSlice = createSlice({
       });
       if (player) {
         shuffle(player.hand);
+      }
+    },
+    _switch: (state, action: PayloadAction<number[]>) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+      const switchedIndices = action.payload;
+
+      if (player) {
+        const playersTurn = checkPlayersTurn(player);
+        if (!playersTurn) return;
+
+        if (switchedIndices.length > player.hand.length) {
+          toast.error(
+            "Değişmek istediğiniz harf sayısı elinizdeki harf sayısından fazla"
+          );
+          return;
+        }
+
+        if (
+          state.game &&
+          switchedIndices.length > state.game.undrawnLetterPool.length
+        ) {
+          toast.error("Havuzda yeterli harf yok");
+          return;
+        }
+        const letterOnBoard = state.board.some((row) =>
+          row.some((cell) => cell && !cell.fixed)
+        );
+        if (letterOnBoard) {
+          toast.error("Tahtada harf varken değişim işlemi yapamazsınız");
+          return;
+        }
+        socket.emit("Switch", { switchedIndices, state });
       }
     },
     makePlay: (state) => {
@@ -222,6 +259,7 @@ export const {
   makePlay,
   changeEmptyLetter,
   setGameState,
+  _switch,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

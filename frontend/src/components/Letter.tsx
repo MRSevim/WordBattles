@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { setDraggingValues } from "../lib/redux/slices/dragSlice";
 import { toast } from "react-toastify";
+import { changeSwitchValue } from "../lib/redux/slices/switchSlice";
 
 interface props {
   letter: LetterType;
@@ -30,6 +31,16 @@ export const Letter = ({
   const draggingValues = useAppSelector(
     (state: RootState) => state.draggingValues
   );
+  const isActive = useAppSelector((state: RootState) => {
+    return (
+      state.switch.switchValues.includes(i as number) && state.switch.switching
+    );
+  });
+
+  const isSwitching = useAppSelector(
+    (state: RootState) => state.switch.switching
+  );
+
   const dispatch = useAppDispatch();
   if (i !== undefined) {
     id = i + 1;
@@ -39,22 +50,21 @@ export const Letter = ({
   const lastElem =
     i !== undefined && handLength !== undefined && i === handLength - 1;
 
-  const { active, attributes, listeners, setNodeRef, transform } = useDraggable(
-    {
+  const { isDragging, active, attributes, listeners, setNodeRef, transform } =
+    useDraggable({
       id,
       data: { letter, coordinates },
-      disabled: !draggable,
-    }
-  );
+      disabled: !draggable || isSwitching,
+    });
 
   const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
     id,
-    disabled: !droppable,
+    disabled: !droppable || isSwitching,
   });
 
   const { setNodeRef: setLastDroppableNodeRef } = useDroppable({
     id: handLength ? handLength + 1 : "last",
-    disabled: !lastElem,
+    disabled: !lastElem || isSwitching,
   });
 
   useEffect(() => {
@@ -111,11 +121,13 @@ export const Letter = ({
     translateValue = 1;
   }
 
+  const translateX = translateValue
+    ? `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem)`
+    : undefined;
+  const translateY = isActive ? `translateY(-10px)` : undefined;
   const style = {
-    transform:
-      CSS.Translate.toString(transform) ||
-      `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem))`,
-    zIndex: draggingActive === i ? 11 : 10,
+    transform: CSS.Translate.toString(transform) || translateX || translateY,
+    zIndex: isDragging ? 11 : 10,
     touchAction: "none",
   };
   const [activeInput, setActiveInput] = useState<boolean>(false);
@@ -124,18 +136,27 @@ export const Letter = ({
     if (letter.letter === "" && !letter.fixed) {
       setActiveInput(true);
     }
-  }, []);
+    if (letter.fixed) {
+      setActiveInput(false);
+    }
+  }, [letter]);
 
   return (
     <div className="relative">
       <div ref={setDroppableNodeRef} className={`w-9 h-9 absolute`}></div>
 
       <div
+        onClick={() => {
+          dispatch(changeSwitchValue(i as number));
+        }}
         ref={setNodeRef}
         style={style}
         {...attributes}
         {...listeners}
-        className="w-9 h-9 bg-orange-900 rounded-lg relative z-10"
+        className={
+          "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
+          (letter.fixed ? "bg-stone-700" : "")
+        }
       >
         <div className="flex items-center justify-center h-full text-lg text-white">
           {activeInput ? (
