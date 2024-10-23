@@ -3,7 +3,12 @@ import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
 import { socket } from "../lib/socketio";
-import { _switch, makePlay, shuffleHand } from "../lib/redux/slices/gameSlice";
+import {
+  _switch,
+  makePlay,
+  pass,
+  shuffleHand,
+} from "../lib/redux/slices/gameSlice";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 
 export const BottomPanel = ({
@@ -38,7 +43,9 @@ export const BottomPanel = ({
             }}
           />
           <Button
-            classes="bi bi-arrow-down-up"
+            classes={
+              "bi bi-arrow-down-up " + (switching ? "animate-bounce" : "")
+            }
             title="Değiştir"
             onClick={() => {
               dispatch(toggleSwitching(playerHand));
@@ -59,7 +66,7 @@ export const BottomPanel = ({
               <Letter
                 handLength={playerHand.length}
                 letter={letter}
-                key={i}
+                key={i + letter.letter}
                 draggable={true}
                 droppable={true}
                 i={i}
@@ -69,7 +76,13 @@ export const BottomPanel = ({
         </div>
 
         <div className="flex gap-2">
-          <Button classes="bi bi-arrow-right" title="Geç" />{" "}
+          <Button
+            classes="bi bi-arrow-right"
+            title="Geç"
+            onClick={() => {
+              dispatch(pass());
+            }}
+          />{" "}
           <Button
             classes="bi bi-arrow-right-square"
             title="Gönder"
@@ -78,7 +91,7 @@ export const BottomPanel = ({
                 dispatch(_switch(switchValues));
                 dispatch(toggleSwitching(playerHand));
               } else {
-                dispatch(makePlay());
+                dispatch(makePlay(false));
               }
             }}
           />

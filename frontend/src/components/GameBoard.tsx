@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { boardSizes } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -8,6 +8,7 @@ import { Letter } from "./Letter";
 import { Modal } from "./Modal";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterPool } from "./LetterPool";
+import { socket } from "../lib/socketio";
 
 export const GameBoard = () => {
   const game = useAppSelector((state: RootState) => state.game);
@@ -25,6 +26,7 @@ export const GameBoard = () => {
             <LetterPool />
           </Modal>
         )}
+
         <Cells />
       </div>
       <BottomPanel setLetterPoolOpen={setLetterPoolOpen} />
@@ -33,8 +35,30 @@ export const GameBoard = () => {
 };
 
 const Cells = () => {
+  const [bingo, setBingo] = useState<boolean>(false);
+  socket.on("Bingo", () => {
+    setBingo(true);
+  });
+
+  useEffect(() => {
+    if (bingo) {
+      setTimeout(() => {
+        setBingo(false);
+      }, 3000);
+    }
+  }, [bingo]);
+
   return (
-    <div className="mt-1 ml-1 ">
+    <div className="mt-1 ml-1 relative">
+      <div
+        className={
+          "opacity-0 transition-opacity absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2" +
+          (bingo ? " opacity-100" : "")
+        }
+      >
+        Bingo yaptınız. Tebrikler.
+      </div>
+
       {[...Array(boardSizes.width)].map((e, i1) => {
         const row = i1 + 1;
 

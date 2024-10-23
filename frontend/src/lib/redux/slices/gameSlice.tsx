@@ -3,7 +3,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { Letter, LettersArray, shuffle } from "../../helpers";
 import { socket } from "../../socketio";
 import { toast } from "react-toastify";
-import { validTurkishLetters } from "../../helpers";
 
 type Board = (Letter | null)[][];
 
@@ -17,12 +16,14 @@ export interface Player {
   turn: boolean;
   socketId: string;
   score: number;
+  timer: number;
 }
 
 export interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
+  passCount: number;
 }
 interface Word {
   word: string;
@@ -179,7 +180,7 @@ export const gameSlice = createSlice({
         socket.emit("Switch", { switchedIndices, state });
       }
     },
-    makePlay: (state) => {
+    pass: (state) => {
       const player = state.game?.players.find((player) => {
         return player.socketId === socket.id;
       });
@@ -187,20 +188,23 @@ export const gameSlice = createSlice({
       const playersTurn = checkPlayersTurn(player);
       if (!playersTurn) return;
 
-      if (state.board[7][7] === null) {
-        toast.error("Lütfen merkez hücreyi kullanınız");
-        return;
-      }
-      const invalidLetter = state.board.some((row) =>
-        row.some(
-          (letter) => letter && !validTurkishLetters.includes(letter.letter)
-        )
-      );
-      if (invalidLetter) {
-        toast.error("Lütfen boş harfler için geçerli bir Türkçe harf giriniz");
-        return;
-      }
+      socket.emit("Pass", {
+        state,
+      });
+    },
+    makePlay: (state, action) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+
+      const playersTurn = checkPlayersTurn(player);
+      if (!playersTurn) return;
+
       socket.emit("Play", {
+        state,
+        timerRanOut: action.payload,
+      });
+      socket.emit("Timer", {
         state,
       });
     },
@@ -260,6 +264,7 @@ export const {
   changeEmptyLetter,
   setGameState,
   _switch,
+  pass,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

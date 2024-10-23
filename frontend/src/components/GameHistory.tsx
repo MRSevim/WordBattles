@@ -46,14 +46,19 @@ export const GameHistory = () => {
               <div
                 className={
                   "inline " +
-                  (player?.socketId === socket.id ? "text-lime-800" : "")
+                  (player?.socketId === socket.id ? "font-bold" : "")
                 }
               >
                 {capitalizeFirstLetter(player?.username as string)}
               </div>
-              ; {words}
-              {words.length === 1 && " kelimesini"}
-              {words.length > 1 && " kelimelerini"} türetti.{" "}
+              {words.length === 0 && " sırasını geçti. "}
+              {words.length > 0 && (
+                <>
+                  ; {words}
+                  {words.length === 1 && " kelimesini"}
+                  {words.length > 1 && " kelimelerini"} türetti.{" "}
+                </>
+              )}
               {"(" + points + " puan)"}
             </div>
           );

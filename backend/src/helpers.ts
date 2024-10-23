@@ -19,12 +19,14 @@ export interface Player {
   turn: boolean;
   socketId: string;
   score: number;
+  timer: number;
 }
 
 interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
+  passCount: number;
 }
 interface Word {
   word: string;
@@ -85,6 +87,16 @@ const letters: LettersArray = [
   { letter: "", point: 0, amount: 2 },
 ];
 
+export const validTurkishLetters: string[] = letters
+  .filter((letter) => letter.letter !== "")
+  .map((letter) => letter.letter);
+
+export const switchTurns = (currentPlayer: Player, opponentPlayer: Player) => {
+  currentPlayer.turn = false;
+  currentPlayer.timer = 10;
+  opponentPlayer.turn = true;
+};
+
 export const switchLetters = (
   switchedIndices: number[],
   playerHand: LettersArray,
@@ -100,6 +112,30 @@ export const switchLetters = (
     undrawnLetterPool.splice(randomIndex, 1); // Remove letter from the pool
     undrawnLetterPool.push(playerHand[index]); // Add old letter back to the pool
     playerHand[index] = randomLetter; // Replace with new random letter
+  });
+};
+
+export const pass = (playerHand: LettersArray, board: Board) => {
+  for (let row = 0; row < board.length; row++) {
+    for (let col = 0; col < board[row].length; col++) {
+      const cell = board[row][col];
+      if (cell && !cell.fixed) {
+        playerHand.push(cell);
+        board[row][col] = null;
+      }
+    }
+  }
+};
+
+export const timerRanOutUnsuccessfully = (state: gameState) => {
+  const currentPlayer = state.game.players.find(
+    (player) => player.turn
+  ) as Player;
+  state.game.passCount += 1;
+  state.history.push({
+    playerSocketId: currentPlayer.socketId,
+    words: [],
+    playerPoints: 0,
   });
 };
 
@@ -324,7 +360,9 @@ export const areNewWordsConnected = (board: Board): boolean => {
 
 export const calculatePoints = (
   board: Board,
-  wordsWithCoordinates: WordWithCoordinates[]
+  wordsWithCoordinates: WordWithCoordinates[],
+  io: any,
+  id: string
 ): number => {
   let totalPoints = 0;
 
@@ -376,9 +414,9 @@ export const calculatePoints = (
     // Add the word's points to the total, applying word multiplier
     totalPoints += wordPoints * wordMultiplier;
   });
-
   // If the player uses all their tiles (Bingo), they get a 50-point bonus
   if (usedLetters.size === HAND_SIZE) {
+    io.to(id).emit("Bingo");
     totalPoints += 50;
   }
 
