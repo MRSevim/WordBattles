@@ -10,6 +10,7 @@ import {
   letterPool,
   pass,
   Player,
+  setUpTimerInterval,
   switchLetters,
   switchTurns,
   timerRanOutUnsuccessfully,
@@ -62,6 +63,10 @@ export const runSocketLogic = (io: any) => {
       }
     }
 
+    socket.on("Timer", ({ state }: { state: gameState }) => {
+      setUpTimerInterval(state, io);
+    });
+
     socket.on(
       "Switch",
       ({
@@ -75,9 +80,8 @@ export const runSocketLogic = (io: any) => {
           game: { players, roomId, undrawnLetterPool },
         } = state;
         const currentPlayer = players.find((player) => player.turn) as Player;
-        const opponentPlayer = players.find((player) => !player.turn) as Player;
 
-        switchTurns(currentPlayer, opponentPlayer);
+        switchTurns(state, io);
 
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
 
@@ -85,32 +89,14 @@ export const runSocketLogic = (io: any) => {
       }
     );
 
-    socket.on("Timer", ({ state }: { state: gameState }) => {
-      const {
-        game: { players, roomId },
-      } = state;
-      const currentPlayer = players.find((player) => player.turn) as Player;
-
-      setInterval(() => {
-        if (currentPlayer.timer > 0) {
-          currentPlayer.timer -= 1;
-          io.to(roomId).emit("Play Made", state);
-        }
-      }, 1000);
-    });
-
     socket.on("Pass", ({ state }: { state: gameState }) => {
       const {
         board,
         game: { players, roomId },
       } = state;
       const currentPlayer = players.find((player) => player.turn) as Player;
-      const opponentPlayer = players.find((player) => !player.turn) as Player;
 
       pass(currentPlayer.hand, board);
-
-      switchTurns(currentPlayer, opponentPlayer);
-      state.game.passCount += 1;
 
       // Append to history
       state.history.push({
@@ -119,6 +105,8 @@ export const runSocketLogic = (io: any) => {
         playerPoints: 0,
       });
 
+      switchTurns(state, io);
+      state.game.passCount += 1;
       io.to(roomId).emit("Play Made", state);
     });
 
@@ -135,10 +123,10 @@ export const runSocketLogic = (io: any) => {
           board,
           game: { players, roomId, undrawnLetterPool },
         } = state;
+
         const id = socket.id;
         // Find the player who made the play
         const currentPlayer = players.find((player) => player.turn) as Player;
-        const opponentPlayer = players.find((player) => !player.turn) as Player;
 
         // Check if the new tiles are aligned
         if (!areTilesAligned(board)) {
@@ -146,8 +134,8 @@ export const runSocketLogic = (io: any) => {
             error: "Yeni harfler yatay veya dikey olarak hizalanmalıdır",
           });
           if (timerRanOut) {
-            switchTurns(currentPlayer, opponentPlayer);
             timerRanOutUnsuccessfully(state);
+            switchTurns(state, io);
             io.to(roomId).emit("Play Made", state);
           }
           return;
@@ -163,8 +151,8 @@ export const runSocketLogic = (io: any) => {
             error: "Merkez hücre kullanılmalıdır",
           });
           if (timerRanOut) {
-            switchTurns(currentPlayer, opponentPlayer);
             timerRanOutUnsuccessfully(state);
+            switchTurns(state, io);
             io.to(roomId).emit("Play Made", state);
           }
           return;
@@ -179,8 +167,8 @@ export const runSocketLogic = (io: any) => {
             error: "Boş harfler geçerli Türkçe harfler olmalıdır",
           });
           if (timerRanOut) {
-            switchTurns(currentPlayer, opponentPlayer);
             timerRanOutUnsuccessfully(state);
+            switchTurns(state, io);
             io.to(roomId).emit("Play Made", state);
           }
           return;
@@ -195,8 +183,8 @@ export const runSocketLogic = (io: any) => {
                 "Yeni kelimelerden en az biri dolu hücreler ile bağlantılı olmalıdır",
             });
             if (timerRanOut) {
-              switchTurns(currentPlayer, opponentPlayer);
               timerRanOutUnsuccessfully(state);
+              switchTurns(state, io);
               io.to(roomId).emit("Play Made", state);
             }
             return;
@@ -212,8 +200,8 @@ export const runSocketLogic = (io: any) => {
             error: "Kelimeler bir harften uzun olmalıdır",
           });
           if (timerRanOut) {
-            switchTurns(currentPlayer, opponentPlayer);
             timerRanOutUnsuccessfully(state);
+            switchTurns(state, io);
             io.to(roomId).emit("Play Made", state);
           }
           return;
@@ -230,8 +218,8 @@ export const runSocketLogic = (io: any) => {
               )}`,
             });
             if (timerRanOut) {
-              switchTurns(currentPlayer, opponentPlayer);
               timerRanOutUnsuccessfully(state);
+              switchTurns(state, io);
               io.to(roomId).emit("Play Made", state);
             }
             return;
@@ -241,8 +229,8 @@ export const runSocketLogic = (io: any) => {
             error: "Kelime doğrulama sırasında bir hata oluştu",
           });
           if (timerRanOut) {
-            switchTurns(currentPlayer, opponentPlayer);
             timerRanOutUnsuccessfully(state);
+            switchTurns(state, io);
             io.to(roomId).emit("Play Made", state);
           }
           return;
@@ -268,7 +256,8 @@ export const runSocketLogic = (io: any) => {
 
         // Switch turns
         completePlayerHand(currentPlayer, undrawnLetterPool);
-        switchTurns(currentPlayer, opponentPlayer);
+        switchTurns(state, io);
+        state.game.passCount = 0;
 
         io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
       }

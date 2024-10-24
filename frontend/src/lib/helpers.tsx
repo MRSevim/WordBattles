@@ -2,8 +2,10 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { AppDispatch } from "./redux/store";
 import { moveLetter } from "./redux/slices/gameSlice";
 
-export const capitalizeFirstLetter = (string: string): string => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+export const capitalizeFirstLetter = (string: string): string | void => {
+  if (string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 };
 export interface Letter {
   letter: string;

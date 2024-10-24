@@ -1,9 +1,11 @@
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
-import { makePlay, Player } from "../lib/redux/slices/gameSlice";
+import { makePlay, pass, Player } from "../lib/redux/slices/gameSlice";
 import { socket } from "../lib/socketio";
 import { GameHistory } from "./GameHistory";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toggleSwitching } from "../lib/redux/slices/switchSlice";
+import { toast } from "react-toastify";
 
 export const SidePanel = () => {
   const game = useAppSelector((state: RootState) => state.game.game);
@@ -27,13 +29,23 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   const playerTurn = player?.turn;
   const timer = player?.timer;
   const dispatch = useAppDispatch();
+  const [ran, setRan] = useState<boolean>(false);
+  const switching = useAppSelector(
+    (state: RootState) => state.switch.switching
+  );
 
   useEffect(() => {
-    if (playerTurn && timer === 0 && player?.socketId === socket.id) {
-      console.log("runs");
-      dispatch(makePlay(true));
+    if (!playerTurn) setRan(false);
+
+    if (playerTurn && timer === 0 && player?.socketId === socket.id && !ran) {
+      if (switching) {
+        dispatch(pass());
+        toast.error("Zamanında değişmediğiniz için sıranız pas geçildi");
+        dispatch(toggleSwitching());
+      } else dispatch(makePlay(true));
+      setRan(true);
     }
-  }, [playerTurn, timer, dispatch]);
+  }, [playerTurn, timer, dispatch, ran]);
 
   return (
     <div

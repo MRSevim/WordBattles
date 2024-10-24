@@ -91,10 +91,45 @@ export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
 
-export const switchTurns = (currentPlayer: Player, opponentPlayer: Player) => {
+let _timerInterval: ReturnType<typeof setInterval> | undefined;
+
+export const switchTurns = (state: gameState, io: any) => {
+  const {
+    game: { players, roomId },
+  } = state;
+
+  const currentPlayer = players.find((player) => player.turn) as Player;
+  const opponentPlayer = players.find((player) => !player.turn) as Player;
+
   currentPlayer.turn = false;
   currentPlayer.timer = 10;
   opponentPlayer.turn = true;
+
+  io.to(roomId).emit("Play Made", state);
+
+  setUpTimerInterval(state, io);
+};
+
+export const setUpTimerInterval = (state: gameState, io: any) => {
+  const {
+    game: { players, roomId },
+  } = state;
+  const currentPlayer = players.find((player) => player.turn) as Player;
+
+  // Clear any previous intervals to avoid multiple timers
+  if (_timerInterval) {
+    clearInterval(_timerInterval);
+  }
+
+  // Set a new interval for the opponent's timer
+  _timerInterval = setInterval(() => {
+    if (currentPlayer.timer > 0) {
+      currentPlayer.timer -= 1;
+      io.to(roomId).emit("Timer Runs", players);
+    } else {
+      clearInterval(_timerInterval); // Clear the interval when timer runs out
+    }
+  }, 1000);
 };
 
 export const switchLetters = (
@@ -132,6 +167,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
     (player) => player.turn
   ) as Player;
   state.game.passCount += 1;
+  pass(currentPlayer.hand, state.board);
   state.history.push({
     playerSocketId: currentPlayer.socketId,
     words: [],

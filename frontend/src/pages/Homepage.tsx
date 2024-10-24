@@ -3,7 +3,12 @@ import { socket } from "../lib/socketio";
 import { SidePanel } from "../components/SidePanel";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../lib/redux/hooks";
-import { GameState, setGameState } from "../lib/redux/slices/gameSlice";
+import {
+  GameState,
+  Player,
+  setGameState,
+  setTimer,
+} from "../lib/redux/slices/gameSlice";
 
 export const Homepage = () => {
   socket.on("connect_error", (err) => {
@@ -11,8 +16,13 @@ export const Homepage = () => {
     toast.error(error);
   });
   const dispatch = useAppDispatch();
+
   socket.on("Play Made", (game: GameState) => {
     dispatch(setGameState(game));
+  });
+
+  socket.on("Timer Runs", (players: Player[]) => {
+    dispatch(setTimer(players));
   });
 
   return (

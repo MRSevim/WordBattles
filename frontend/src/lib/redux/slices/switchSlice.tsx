@@ -11,12 +11,17 @@ export const switchSlice = createSlice({
   name: "switch",
   initialState: initialState,
   reducers: {
-    toggleSwitching: (state, action: PayloadAction<LettersArray>) => {
+    toggleSwitching: (
+      state,
+      action: PayloadAction<LettersArray | undefined>
+    ) => {
       if (!state.switching) {
         state.switching = true;
-        action.payload.forEach((letter, i) => {
-          state.switchValues.push(i);
-        });
+        if (action.payload) {
+          action.payload.forEach((letter, i) => {
+            state.switchValues.push(i);
+          });
+        }
       } else {
         state.switching = false;
         state.switchValues = [];

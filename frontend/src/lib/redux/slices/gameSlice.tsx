@@ -78,6 +78,17 @@ export const gameSlice = createSlice({
     setGameState: (state, action: PayloadAction<GameState>) => {
       return action.payload;
     },
+    setTimer: (state, action: PayloadAction<Player[]>) => {
+      action.payload.forEach((player) => {
+        const _player = state.game?.players.find((Player) => {
+          return Player.socketId === player.socketId;
+        });
+        if (_player) {
+          _player.timer = player.timer;
+        }
+      });
+    },
+
     moveLetter: (state, action: PayloadAction<moveAction>) => {
       const player = state.game?.players.find((player) => {
         return player.socketId === socket.id;
@@ -192,6 +203,23 @@ export const gameSlice = createSlice({
         state,
       });
     },
+    returnEverythingToHand: (state) => {
+      const player = state.game?.players.find((player) => {
+        return player.socketId === socket.id;
+      });
+      if (player) {
+        let board = state.board;
+        for (let row = 0; row < board.length; row++) {
+          for (let col = 0; col < board[row].length; col++) {
+            const cell = board[row][col];
+            if (cell && !cell.fixed) {
+              player.hand.push(cell);
+              board[row][col] = null;
+            }
+          }
+        }
+      }
+    },
     makePlay: (state, action) => {
       const player = state.game?.players.find((player) => {
         return player.socketId === socket.id;
@@ -203,9 +231,6 @@ export const gameSlice = createSlice({
       socket.emit("Play", {
         state,
         timerRanOut: action.payload,
-      });
-      socket.emit("Timer", {
-        state,
       });
     },
     changeEmptyLetter: (
@@ -265,6 +290,8 @@ export const {
   setGameState,
   _switch,
   pass,
+  setTimer,
+  returnEverythingToHand,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

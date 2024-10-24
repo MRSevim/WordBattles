@@ -7,6 +7,7 @@ import {
   _switch,
   makePlay,
   pass,
+  returnEverythingToHand,
   shuffleHand,
 } from "../lib/redux/slices/gameSlice";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
@@ -90,6 +91,9 @@ export const BottomPanel = ({
               if (switching) {
                 dispatch(_switch(switchValues));
                 dispatch(toggleSwitching(playerHand));
+                if (playerHand.length !== 7) {
+                  dispatch(returnEverythingToHand());
+                }
               } else {
                 dispatch(makePlay(false));
               }
