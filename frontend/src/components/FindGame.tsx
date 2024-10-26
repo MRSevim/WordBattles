@@ -20,7 +20,7 @@ export const FindGame = () => {
     });
   });
 
-  if (_game.findingGame) {
+  if (_game.status === "looking") {
     return (
       <div className="bg-primary text-white focus:ring-4 font-medium rounded-lg px-5 py-2.5">
         Oyun aranıyor...

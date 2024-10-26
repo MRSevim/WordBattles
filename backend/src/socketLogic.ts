@@ -7,7 +7,8 @@ import {
   findWordsOnBoard,
   gameState,
   generateGame,
-  letterPool,
+  generateLetterPool,
+  letters,
   pass,
   Player,
   setUpTimerInterval,
@@ -28,6 +29,7 @@ export const runSocketLogic = (io: any) => {
 
     for (let [id, _socket] of io.of("/").sockets) {
       if (!_socket.full && socket.id !== id) {
+        const letterPool = generateLetterPool(letters);
         const playersStatus = generateGame(letterPool);
 
         const players = [
@@ -37,7 +39,7 @@ export const runSocketLogic = (io: any) => {
             turn: playersStatus.startingPlayer === 1,
             socketId: socket.id,
             score: 0,
-            timer: 10,
+            timer: 60,
           },
           {
             hand: playersStatus.players[1],
@@ -45,7 +47,7 @@ export const runSocketLogic = (io: any) => {
             turn: playersStatus.startingPlayer === 2,
             socketId: id,
             score: 0,
-            timer: 10,
+            timer: 60,
           },
         ];
         const roomId = uuidv6();
@@ -105,8 +107,8 @@ export const runSocketLogic = (io: any) => {
         playerPoints: 0,
       });
 
-      switchTurns(state, io);
       state.game.passCount += 1;
+      switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
     });
 
@@ -255,9 +257,9 @@ export const runSocketLogic = (io: any) => {
         });
 
         // Switch turns
-        completePlayerHand(currentPlayer, undrawnLetterPool);
-        switchTurns(state, io);
         state.game.passCount = 0;
+        switchTurns(state, io);
+        completePlayerHand(currentPlayer, undrawnLetterPool);
 
         io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
       }

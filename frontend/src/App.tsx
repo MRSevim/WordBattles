@@ -14,6 +14,7 @@ import { handleDragEnd } from "./lib/helpers";
 import { useAppDispatch } from "./lib/redux/hooks";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Rules } from "./pages/Rules";
 
 function App() {
   return (
@@ -46,7 +47,8 @@ const InnerApp = () => {
       <ToastContainer />
       <Header />
       <Routes>
-        <Route path="/" element={<Homepage />}></Route>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/oyun-kurallari" element={<Rules />} />
       </Routes>
     </DndContext>
   );

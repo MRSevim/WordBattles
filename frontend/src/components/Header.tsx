@@ -16,9 +16,7 @@ export const Header = () => {
 const Links = () => {
   return (
     <nav className="gap-4 flex">
-      <Link to="/oyun-kuralları">Oyun Kuralları</Link>
-      <Link to="/giriş-yap">Giriş Yap</Link>
-      <Link to="/hesap-oluştur">Hesap Oluştur</Link>
+      <Link to="/oyun-kurallari">Oyun Kuralları</Link>
     </nav>
   );
 };

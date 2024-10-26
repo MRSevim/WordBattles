@@ -38,7 +38,7 @@ export interface CheckedWords {
 }
 
 export interface gameState {
-  findingGame: boolean;
+  status: string;
   game: Game;
   board: Board;
   history: {
@@ -54,7 +54,8 @@ export interface WordWithCoordinates {
   end: [number, number];
 }
 
-const letters: LettersArray = [
+export const letters: LettersArray = [
+  { letter: "", point: 0, amount: 2 },
   { letter: "A", point: 1, amount: 12 },
   { letter: "B", point: 3, amount: 2 },
   { letter: "C", point: 4, amount: 2 },
@@ -84,14 +85,43 @@ const letters: LettersArray = [
   { letter: "V", point: 7, amount: 1 },
   { letter: "Y", point: 3, amount: 2 },
   { letter: "Z", point: 4, amount: 2 },
-  { letter: "", point: 0, amount: 2 },
 ];
 
 export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
 
-let _timerInterval: ReturnType<typeof setInterval> | undefined;
+// Function to check game end conditions
+const checkGameEnd = (state: gameState) => {
+  const { players, undrawnLetterPool, passCount } = state.game;
+
+  // Check if the letter pool is empty and one player has no tiles left
+  const isLetterPoolEmpty = undrawnLetterPool.length === 0;
+  const finishingPlayer = players.find((player) => player.hand.length === 0);
+  const hasFinishedTiles = !!finishingPlayer;
+  const unfinishedPlayer = players.find((player) => player.hand.length > 0);
+
+  if (isLetterPoolEmpty && hasFinishedTiles && unfinishedPlayer) {
+    // Player has finished their tiles and pool is empty
+    state.status = "ended";
+    const unfinishedPlayerHandSize = unfinishedPlayer.hand.length;
+    unfinishedPlayer.score -= unfinishedPlayerHandSize;
+    finishingPlayer.score += unfinishedPlayerHandSize;
+    return true;
+  }
+
+  // Check if the pass count is 4 or more
+  if (passCount >= 4) {
+    // Logic for ending the game due to passes
+    state.status = "ended";
+    players.forEach((player) => {
+      player.score -= player.hand.length; // Subtract the length of their hand from their score
+    });
+    return true;
+  }
+
+  return false;
+};
 
 export const switchTurns = (state: gameState, io: any) => {
   const {
@@ -100,14 +130,24 @@ export const switchTurns = (state: gameState, io: any) => {
 
   const currentPlayer = players.find((player) => player.turn) as Player;
   const opponentPlayer = players.find((player) => !player.turn) as Player;
+  const gameEnded = checkGameEnd(state);
+  if (!gameEnded) {
+    currentPlayer.turn = false;
+    currentPlayer.timer = 60;
+    opponentPlayer.turn = true;
 
-  currentPlayer.turn = false;
-  currentPlayer.timer = 10;
-  opponentPlayer.turn = true;
+    io.to(roomId).emit("Play Made", state);
 
-  io.to(roomId).emit("Play Made", state);
-
-  setUpTimerInterval(state, io);
+    setUpTimerInterval(state, io);
+  } else {
+    clearTimerIfExist(io, roomId);
+  }
+};
+const clearTimerIfExist = (io: any, roomId: string) => {
+  // Clear any previous intervals to avoid multiple timers
+  if (io.sockets.adapter.rooms.get(roomId)?.timerInterval) {
+    clearInterval(io.sockets.adapter.rooms.get(roomId).timerInterval);
+  }
 };
 
 export const setUpTimerInterval = (state: gameState, io: any) => {
@@ -116,18 +156,15 @@ export const setUpTimerInterval = (state: gameState, io: any) => {
   } = state;
   const currentPlayer = players.find((player) => player.turn) as Player;
 
-  // Clear any previous intervals to avoid multiple timers
-  if (_timerInterval) {
-    clearInterval(_timerInterval);
-  }
+  clearTimerIfExist(io, roomId);
 
   // Set a new interval for the opponent's timer
-  _timerInterval = setInterval(() => {
+  io.sockets.adapter.rooms.get(roomId).timerInterval = setInterval(() => {
     if (currentPlayer.timer > 0) {
       currentPlayer.timer -= 1;
       io.to(roomId).emit("Timer Runs", players);
     } else {
-      clearInterval(_timerInterval); // Clear the interval when timer runs out
+      clearTimerIfExist(io, roomId); // Clear the interval when timer runs out
     }
   }, 1000);
 };
@@ -147,6 +184,12 @@ export const switchLetters = (
     undrawnLetterPool.splice(randomIndex, 1); // Remove letter from the pool
     undrawnLetterPool.push(playerHand[index]); // Add old letter back to the pool
     playerHand[index] = randomLetter; // Replace with new random letter
+  });
+  // Sort the undrawnLetterPool based on their index in the 'letters' array
+  undrawnLetterPool.sort((a, b) => {
+    const indexA = letters.findIndex((letter) => letter.letter === a.letter);
+    const indexB = letters.findIndex((letter) => letter.letter === b.letter);
+    return indexA - indexB;
   });
 };
 
@@ -501,8 +544,6 @@ export const generateLetterPool = (array: LettersArray): LettersArray => {
   return newArr;
 };
 
-export const letterPool: LettersArray = generateLetterPool(letters);
-
 export const generateGame = (letterPool: LettersArray) => {
   const players: LettersArray[] = [[], []]; // Two players
   const usedLetters = new Set();
@@ -526,20 +567,21 @@ export const generateGame = (letterPool: LettersArray) => {
 
   const undrawnletterPool = letterPool.filter((letter) => !letter.drawn);
 
-  // Function to determine the distance of a letter from "A"
-  const getLetterDistance = (letter: string) => {
-    if (letter === "") return Infinity;
-    return Math.abs(letter.charCodeAt(0) - "A".charCodeAt(0));
+  // Function to get the index of a letter in the 'letters' array
+  const getLetterIndex = (letter: string) => {
+    const index = letters.findIndex((item) => item.letter === letter);
+    return index !== -1 ? index : Infinity; // If letter isn't in the array, assign a high index
   };
 
   const getPlayersClosest = (player: LettersArray) =>
     player.reduce(
       (closest, letter) =>
-        getLetterDistance(letter.letter) < getLetterDistance(closest.letter)
+        getLetterIndex(letter.letter) < getLetterIndex(closest.letter)
           ? letter
           : closest,
       player[0]
     );
+
   // Get the closest letter to "A" for each player
   const player1Closest = getPlayersClosest(players[0]);
 
@@ -548,13 +590,13 @@ export const generateGame = (letterPool: LettersArray) => {
   // Determine who starts
   let startingPlayer;
   if (
-    getLetterDistance(player1Closest.letter) <
-    getLetterDistance(player2Closest.letter)
+    getLetterIndex(player1Closest.letter) <
+    getLetterIndex(player2Closest.letter)
   ) {
     startingPlayer = 1; // Player 1 starts
   } else if (
-    getLetterDistance(player1Closest.letter) >
-    getLetterDistance(player2Closest.letter)
+    getLetterIndex(player1Closest.letter) >
+    getLetterIndex(player2Closest.letter)
   ) {
     startingPlayer = 2; // Player 2 starts
   } else {

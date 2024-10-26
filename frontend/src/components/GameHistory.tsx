@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { capitalizeFirstLetter } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -7,6 +8,11 @@ export const GameHistory = () => {
   const history = useAppSelector((state: RootState) => state.game.history);
   const game = useAppSelector((state: RootState) => state.game.game);
   const players = game?.players;
+
+  const [mousePosition, setMousePosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
 
   return (
     <div className="p-4 bg-gray-100 rounded-lg shadow-md m-3 max-h-96 overflow-auto">
@@ -24,9 +30,22 @@ export const GameHistory = () => {
             <div key={i} className="inline">
               <div className="group relative inline">
                 {wordsLength > 1 && i === wordsLength - 1 && "ve "}
-                <span className="cursor-pointer">{word.word}</span>
+                <span
+                  className="cursor-pointer"
+                  onMouseEnter={(e) => {
+                    setMousePosition({ x: e.clientX, y: e.clientY });
+                  }}
+                >
+                  {word.word}
+                </span>
 
-                <div className="hidden group-hover:block absolute w-72 bg-slate-800 text-white shadow-lg p-4 rounded-md z-50 -left-20 top-full ">
+                <div
+                  style={{
+                    top: mousePosition.y + "px",
+                    left: mousePosition.x + "px",
+                  }}
+                  className="hidden group-hover:block fixed w-72 max-h-40 bg-slate-800 text-white shadow-lg p-4 rounded-md z-50 overflow-auto"
+                >
                   <ul>
                     {word.meanings.map((meaning, i) => {
                       return (
@@ -41,27 +60,31 @@ export const GameHistory = () => {
               {wordsLength > 1 && i < wordsLength - 1 && ", "}
             </div>
           ));
-          return (
-            <div className="ms-4" key={i}>
-              <div
-                className={
-                  "inline " +
-                  (player?.socketId === socket.id ? "font-bold" : "")
-                }
-              >
-                {capitalizeFirstLetter(player?.username as string)}
+          if (player) {
+            return (
+              <div className={i % 2 === 0 ? "bg-slate-300	" : ""} key={i}>
+                <div className="ms-4 p-2">
+                  <div
+                    className={
+                      "inline " +
+                      (player?.socketId === socket.id ? "font-bold" : "")
+                    }
+                  >
+                    {capitalizeFirstLetter(player.username)}
+                  </div>
+                  {words.length === 0 && " sırasını geçti. "}
+                  {words.length > 0 && (
+                    <>
+                      ; {words}
+                      {words.length === 1 && " kelimesini"}
+                      {words.length > 1 && " kelimelerini"} türetti.{" "}
+                    </>
+                  )}
+                  {"(" + points + " puan)"}
+                </div>
               </div>
-              {words.length === 0 && " sırasını geçti. "}
-              {words.length > 0 && (
-                <>
-                  ; {words}
-                  {words.length === 1 && " kelimesini"}
-                  {words.length > 1 && " kelimelerini"} türetti.{" "}
-                </>
-              )}
-              {"(" + points + " puan)"}
-            </div>
-          );
+            );
+          }
         })
         .reverse()}
     </div>

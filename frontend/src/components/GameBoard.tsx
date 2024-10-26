@@ -9,10 +9,18 @@ import { Modal } from "./Modal";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterPool } from "./LetterPool";
 import { socket } from "../lib/socketio";
+import { GameEnded } from "./GameEnded";
 
 export const GameBoard = () => {
   const game = useAppSelector((state: RootState) => state.game);
   const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
+  const [gameEnded, setGameEnded] = useState(false);
+  useEffect(() => {
+    if (game.status === "ended") {
+      setGameEnded(true);
+    } else setGameEnded(false);
+  }, [game]);
+
   return (
     <div className="w-2/3 flex flex-col items-center">
       <div className="relative">
@@ -26,7 +34,11 @@ export const GameBoard = () => {
             <LetterPool />
           </Modal>
         )}
-
+        {gameEnded && (
+          <Modal>
+            <GameEnded />
+          </Modal>
+        )}
         <Cells />
       </div>
       <BottomPanel setLetterPoolOpen={setLetterPoolOpen} />

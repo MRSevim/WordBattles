@@ -31,7 +31,7 @@ interface Word {
 }
 
 export interface GameState {
-  findingGame: boolean;
+  status: string;
   game: Game | null;
   board: Board;
   history: {
@@ -58,7 +58,7 @@ interface moveAction {
 }
 
 const initialState: GameState = {
-  findingGame: false,
+  status: "idle",
   game: null,
   board: initialBoard,
   history: [],
@@ -69,10 +69,10 @@ export const gameSlice = createSlice({
   initialState: initialState as GameState,
   reducers: {
     setFindingGame: (state) => {
-      state.findingGame = true;
+      state.status = "looking";
     },
     setGame: (state, action: PayloadAction<Game>) => {
-      state.findingGame = false;
+      state.status = "found";
       state.game = action.payload;
     },
     setGameState: (state, action: PayloadAction<GameState>) => {
