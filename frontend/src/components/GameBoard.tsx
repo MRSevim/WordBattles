@@ -62,14 +62,11 @@ const Cells = () => {
 
   return (
     <div className="mt-1 ml-1 relative">
-      <div
-        className={
-          "opacity-0 transition-opacity absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2" +
-          (bingo ? " opacity-100" : "")
-        }
-      >
-        Bingo yaptınız. Tebrikler.
-      </div>
+      {bingo && (
+        <div className="absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2">
+          Bingo yaptınız. Tebrikler.
+        </div>
+      )}
 
       {[...Array(boardSizes.width)].map((e, i1) => {
         const row = i1 + 1;

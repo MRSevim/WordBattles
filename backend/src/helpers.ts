@@ -221,7 +221,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
 // Helper function for validating words using Promise.all
 export const validateWords = async (words: string[]): Promise<CheckedWords> => {
   const fetches = words.map((word) =>
-    fetch(`https://sozluk.gov.tr/gts?ara=${word.toLowerCase()}`)
+    fetch(`https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
@@ -421,20 +421,52 @@ const isAdjacentToFixed = (board: Board, row: number, col: number): boolean => {
   return false;
 };
 
-export const areNewWordsConnected = (board: Board): boolean => {
-  let newTilesConnected = false;
+export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
+  let newTiles: { row: number; col: number }[] = [];
+
+  // Collect positions of newly placed tiles
   for (let row = 0; row < board.length; row++) {
     for (let col = 0; col < board[row].length; col++) {
       const cell = board[row][col];
       if (cell && !cell.fixed) {
-        // Check if this new tile is connected to any fixed tile
-        if (isAdjacentToFixed(board, row, col)) {
-          newTilesConnected = true;
-        }
+        newTiles.push({ row, col });
       }
     }
   }
-  return newTilesConnected;
+
+  // Return false if there are no new tiles
+  if (newTiles.length === 0) return false;
+
+  // Calculate bounds for newly placed tiles
+  const minRow = Math.min(...newTiles.map((tile) => tile.row));
+  const maxRow = Math.max(...newTiles.map((tile) => tile.row));
+  const minCol = Math.min(...newTiles.map((tile) => tile.col));
+  const maxCol = Math.max(...newTiles.map((tile) => tile.col));
+
+  // Ensure new tiles are in a single row or column
+  const isSingleLine = minRow === maxRow || minCol === maxCol;
+  if (!isSingleLine) return false;
+
+  // Verify that all tiles in the line are either new tiles or filled
+  const isConnectedLine = () => {
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        const cell = board[r][c];
+        if (!cell) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  if (!isConnectedLine()) return false;
+
+  // Check that at least one new tile is adjacent to a fixed tile
+  const isConnectedToFixed = newTiles.some(({ row, col }) =>
+    isAdjacentToFixed(board, row, col)
+  );
+  return isConnectedToFixed;
 };
 
 export const calculatePoints = (

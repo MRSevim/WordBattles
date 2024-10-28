@@ -10,9 +10,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: env.FRONTEND_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
+          target: env.VITE_BACKEND_URL,
         },
       },
     },

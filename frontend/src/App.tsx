@@ -15,13 +15,18 @@ import { useAppDispatch } from "./lib/redux/hooks";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Rules } from "./pages/Rules";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
   return (
     <BrowserRouter>
-      <Provider store={store}>
-        <InnerApp />
-      </Provider>
+      <GoogleOAuthProvider
+        clientId={import.meta.env.VITE_GOOGLE_AUTH_CLIEND_ID}
+      >
+        <Provider store={store}>
+          <InnerApp />
+        </Provider>
+      </GoogleOAuthProvider>
     </BrowserRouter>
   );
 }
@@ -48,7 +53,7 @@ const InnerApp = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/oyun-kurallari" element={<Rules />} />
+        <Route path="/oyun-hakkinda" element={<Rules />} />
       </Routes>
     </DndContext>
   );

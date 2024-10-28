@@ -1,5 +1,5 @@
 import {
-  areNewWordsConnected,
+  areNewWordsCorrectlyPlaced,
   areTilesAligned,
   calculatePoints,
   CheckedWords,
@@ -83,6 +83,13 @@ export const runSocketLogic = (io: any) => {
         } = state;
         const currentPlayer = players.find((player) => player.turn) as Player;
 
+        // Append to history
+        state.history.push({
+          playerSocketId: currentPlayer.socketId,
+          words: [],
+          playerPoints: 0,
+        });
+
         switchTurns(state, io);
 
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
@@ -112,6 +119,12 @@ export const runSocketLogic = (io: any) => {
       io.to(roomId).emit("Play Made", state);
     });
 
+    const handleUnsuccessfull = (state: gameState) => {
+      timerRanOutUnsuccessfully(state);
+      switchTurns(state, io);
+      io.to(state.game.roomId).emit("Play Made", state);
+    };
+
     socket.on(
       "Play",
       async ({
@@ -130,32 +143,12 @@ export const runSocketLogic = (io: any) => {
         // Find the player who made the play
         const currentPlayer = players.find((player) => player.turn) as Player;
 
-        // Check if the new tiles are aligned
-        if (!areTilesAligned(board)) {
-          io.to(id).emit("Game Error", {
-            error: "Yeni harfler yatay veya dikey olarak hizalanmalıdır",
-          });
-          if (timerRanOut) {
-            timerRanOutUnsuccessfully(state);
-            switchTurns(state, io);
-            io.to(roomId).emit("Play Made", state);
-          }
-          return;
-        }
-
-        // First, check if the new words are connected to old ones (if any)
-        const existingWordOnBoard = board.some((row) =>
-          row.some((cell) => cell && cell.fixed)
-        );
-
         if (state.board[7][7] === null) {
           io.to(id).emit("Game Error", {
             error: "Merkez hücre kullanılmalıdır",
           });
           if (timerRanOut) {
-            timerRanOutUnsuccessfully(state);
-            switchTurns(state, io);
-            io.to(roomId).emit("Play Made", state);
+            handleUnsuccessfull(state);
           }
           return;
         }
@@ -169,25 +162,25 @@ export const runSocketLogic = (io: any) => {
             error: "Boş harfler geçerli Türkçe harfler olmalıdır",
           });
           if (timerRanOut) {
-            timerRanOutUnsuccessfully(state);
-            switchTurns(state, io);
-            io.to(roomId).emit("Play Made", state);
+            handleUnsuccessfull(state);
           }
           return;
         }
+        // First, check if the new words are connected to old ones (if any)
+        const existingWordOnBoard = board.some((row) =>
+          row.some((cell) => cell && cell.fixed)
+        );
 
         if (existingWordOnBoard) {
-          const newWordsConnected = areNewWordsConnected(board);
+          const newWordsCorrectlyPlaced = areNewWordsCorrectlyPlaced(board);
 
-          if (!newWordsConnected) {
+          if (!newWordsCorrectlyPlaced) {
             io.to(id).emit("Game Error", {
               error:
-                "Yeni kelimelerden en az biri dolu hücreler ile bağlantılı olmalıdır",
+                "Yeni yerleştirilen harfler yatay veya dikey olarak birleşik bir çizgi oluşturmalıdır",
             });
             if (timerRanOut) {
-              timerRanOutUnsuccessfully(state);
-              switchTurns(state, io);
-              io.to(roomId).emit("Play Made", state);
+              handleUnsuccessfull(state);
             }
             return;
           }
@@ -202,9 +195,7 @@ export const runSocketLogic = (io: any) => {
             error: "Kelimeler bir harften uzun olmalıdır",
           });
           if (timerRanOut) {
-            timerRanOutUnsuccessfully(state);
-            switchTurns(state, io);
-            io.to(roomId).emit("Play Made", state);
+            handleUnsuccessfull(state);
           }
           return;
         }
@@ -220,9 +211,7 @@ export const runSocketLogic = (io: any) => {
               )}`,
             });
             if (timerRanOut) {
-              timerRanOutUnsuccessfully(state);
-              switchTurns(state, io);
-              io.to(roomId).emit("Play Made", state);
+              handleUnsuccessfull(state);
             }
             return;
           }
@@ -231,9 +220,7 @@ export const runSocketLogic = (io: any) => {
             error: "Kelime doğrulama sırasında bir hata oluştu",
           });
           if (timerRanOut) {
-            timerRanOutUnsuccessfully(state);
-            switchTurns(state, io);
-            io.to(roomId).emit("Play Made", state);
+            handleUnsuccessfull(state);
           }
           return;
         }
