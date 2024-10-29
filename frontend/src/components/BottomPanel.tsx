@@ -20,9 +20,9 @@ export const BottomPanel = ({
   const dispatch = useAppDispatch();
   const playerHand: LettersArray | null =
     useAppSelector((state: RootState) => {
-      let id = socket.id;
+      let sessionId = socket.sessionId;
       const player = state.game?.game?.players.find((player) => {
-        return player.socketId === id;
+        return player.sessionId === sessionId;
       });
       return player?.hand;
     }) ?? null;

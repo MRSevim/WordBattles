@@ -14,7 +14,7 @@ export interface Player {
   hand: LettersArray;
   username: string;
   turn: boolean;
-  socketId: string;
+  sessionId: string;
   score: number;
   timer: number;
 }
@@ -35,7 +35,7 @@ export interface GameState {
   game: Game | null;
   board: Board;
   history: {
-    playerSocketId: string;
+    playerSessionId: string;
     words: Word[];
     playerPoints: number;
   }[];
@@ -81,7 +81,7 @@ export const gameSlice = createSlice({
     setTimer: (state, action: PayloadAction<Player[]>) => {
       action.payload.forEach((player) => {
         const _player = state.game?.players.find((Player) => {
-          return Player.socketId === player.socketId;
+          return Player.sessionId === player.sessionId;
         });
         if (_player) {
           _player.timer = player.timer;
@@ -91,7 +91,7 @@ export const gameSlice = createSlice({
 
     moveLetter: (state, action: PayloadAction<moveAction>) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
 
       if (player) {
@@ -151,7 +151,7 @@ export const gameSlice = createSlice({
     },
     shuffleHand: (state) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
       if (player) {
         shuffle(player.hand);
@@ -159,7 +159,7 @@ export const gameSlice = createSlice({
     },
     _switch: (state, action: PayloadAction<number[]>) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
       const switchedIndices = action.payload;
 
@@ -193,7 +193,7 @@ export const gameSlice = createSlice({
     },
     pass: (state) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
 
       const playersTurn = checkPlayersTurn(player);
@@ -205,7 +205,7 @@ export const gameSlice = createSlice({
     },
     returnEverythingToHand: (state) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
       if (player) {
         let board = state.board;
@@ -222,7 +222,7 @@ export const gameSlice = createSlice({
     },
     makePlay: (state, action) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
 
       const playersTurn = checkPlayersTurn(player);
@@ -244,7 +244,7 @@ export const gameSlice = createSlice({
       }>
     ) => {
       const player = state.game?.players.find((player) => {
-        return player.socketId === socket.id;
+        return player.sessionId === socket.sessionId;
       });
 
       const { newLetter } = action.payload;

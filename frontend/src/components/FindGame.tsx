@@ -6,6 +6,7 @@ import { Game } from "../lib/redux/slices/gameSlice";
 import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { setUser } from "../lib/redux/slices/userSlice";
+import { useEffect } from "react";
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +17,22 @@ export const FindGame = () => {
     socket.connect();
     dispatch(setFindingGame());
   };
+
+  const sessionId = localStorage.getItem("sessionId");
+  const userFromStorage = localStorage.getItem("user");
+  let parsed = null;
+  if (userFromStorage) {
+    parsed = JSON.parse(userFromStorage);
+  }
+
+  useEffect(() => {
+    if (sessionId) {
+      socket.auth = { user: parsed, sessionId };
+      socket.sessionId = sessionId;
+      socket.user = parsed;
+      findGame();
+    }
+  }, [sessionId, socket]);
 
   socket.on("Start Game", (game: Game) => {
     dispatch(setGame(game));
@@ -56,6 +73,7 @@ export const FindGame = () => {
               toast.error(json.message);
               return;
             }
+            socket.auth = { ...socket.auth, user: json };
             dispatch(setUser(json));
             findGame();
           }}

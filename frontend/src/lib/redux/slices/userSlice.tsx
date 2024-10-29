@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-type User = { username: string; email: string; image?: string } | null;
+export type User = { username: string; email: string; image?: string } | null;
 
 const userFromStorage = localStorage.getItem("user");
 let parsed = null;

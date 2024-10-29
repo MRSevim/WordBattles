@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { useSocketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
 const http = require("http");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -27,6 +28,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cookieParser());
+
+useSocketAuthMiddleware(io);
 
 app.use("/api/user", userRoutes);
 

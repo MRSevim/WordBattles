@@ -26,6 +26,10 @@ export const runSocketLogic = (io: any) => {
   io.on("connection", (socket: any) => {
     console.log("a user connected");
 
+    socket.emit("session", {
+      sessionId: socket.sessionId,
+    });
+
     for (let [id, _socket] of io.of("/").sockets) {
       if (!_socket.full && socket.id !== id) {
         const letterPool = generateLetterPool(letters);
@@ -34,17 +38,17 @@ export const runSocketLogic = (io: any) => {
         const players = [
           {
             hand: playersStatus.players[0],
-            username: "konuk",
+            username: socket.user?.username || "konuk",
             turn: playersStatus.startingPlayer === 1,
-            socketId: socket.id,
+            sessionId: socket.sessionId,
             score: 0,
             timer: 60,
           },
           {
             hand: playersStatus.players[1],
-            username: "konuk",
+            username: _socket.user?.username || "konuk",
             turn: playersStatus.startingPlayer === 2,
-            socketId: id,
+            sessionId: _socket.sessionId,
             score: 0,
             timer: 60,
           },
@@ -84,7 +88,7 @@ export const runSocketLogic = (io: any) => {
 
         // Append to history
         state.history.push({
-          playerSocketId: currentPlayer.socketId,
+          playerSessionId: currentPlayer.sessionId,
           words: [],
           playerPoints: 0,
         });
@@ -103,12 +107,11 @@ export const runSocketLogic = (io: any) => {
         game: { players, roomId },
       } = state;
       const currentPlayer = players.find((player) => player.turn) as Player;
-
       pass(currentPlayer.hand, board);
 
       // Append to history
       state.history.push({
-        playerSocketId: currentPlayer.socketId,
+        playerSessionId: currentPlayer.sessionId,
         words: [],
         playerPoints: 0,
       });
@@ -237,7 +240,7 @@ export const runSocketLogic = (io: any) => {
 
         // Append to history
         state.history.push({
-          playerSocketId: currentPlayer.socketId,
+          playerSessionId: currentPlayer.sessionId,
           words: checkedWords.validWords,
           playerPoints,
         });

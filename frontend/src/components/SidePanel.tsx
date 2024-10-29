@@ -37,7 +37,12 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   useEffect(() => {
     if (!playerTurn) setRan(false);
 
-    if (playerTurn && timer === 0 && player?.socketId === socket.id && !ran) {
+    if (
+      playerTurn &&
+      timer === 0 &&
+      player?.sessionId === socket.sessionId &&
+      !ran
+    ) {
       if (switching) {
         dispatch(pass());
         toast.error("Zamanında değişmediğiniz için sıranız pas geçildi");
@@ -50,8 +55,8 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   return (
     <div
       className={
-        "flex flex-col bg-white text-center border-solid border-2 rounded p-7 " +
-        (player?.socketId === socket.id ? "border-amber-500" : "")
+        "flex flex-col items-center justify-center bg-white text-center border-solid border-2 rounded p-4 w-36	" +
+        (player?.sessionId === socket.sessionId ? "border-amber-500" : "")
       }
     >
       <p>{player?.username}</p>

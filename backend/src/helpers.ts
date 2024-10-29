@@ -17,7 +17,7 @@ export interface Player {
   hand: LettersArray;
   username: string;
   turn: boolean;
-  socketId: string;
+  sessionId: string;
   score: number;
   timer: number;
 }
@@ -42,7 +42,7 @@ export interface gameState {
   game: Game;
   board: Board;
   history: {
-    playerSocketId: string;
+    playerSessionId: string;
     words: Word[];
     playerPoints: number;
   }[];
@@ -212,7 +212,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
   state.game.passCount += 1;
   pass(currentPlayer.hand, state.board);
   state.history.push({
-    playerSocketId: currentPlayer.socketId,
+    playerSessionId: currentPlayer.sessionId,
     words: [],
     playerPoints: 0,
   });
