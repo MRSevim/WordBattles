@@ -1,4 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import { RootState } from "../lib/redux/store";
+import { toast } from "react-toastify";
+import { setUser } from "../lib/redux/slices/userSlice";
 
 export const Header = () => {
   return (
@@ -14,9 +18,32 @@ export const Header = () => {
 };
 
 const Links = () => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: RootState) => state.user);
   return (
     <nav className="gap-4 flex">
       <Link to="/oyun-hakkinda">Oyun Hakkında</Link>
+      {user && (
+        <>
+          <p
+            className="cursor-pointer"
+            onClick={async () => {
+              const response = await fetch("/api/user/logout", {
+                method: "POST",
+              });
+
+              const json = await response.json();
+              if (!response.ok) {
+                toast.error(json.message);
+                return;
+              }
+              dispatch(setUser(null));
+            }}
+          >
+            Çıkış
+          </p>
+        </>
+      )}
     </nav>
   );
 };

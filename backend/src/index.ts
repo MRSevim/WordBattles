@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 const http = require("http");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const { instrument } = require("@socket.io/admin-ui");
 const { runSocketLogic } = require("./socketLogic");
@@ -12,8 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL, "https://admin.socket.io"],
-    credentials: true,
+    origin: [process.env.FRONTEND_URL],
   },
 });
 
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
   console.log(req.path, req.method);
   next();
 });
+app.use(cookieParser());
 
 app.use("/api/user", userRoutes);
 
@@ -43,6 +45,14 @@ instrument(io, {
 app.use(notFound);
 app.use(errorHandler);
 
-server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    // listen for requests
+    server.listen(port, () => {
+      console.log("connected to db & listening on port", port);
+    });
+  })
+  .catch((error: string) => {
+    console.log(error);
+  });

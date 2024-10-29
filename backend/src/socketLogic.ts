@@ -1,6 +1,5 @@
 import {
   areNewWordsCorrectlyPlaced,
-  areTilesAligned,
   calculatePoints,
   CheckedWords,
   completePlayerHand,

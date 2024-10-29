@@ -276,29 +276,6 @@ export const updateBoard = (
   });
 };
 
-// Check if all new tiles are aligned horizontally or vertically
-export const areTilesAligned = (board: Board): boolean => {
-  const newTiles: { row: number; col: number }[] = []; // Collect newly placed tiles
-  for (let row = 0; row < board.length; row++) {
-    for (let col = 0; col < board[row].length; col++) {
-      const cell = board[row][col];
-      if (cell && !cell.fixed) {
-        newTiles.push({ row, col });
-      }
-    }
-  }
-  if (newTiles.length <= 1) return true; // If only one tile, it's trivially aligned
-
-  // Check if all tiles are in the same row (horizontal alignment)
-  const sameRow = newTiles.every((tile) => tile.row === newTiles[0].row);
-
-  // Check if all tiles are in the same column (vertical alignment)
-  const sameCol = newTiles.every((tile) => tile.col === newTiles[0].col);
-
-  // Return true if they are aligned in one direction
-  return sameRow || sameCol;
-};
-
 export const findWordsOnBoard = (board: Board): WordWithCoordinates[] => {
   const words: WordWithCoordinates[] = [];
 
