@@ -1,8 +1,12 @@
 import { RootState } from "../lib/redux/store";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { socket } from "../lib/socketio";
-import { setFindingGame, setGame } from "../lib/redux/slices/gameSlice";
-import { Game } from "../lib/redux/slices/gameSlice";
+import {
+  setGameStatus,
+  setGameState,
+  GameState,
+} from "../lib/redux/slices/gameSlice";
+
 import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { setUser } from "../lib/redux/slices/userSlice";
@@ -15,36 +19,51 @@ export const FindGame = () => {
 
   const findGame = () => {
     socket.connect();
-    dispatch(setFindingGame());
+    dispatch(setGameStatus("looking"));
+  };
+
+  const stopLooking = () => {
+    socket.disconnect();
+    dispatch(setGameStatus("idle"));
+    localStorage.removeItem("sessionId");
   };
 
   const sessionId = localStorage.getItem("sessionId");
-  const userFromStorage = localStorage.getItem("user");
+  const userFromStorage = sessionStorage.getItem("user");
   let parsed = null;
   if (userFromStorage) {
     parsed = JSON.parse(userFromStorage);
   }
+  const roomId = localStorage.getItem("roomId");
 
   useEffect(() => {
     if (sessionId) {
-      socket.auth = { user: parsed, sessionId };
+      socket.auth = { user: parsed, sessionId, roomId };
       socket.sessionId = sessionId;
-      socket.user = parsed;
       findGame();
     }
   }, [sessionId, socket]);
 
-  socket.on("Start Game", (game: Game) => {
-    dispatch(setGame(game));
-    socket.emit("Timer", {
-      state: { ..._game, game },
-    });
+  socket.on("Start Game", (game: GameState) => {
+    dispatch(setGameState(game));
+    if (game.game) {
+      localStorage.setItem("roomId", game.game.roomId);
+      socket.auth = { ...socket.auth, roomId };
+    }
+    socket.emit("Timer", game);
   });
-
+  if (roomId) {
+    return (
+      <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
+        Devam eden oyuna bağlanılıyor...
+      </div>
+    );
+  }
   if (_game.status === "looking") {
     return (
-      <div className="bg-primary text-white focus:ring-4 font-medium rounded-lg px-5 py-2.5">
+      <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
         Oyun aranıyor...
+        <FindButton onClick={stopLooking} text="Dur" />
       </div>
     );
   }

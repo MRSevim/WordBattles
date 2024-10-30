@@ -18,6 +18,7 @@ export const BottomPanel = ({
   setLetterPoolOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const dispatch = useAppDispatch();
+  const game = useAppSelector((state) => state.game);
   const playerHand: LettersArray | null =
     useAppSelector((state: RootState) => {
       let sessionId = socket.sessionId;
@@ -32,6 +33,7 @@ export const BottomPanel = ({
   const switchValues = useAppSelector(
     (state: RootState) => state.switch.switchValues
   );
+
   if (playerHand) {
     return (
       <div className="p-4 bg-slate-500 w-full flex justify-between">
@@ -49,14 +51,18 @@ export const BottomPanel = ({
             }
             title="Değiştir"
             onClick={() => {
-              dispatch(toggleSwitching(playerHand));
+              if (game.status !== "ended") {
+                dispatch(toggleSwitching(playerHand));
+              }
             }}
           />
           <Button
             classes="bi bi-arrow-left-right"
             title="Karıştır"
             onClick={() => {
-              dispatch(shuffleHand());
+              if (game.status !== "ended") {
+                dispatch(shuffleHand());
+              }
             }}
           />
         </div>
@@ -68,8 +74,8 @@ export const BottomPanel = ({
                 handLength={playerHand.length}
                 letter={letter}
                 key={i + letter.letter}
-                draggable={true}
-                droppable={true}
+                draggable={game.status !== "ended"}
+                droppable={game.status !== "ended"}
                 i={i}
               />
             );
@@ -81,21 +87,25 @@ export const BottomPanel = ({
             classes="bi bi-arrow-right"
             title="Geç"
             onClick={() => {
-              dispatch(pass());
+              if (game.status !== "ended") {
+                dispatch(pass());
+              }
             }}
           />{" "}
           <Button
             classes="bi bi-arrow-right-square"
             title="Gönder"
             onClick={() => {
-              if (switching) {
-                dispatch(_switch(switchValues));
-                dispatch(toggleSwitching(playerHand));
-                if (playerHand.length !== 7) {
-                  dispatch(returnEverythingToHand());
+              if (game.status !== "ended") {
+                if (switching) {
+                  dispatch(_switch(switchValues));
+                  dispatch(toggleSwitching(playerHand));
+                  if (playerHand.length !== 7) {
+                    dispatch(returnEverythingToHand());
+                  }
+                } else {
+                  dispatch(makePlay(false));
                 }
-              } else {
-                dispatch(makePlay(false));
               }
             }}
           />

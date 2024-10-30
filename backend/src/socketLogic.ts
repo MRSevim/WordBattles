@@ -2,14 +2,16 @@ import {
   areNewWordsCorrectlyPlaced,
   calculatePoints,
   CheckedWords,
+  clearTimerIfExist,
   completePlayerHand,
   findWordsOnBoard,
   gameState,
-  generateGame,
-  generateLetterPool,
-  letters,
+  generateGameState,
+  getGameFromMemory,
   pass,
   Player,
+  removeGameFromMemory,
+  saveGameToMemory,
   setUpTimerInterval,
   switchLetters,
   switchTurns,
@@ -20,8 +22,6 @@ import {
   WordWithCoordinates,
 } from "./helpers";
 
-const { v6: uuidv6 } = require("uuid");
-
 export const runSocketLogic = (io: any) => {
   io.on("connection", (socket: any) => {
     console.log("a user connected");
@@ -30,45 +30,29 @@ export const runSocketLogic = (io: any) => {
       sessionId: socket.sessionId,
     });
 
-    for (let [id, _socket] of io.of("/").sockets) {
-      if (!_socket.full && socket.id !== id) {
-        const letterPool = generateLetterPool(letters);
-        const playersStatus = generateGame(letterPool);
+    const startGame = (socket: any, _socket: any) => {
+      const gameState = generateGameState(socket, _socket);
+      io.to(gameState.game.roomId).emit("Start Game", gameState);
+    };
 
-        const players = [
-          {
-            hand: playersStatus.players[0],
-            username: socket.user?.username || "konuk",
-            turn: playersStatus.startingPlayer === 1,
-            sessionId: socket.sessionId,
-            score: 0,
-            timer: 60,
-          },
-          {
-            hand: playersStatus.players[1],
-            username: _socket.user?.username || "konuk",
-            turn: playersStatus.startingPlayer === 2,
-            sessionId: _socket.sessionId,
-            score: 0,
-            timer: 60,
-          },
-        ];
-        const roomId = uuidv6();
-        _socket.join(roomId);
-        socket.join(roomId);
-        console.log("Game found", roomId);
-        io.to(roomId).emit("Start Game", {
-          players,
-          undrawnLetterPool: playersStatus.undrawnletterPool,
-          roomId,
-          passCount: 0,
-        });
-        _socket.full = true;
-        socket.full = true;
+    for (let [id, _socket] of io.of("/").sockets) {
+      if (socket.roomId) {
+        const roomId = socket.roomId;
+        const game = getGameFromMemory(socket.roomId);
+
+        if (game) {
+          io.to(roomId).emit("Play Made", game.gameState);
+        } else {
+          socket.roomId = undefined;
+          io.to(roomId).emit("No Game In Memory");
+          socket.leave(roomId);
+        }
+      } else if (!socket.roomId && !_socket.roomId && socket.id !== id) {
+        startGame(socket, _socket);
       }
     }
 
-    socket.on("Timer", ({ state }: { state: gameState }) => {
+    socket.on("Timer", (state: gameState) => {
       setUpTimerInterval(state, io);
     });
 
@@ -93,9 +77,9 @@ export const runSocketLogic = (io: any) => {
           playerPoints: 0,
         });
 
-        switchTurns(state, io);
-
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
+
+        switchTurns(state, io);
 
         io.to(roomId).emit("Play Made", state);
       }
@@ -119,6 +103,31 @@ export const runSocketLogic = (io: any) => {
       state.game.passCount += 1;
       switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
+    });
+
+    socket.on("Leave Game", ({ state }: { state: gameState }) => {
+      const roomId = state.game.roomId;
+      state.status = "ended";
+      socket.leave(roomId);
+      const game = getGameFromMemory(roomId);
+      if (game) {
+        clearTimerIfExist(roomId);
+        saveGameToMemory({
+          gameState: state,
+          timerInterval: game.timerInterval,
+        });
+      }
+
+      // Check how many sockets are in the room
+      const roomSockets = io.sockets.adapter.rooms.get(roomId);
+
+      if (roomSockets && roomSockets.size === 0) {
+        // If no sockets are left, remove the game from memory
+        removeGameFromMemory(roomId);
+      } else {
+        // Otherwise, notify remaining players
+        io.to(roomId).emit("Play Made", state);
+      }
     });
 
     const handleUnsuccessfull = (state: gameState) => {
@@ -247,8 +256,8 @@ export const runSocketLogic = (io: any) => {
 
         // Switch turns
         state.game.passCount = 0;
-        switchTurns(state, io);
         completePlayerHand(currentPlayer, undrawnLetterPool);
+        switchTurns(state, io);
 
         io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
       }

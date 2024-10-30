@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export type User = { username: string; email: string; image?: string } | null;
 
-const userFromStorage = localStorage.getItem("user");
+const userFromStorage = sessionStorage.getItem("user");
 let parsed = null;
 if (userFromStorage) {
   parsed = JSON.parse(userFromStorage);
@@ -18,9 +18,9 @@ export const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       const user = action.payload;
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("user", JSON.stringify(user));
       } else {
-        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
       }
       return user;
     },

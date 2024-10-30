@@ -1,3 +1,5 @@
+const { v6: uuidv6 } = require("uuid");
+
 interface Letter {
   letter: string;
   point: number;
@@ -91,6 +93,38 @@ export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
 
+type gameWithTimerInterval = {
+  gameState: gameState;
+  timerInterval: ReturnType<typeof setInterval>;
+};
+let ongoingGames: gameWithTimerInterval[] = [];
+
+export const saveGameToMemory = (game: gameWithTimerInterval) => {
+  const foundGameIndex = ongoingGames.findIndex(
+    (g) => g.gameState.game.roomId === game.gameState.game.roomId
+  );
+
+  if (foundGameIndex !== -1) {
+    // Replace the existing game with the new game
+    ongoingGames[foundGameIndex] = game;
+  } else {
+    // If not found, push the new game to the ongoingGames array
+    ongoingGames.push(game);
+  }
+};
+export const getGameFromMemory = (roomId: string) => {
+  const foundGame = ongoingGames.find(
+    (game) => game.gameState.game.roomId === roomId
+  );
+
+  return foundGame;
+};
+export const removeGameFromMemory = (roomId: string) => {
+  ongoingGames = ongoingGames.filter(
+    (game) => game.gameState.game.roomId !== roomId
+  );
+};
+
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
   const { players, undrawnLetterPool, passCount } = state.game;
@@ -123,6 +157,51 @@ const checkGameEnd = (state: gameState) => {
   return false;
 };
 
+export const generateInitialBoard = (): Board => {
+  return Array.from({ length: 15 }, () => Array(15).fill(null));
+};
+
+export const generateGameState = (socket: any, _socket: any) => {
+  const letterPool = generateLetterPool(letters);
+  const playersStatus = generateGame(letterPool);
+  const initialBoard = generateInitialBoard();
+  const players = [
+    {
+      hand: playersStatus.players[0],
+      username: socket.user?.username || "konuk",
+      turn: playersStatus.startingPlayer === 1,
+      sessionId: socket.sessionId,
+      score: 0,
+      timer: 60,
+    },
+    {
+      hand: playersStatus.players[1],
+      username: _socket.user?.username || "konuk",
+      turn: playersStatus.startingPlayer === 2,
+      sessionId: _socket.sessionId,
+      score: 0,
+      timer: 60,
+    },
+  ];
+  const roomId = uuidv6();
+
+  _socket.join(roomId);
+  socket.join(roomId);
+  console.log("Game found", roomId);
+  const state: gameState = {
+    status: "found",
+    game: {
+      players,
+      undrawnLetterPool: playersStatus.undrawnletterPool,
+      roomId,
+      passCount: 0,
+    },
+    board: initialBoard,
+    history: [],
+  };
+  return state;
+};
+
 export const switchTurns = (state: gameState, io: any) => {
   const {
     game: { players, roomId },
@@ -140,13 +219,18 @@ export const switchTurns = (state: gameState, io: any) => {
 
     setUpTimerInterval(state, io);
   } else {
-    clearTimerIfExist(io, roomId);
+    clearTimerIfExist(roomId);
+  }
+  const game = getGameFromMemory(roomId);
+  if (game) {
+    saveGameToMemory({ gameState: state, timerInterval: game.timerInterval });
   }
 };
-const clearTimerIfExist = (io: any, roomId: string) => {
-  // Clear any previous intervals to avoid multiple timers
-  if (io.sockets.adapter.rooms.get(roomId)?.timerInterval) {
-    clearInterval(io.sockets.adapter.rooms.get(roomId).timerInterval);
+export const clearTimerIfExist = (roomId: string) => {
+  const game = getGameFromMemory(roomId);
+  const timer = game?.timerInterval;
+  if (timer) {
+    clearInterval(timer);
   }
 };
 
@@ -156,17 +240,18 @@ export const setUpTimerInterval = (state: gameState, io: any) => {
   } = state;
   const currentPlayer = players.find((player) => player.turn) as Player;
 
-  clearTimerIfExist(io, roomId);
-
+  clearTimerIfExist(roomId);
   // Set a new interval for the opponent's timer
-  io.sockets.adapter.rooms.get(roomId).timerInterval = setInterval(() => {
+  const timerInterval = setInterval(() => {
     if (currentPlayer.timer > 0) {
       currentPlayer.timer -= 1;
       io.to(roomId).emit("Timer Runs", players);
     } else {
-      clearTimerIfExist(io, roomId); // Clear the interval when timer runs out
+      clearTimerIfExist(roomId); // Clear the interval when timer runs out
     }
   }, 1000);
+
+  saveGameToMemory({ gameState: state, timerInterval });
 };
 
 export const switchLetters = (

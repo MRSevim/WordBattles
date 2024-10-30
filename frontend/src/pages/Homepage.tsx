@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "../lib/redux/hooks";
 import {
   GameState,
+  leaveGame,
   Player,
   setGameState,
   setTimer,
@@ -19,6 +20,10 @@ export const Homepage = () => {
 
   socket.on("Play Made", (game: GameState) => {
     dispatch(setGameState(game));
+  });
+
+  socket.on("No Game In Memory", () => {
+    dispatch(leaveGame());
   });
 
   socket.on("Timer Runs", (players: Player[]) => {

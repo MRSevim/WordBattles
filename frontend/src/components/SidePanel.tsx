@@ -1,6 +1,11 @@
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
-import { makePlay, pass, Player } from "../lib/redux/slices/gameSlice";
+import {
+  leaveGame,
+  makePlay,
+  pass,
+  Player,
+} from "../lib/redux/slices/gameSlice";
 import { socket } from "../lib/socketio";
 import { GameHistory } from "./GameHistory";
 import { useEffect, useState } from "react";
@@ -9,12 +14,29 @@ import { toast } from "react-toastify";
 
 export const SidePanel = () => {
   const game = useAppSelector((state: RootState) => state.game.game);
+  const state = useAppSelector((state: RootState) => state.game);
+  const dispatch = useAppDispatch();
+
+  const leave = () => {
+    dispatch(leaveGame());
+    socket.emit("Leave Game", { state });
+    socket.disconnect();
+  };
 
   return (
     <div className="w-1/3 bg-slate-400">
       {game && (
         <>
-          <div className="flex align-center justify-around my-8">
+          <div className="flex justify-end">
+            <div
+              onClick={leave}
+              className="bg-orange-900 rounded-lg p-2 w-16 m-3 text-white cursor-pointer"
+            >
+              <span>Ayrıl</span>
+              <i className="bi bi-door-open"></i>
+            </div>
+          </div>
+          <div className="flex align-center justify-around mb-8">
             <PlayerContainer player={game?.players[0]} />
             <PlayerContainer player={game?.players[1]} />
           </div>

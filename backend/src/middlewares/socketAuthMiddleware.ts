@@ -9,20 +9,16 @@ export const useSocketAuthMiddleware = (io: any) => {
       socket.user = user;
     }
     const sessionId = socket.handshake.auth.sessionId;
+
+    if (roomId) {
+      socket.roomId = roomId;
+      socket.join(roomId);
+    }
+
     if (sessionId) {
       socket.sessionId = sessionId;
       return next();
     }
-
-    /*      if (roomId) {
-       // find existing session
-       const session = sessionStore.findSession(sessionID);
-       if (session) {
-         socket.sessionID = sessionID;
-
-         return next();
-       }
-     } */
 
     socket.sessionId = uuidv6();
     next();

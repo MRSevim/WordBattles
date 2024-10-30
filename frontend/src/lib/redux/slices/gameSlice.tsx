@@ -68,12 +68,16 @@ export const gameSlice = createSlice({
   name: "game",
   initialState: initialState as GameState,
   reducers: {
-    setFindingGame: (state) => {
-      state.status = "looking";
+    setGameStatus: (state, action: PayloadAction<string>) => {
+      state.status = action.payload;
     },
-    setGame: (state, action: PayloadAction<Game>) => {
-      state.status = "found";
-      state.game = action.payload;
+    leaveGame: (state) => {
+      localStorage.removeItem("roomId");
+      localStorage.removeItem("sessionId");
+
+      socket.auth = { ...socket.auth, sessionId: undefined, roomId: undefined };
+      socket.sessionId = undefined;
+      return initialState;
     },
     setGameState: (state, action: PayloadAction<GameState>) => {
       return action.payload;
@@ -281,8 +285,7 @@ socket.on("Game Error", ({ error }: { error: string }) => {
 
 // Action creators are generated for each case reducer function
 export const {
-  setFindingGame,
-  setGame,
+  setGameStatus,
   moveLetter,
   shuffleHand,
   makePlay,
@@ -292,6 +295,7 @@ export const {
   pass,
   setTimer,
   returnEverythingToHand,
+  leaveGame,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
