@@ -16,6 +16,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Rules } from "./pages/Rules";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { RankedPoints } from "./pages/RankedPoints";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ const InnerApp = () => {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/oyun-hakkinda" element={<Rules />} />
+        <Route path="/dereceli-puanlari" element={<RankedPoints />} />
       </Routes>
     </DndContext>
   );

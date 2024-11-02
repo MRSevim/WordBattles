@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { socket } from "../../socketio";
 
 export type User = { username: string; email: string; image?: string } | null;
 
@@ -21,6 +22,7 @@ export const userSlice = createSlice({
         sessionStorage.setItem("user", JSON.stringify(user));
       } else {
         sessionStorage.removeItem("user");
+        socket.auth = { ...socket.auth, user: null };
       }
       return user;
     },

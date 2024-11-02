@@ -82,7 +82,6 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
       }
     >
       <p>{player?.username}</p>
-      <p>Derece:xx</p>
       Puan: {player?.score}
       {player && (
         <div className="mt-2 w-20">

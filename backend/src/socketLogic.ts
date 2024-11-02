@@ -1,4 +1,5 @@
 import {
+  applyPointDifference,
   areNewWordsCorrectlyPlaced,
   calculatePoints,
   CheckedWords,
@@ -74,10 +75,13 @@ export const runSocketLogic = (io: any) => {
         state.history.push({
           playerSessionId: currentPlayer.sessionId,
           words: [],
+          type: "switch",
           playerPoints: 0,
         });
 
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
+
+        currentPlayer.passCount = 0;
 
         switchTurns(state, io);
 
@@ -100,13 +104,16 @@ export const runSocketLogic = (io: any) => {
         playerPoints: 0,
       });
 
-      state.game.passCount += 1;
+      currentPlayer.passCount += 1;
       switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
     });
 
     socket.on("Leave Game", ({ state }: { state: gameState }) => {
       const roomId = state.game.roomId;
+      if (state.status !== "ended") {
+        applyPointDifference(state);
+      }
       state.status = "ended";
       socket.leave(roomId);
       const game = getGameFromMemory(roomId);
@@ -255,7 +262,7 @@ export const runSocketLogic = (io: any) => {
         });
 
         // Switch turns
-        state.game.passCount = 0;
+        currentPlayer.passCount = 0;
         completePlayerHand(currentPlayer, undrawnLetterPool);
         switchTurns(state, io);
 

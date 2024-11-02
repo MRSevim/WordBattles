@@ -22,13 +22,14 @@ export interface Player {
   sessionId: string;
   score: number;
   timer: number;
+  passCount: number;
+  email?: string;
 }
 
 interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
-  passCount: number;
 }
 interface Word {
   word: string;
@@ -47,6 +48,7 @@ export interface gameState {
     playerSessionId: string;
     words: Word[];
     playerPoints: number;
+    type?: string;
   }[];
 }
 
@@ -55,6 +57,8 @@ export interface WordWithCoordinates {
   start: [number, number];
   end: [number, number];
 }
+
+export const gameTime = 60;
 
 export const letters: LettersArray = [
   { letter: "", point: 0, amount: 2 },
@@ -127,7 +131,8 @@ export const removeGameFromMemory = (roomId: string) => {
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
-  const { players, undrawnLetterPool, passCount } = state.game;
+  let gameEnded = false;
+  const { players, undrawnLetterPool } = state.game;
 
   // Check if the letter pool is empty and one player has no tiles left
   const isLetterPoolEmpty = undrawnLetterPool.length === 0;
@@ -141,20 +146,60 @@ const checkGameEnd = (state: gameState) => {
     const unfinishedPlayerHandSize = unfinishedPlayer.hand.length;
     unfinishedPlayer.score -= unfinishedPlayerHandSize;
     finishingPlayer.score += unfinishedPlayerHandSize;
-    return true;
+    gameEnded = true;
   }
-
+  const playersPassedEnough = players.every((player) => player.passCount >= 2);
   // Check if the pass count is 4 or more
-  if (passCount >= 4) {
+  if (playersPassedEnough) {
     // Logic for ending the game due to passes
     state.status = "ended";
-    players.forEach((player) => {
-      player.score -= player.hand.length; // Subtract the length of their hand from their score
-    });
-    return true;
+
+    gameEnded = true;
+  }
+  if (gameEnded) {
+    applyPointDifference(state);
   }
 
-  return false;
+  return gameEnded;
+};
+
+export const applyPointDifference = async (state: gameState) => {
+  const everyoneIsUser = state.game.players.every((player) => player.email);
+
+  if (everyoneIsUser) {
+    const { User } = require("./models/userModel");
+    // Calculate score difference
+    const [player1, player2] = state.game.players;
+    const scoreDifference = Math.abs(player1.score - player2.score);
+    // Determine the winner and loser
+    let winner, loser;
+    if (player1.score > player2.score) {
+      winner = player1;
+      loser = player2;
+    } else if (player2.score > player1.score) {
+      winner = player2;
+      loser = player1;
+    } else {
+      // In case of a tie, you may decide to handle this differently (e.g., no point difference applied)
+      return;
+    }
+
+    try {
+      // Update the winner's score
+      await User.findOneAndUpdate(
+        { email: winner.email },
+        { $inc: { rankedScore: scoreDifference } }
+      );
+
+      // Update the loser's score
+      await User.findOneAndUpdate(
+        { email: loser.email },
+        { $inc: { rankedScore: -scoreDifference } }
+      );
+    } catch (error) {
+      console.error("Error updating ranked scores:", error);
+    }
+  }
 };
 
 export const generateInitialBoard = (): Board => {
@@ -169,18 +214,22 @@ export const generateGameState = (socket: any, _socket: any) => {
     {
       hand: playersStatus.players[0],
       username: socket.user?.username || "konuk",
+      email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
       sessionId: socket.sessionId,
       score: 0,
-      timer: 60,
+      passCount: 0,
+      timer: gameTime,
     },
     {
       hand: playersStatus.players[1],
       username: _socket.user?.username || "konuk",
+      email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
       sessionId: _socket.sessionId,
       score: 0,
-      timer: 60,
+      passCount: 0,
+      timer: gameTime,
     },
   ];
   const roomId = uuidv6();
@@ -194,7 +243,6 @@ export const generateGameState = (socket: any, _socket: any) => {
       players,
       undrawnLetterPool: playersStatus.undrawnletterPool,
       roomId,
-      passCount: 0,
     },
     board: initialBoard,
     history: [],
@@ -212,7 +260,7 @@ export const switchTurns = (state: gameState, io: any) => {
   const gameEnded = checkGameEnd(state);
   if (!gameEnded) {
     currentPlayer.turn = false;
-    currentPlayer.timer = 60;
+    currentPlayer.timer = gameTime;
     opponentPlayer.turn = true;
 
     io.to(roomId).emit("Play Made", state);
@@ -220,6 +268,7 @@ export const switchTurns = (state: gameState, io: any) => {
     setUpTimerInterval(state, io);
   } else {
     clearTimerIfExist(roomId);
+    io.to(roomId).emit("Play Made", state);
   }
   const game = getGameFromMemory(roomId);
   if (game) {
@@ -248,6 +297,8 @@ export const setUpTimerInterval = (state: gameState, io: any) => {
       io.to(roomId).emit("Timer Runs", players);
     } else {
       clearTimerIfExist(roomId); // Clear the interval when timer runs out
+      timerRanOutUnsuccessfully(state);
+      switchTurns(state, io);
     }
   }, 1000);
 
@@ -259,17 +310,25 @@ export const switchLetters = (
   playerHand: LettersArray,
   undrawnLetterPool: LettersArray
 ): void => {
+  const lettersToReturnToPool: LettersArray = []; // Temporary array for old letters
+
   // Switch each letter at the specified indices with a random one from the undrawn pool
   switchedIndices.forEach((index) => {
     // Select a random letter from the undrawn pool
     const randomIndex = Math.floor(Math.random() * undrawnLetterPool.length);
     const randomLetter = undrawnLetterPool[randomIndex];
 
+    // Store the old letter in the temporary array instead of adding it back immediately
+    lettersToReturnToPool.push(playerHand[index]);
+
     // Swap the player's letter with the random letter
     undrawnLetterPool.splice(randomIndex, 1); // Remove letter from the pool
-    undrawnLetterPool.push(playerHand[index]); // Add old letter back to the pool
     playerHand[index] = randomLetter; // Replace with new random letter
   });
+
+  // After all switches are done, add the old letters back to the pool
+  undrawnLetterPool.push(...lettersToReturnToPool);
+
   // Sort the undrawnLetterPool based on their index in the 'letters' array
   undrawnLetterPool.sort((a, b) => {
     const indexA = letters.findIndex((letter) => letter.letter === a.letter);
@@ -294,7 +353,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
   const currentPlayer = state.game.players.find(
     (player) => player.turn
   ) as Player;
-  state.game.passCount += 1;
+  currentPlayer.passCount += 1;
   pass(currentPlayer.hand, state.board);
   state.history.push({
     playerSessionId: currentPlayer.sessionId,

@@ -74,7 +74,12 @@ export const GameHistory = () => {
                   >
                     {capitalizeFirstLetter(player.username)}
                   </div>
-                  {words.length === 0 && " sırasını geçti. "}
+                  {words.length === 0 &&
+                    item.type !== "switch" &&
+                    " sırasını geçti. "}
+                  {words.length === 0 &&
+                    item.type === "switch" &&
+                    " harf değiştirdi. "}
                   {words.length > 0 && (
                     <>
                       ; {words}

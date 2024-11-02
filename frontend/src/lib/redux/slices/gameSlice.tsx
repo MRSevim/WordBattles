@@ -17,13 +17,14 @@ export interface Player {
   sessionId: string;
   score: number;
   timer: number;
+  passCount: number;
+  email?: string;
 }
 
 export interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
-  passCount: number;
 }
 interface Word {
   word: string;
@@ -38,6 +39,7 @@ export interface GameState {
     playerSessionId: string;
     words: Word[];
     playerPoints: number;
+    type?: string;
   }[];
 }
 export interface Coordinates {

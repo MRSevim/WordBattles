@@ -38,7 +38,7 @@ export const Rules = () => {
           </li>
           <li>
             Oyun havuzdaki tüm harfler çekilince ve bir oyuncu elindeki harfleri
-            bitirince; veya 4 defa pas geçilince sonlanır.
+            bitirince; veya 4 defa üstüste pas geçilince sonlanır.
           </li>
         </ul>
       </div>
@@ -85,8 +85,11 @@ export const Rules = () => {
           <li>
             Oyun bitmeden bir oyuncu ayrılırsa, ayrılan oyuncu geride ise
             ayrılmadan önceki puan farkı, oyuncuların dereceli puanlarına
-            eklenir. Ayrılan oyuncu önde ise iki oyuncu da dereceli puanı
-            alamaz.
+            eklenir.
+          </li>
+          <li>
+            Derece puanı ekleme ve çıkarmaları, 2 oyuncu da giriş yaptıysa
+            yapılır.
           </li>
         </ul>
       </div>

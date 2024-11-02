@@ -19,15 +19,28 @@ export const Header = () => {
 
 const Links = () => {
   const dispatch = useAppDispatch();
+
   const user = useAppSelector((state: RootState) => state.user);
   return (
     <nav className="gap-4 flex">
       <Link to="/oyun-hakkinda">Oyun Hakkında</Link>
+      <Link to="/dereceli-puanlari">Dereceli Puanları</Link>
       {user && (
         <>
           <p
             className="cursor-pointer"
             onClick={async () => {
+              const sessionId = localStorage.getItem("sessionId");
+              const roomId = localStorage.getItem("roomId");
+              if (roomId) {
+                toast.error("Oyun içindeyken çıkış yapamazsınız");
+                return;
+              }
+
+              if (sessionId) {
+                toast.error("Oyun ararken çıkış yapamazsınız");
+                return;
+              }
               const response = await fetch("/api/user/logout", {
                 method: "POST",
               });
