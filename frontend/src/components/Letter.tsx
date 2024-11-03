@@ -19,7 +19,6 @@ interface props {
 }
 
 export const Letter = ({
-  handLength,
   letter,
   droppable,
   coordinates,
@@ -47,8 +46,6 @@ export const Letter = ({
   } else if (coordinates) {
     id = `letter-${coordinates.row}-${coordinates.col}`;
   }
-  const lastElem =
-    i !== undefined && handLength !== undefined && i === handLength - 1;
 
   const { isDragging, active, attributes, listeners, setNodeRef, transform } =
     useDraggable({
@@ -60,11 +57,6 @@ export const Letter = ({
   const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
     id,
     disabled: !droppable || isSwitching,
-  });
-
-  const { setNodeRef: setLastDroppableNodeRef } = useDroppable({
-    id: handLength ? handLength + 1 : "last",
-    disabled: !lastElem || isSwitching,
   });
 
   useEffect(() => {
@@ -143,7 +135,12 @@ export const Letter = ({
 
   return (
     <div className="relative">
-      <div ref={setDroppableNodeRef} className={`w-9 h-9 absolute`}></div>
+      <div
+        ref={setDroppableNodeRef}
+        className={`w-9 h-9 absolute ${
+          isOver ? "bg-green-400 rounded-lg" : ""
+        }`}
+      ></div>
 
       <div
         onClick={() => {
@@ -190,12 +187,6 @@ export const Letter = ({
           {letter.point}
         </div>
       </div>
-      {lastElem && (
-        <div
-          ref={setLastDroppableNodeRef}
-          className="w-9 h-9 absolute -right-11"
-        ></div>
-      )}
     </div>
   );
 };

@@ -76,7 +76,7 @@ export const gameSlice = createSlice({
     leaveGame: (state) => {
       localStorage.removeItem("roomId");
       localStorage.removeItem("sessionId");
-
+      window.dispatchEvent(new Event("storage"));
       socket.auth = { ...socket.auth, sessionId: undefined, roomId: undefined };
       socket.sessionId = undefined;
       return initialState;

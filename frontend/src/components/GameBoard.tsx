@@ -30,7 +30,7 @@ export const GameBoard = () => {
           </Modal>
         )}
         {letterPoolOpen && (
-          <Modal z={50}>
+          <Modal z={40}>
             <LetterPool />
           </Modal>
         )}

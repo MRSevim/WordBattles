@@ -11,6 +11,7 @@ import {
   shuffleHand,
 } from "../lib/redux/slices/gameSlice";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
+import { useDroppable } from "@dnd-kit/core";
 
 export const BottomPanel = ({
   setLetterPoolOpen,
@@ -71,7 +72,6 @@ export const BottomPanel = ({
           {playerHand.map((letter, i) => {
             return (
               <Letter
-                handLength={playerHand.length}
                 letter={letter}
                 key={i + letter.letter}
                 draggable={game.status !== "ended"}
@@ -80,6 +80,12 @@ export const BottomPanel = ({
               />
             );
           })}
+          {playerHand.length !== 7 && (
+            <LastLetterSpot
+              handLength={playerHand.length}
+              droppable={game.status !== "ended"}
+            />
+          )}
         </div>
 
         <div className="flex gap-2">
@@ -133,5 +139,27 @@ export const Button = ({
         classes
       }
     ></i>
+  );
+};
+
+const LastLetterSpot = ({
+  handLength,
+  droppable,
+}: {
+  droppable: boolean;
+  handLength: number;
+}) => {
+  const isSwitching = useAppSelector(
+    (state: RootState) => state.switch.switching
+  );
+  const { isOver, setNodeRef } = useDroppable({
+    id: handLength ? handLength + 1 : "last",
+    disabled: !droppable || isSwitching,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={"w-9 h-9 " + (isOver ? "bg-green-400 rounded-lg" : "")}
+    ></div>
   );
 };

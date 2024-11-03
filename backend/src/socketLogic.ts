@@ -23,6 +23,8 @@ import {
   WordWithCoordinates,
 } from "./helpers";
 
+export let waitingPlayer: any = null;
+
 export const runSocketLogic = (io: any) => {
   io.on("connection", (socket: any) => {
     console.log("a user connected");
@@ -36,22 +38,32 @@ export const runSocketLogic = (io: any) => {
       io.to(gameState.game.roomId).emit("Start Game", gameState);
     };
 
-    for (let [id, _socket] of io.of("/").sockets) {
-      if (socket.roomId) {
-        const roomId = socket.roomId;
-        const game = getGameFromMemory(socket.roomId);
+    if (socket.roomId) {
+      const roomId = socket.roomId;
+      const game = getGameFromMemory(socket.roomId);
 
-        if (game) {
-          io.to(roomId).emit("Play Made", game.gameState);
-        } else {
-          socket.roomId = undefined;
-          io.to(roomId).emit("No Game In Memory");
-          socket.leave(roomId);
-        }
-      } else if (!socket.roomId && !_socket.roomId && socket.id !== id) {
-        startGame(socket, _socket);
+      if (game) {
+        io.to(roomId).emit("Play Made", game.gameState);
+      } else {
+        socket.roomId = undefined;
+        io.to(roomId).emit("No Game In Memory");
+        socket.leave(roomId);
+      }
+    } else {
+      if (waitingPlayer) {
+        startGame(socket, waitingPlayer);
+        waitingPlayer = null;
+      } else {
+        waitingPlayer = socket;
       }
     }
+    socket.on("disconnect", () => {
+      console.log("A user disconnected");
+
+      if (waitingPlayer === socket) {
+        waitingPlayer = null;
+      }
+    });
 
     socket.on("Timer", (state: gameState) => {
       setUpTimerInterval(state, io);
@@ -81,7 +93,8 @@ export const runSocketLogic = (io: any) => {
 
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
 
-        currentPlayer.passCount = 0;
+        currentPlayer.closedPassCount = 0;
+        state.game.passCount = 0;
 
         switchTurns(state, io);
 
@@ -104,7 +117,7 @@ export const runSocketLogic = (io: any) => {
         playerPoints: 0,
       });
 
-      currentPlayer.passCount += 1;
+      state.game.passCount += 1;
       switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
     });
@@ -262,7 +275,8 @@ export const runSocketLogic = (io: any) => {
         });
 
         // Switch turns
-        currentPlayer.passCount = 0;
+        currentPlayer.closedPassCount = 0;
+        state.game.passCount = 0;
         completePlayerHand(currentPlayer, undrawnLetterPool);
         switchTurns(state, io);
 

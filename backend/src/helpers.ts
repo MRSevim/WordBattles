@@ -22,7 +22,7 @@ export interface Player {
   sessionId: string;
   score: number;
   timer: number;
-  passCount: number;
+  closedPassCount: number;
   email?: string;
 }
 
@@ -30,6 +30,7 @@ interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
+  passCount: number;
 }
 interface Word {
   word: string;
@@ -148,9 +149,11 @@ const checkGameEnd = (state: gameState) => {
     finishingPlayer.score += unfinishedPlayerHandSize;
     gameEnded = true;
   }
-  const playersPassedEnough = players.every((player) => player.passCount >= 2);
-  // Check if the pass count is 4 or more
-  if (playersPassedEnough) {
+  const playerPassedEnough = players.some(
+    (player) => player.closedPassCount >= 2
+  );
+  const playersPassedEnough = state.game.passCount >= 4;
+  if (playerPassedEnough || playersPassedEnough) {
     // Logic for ending the game due to passes
     state.status = "ended";
 
@@ -165,6 +168,9 @@ const checkGameEnd = (state: gameState) => {
 
 export const applyPointDifference = async (state: gameState) => {
   const everyoneIsUser = state.game.players.every((player) => player.email);
+  const disconnectedPlayer = state.game.players.find(
+    (player) => player.closedPassCount >= 2
+  );
 
   if (everyoneIsUser) {
     const { User } = require("./models/userModel");
@@ -173,15 +179,31 @@ export const applyPointDifference = async (state: gameState) => {
     const scoreDifference = Math.abs(player1.score - player2.score);
     // Determine the winner and loser
     let winner, loser;
-    if (player1.score > player2.score) {
-      winner = player1;
-      loser = player2;
-    } else if (player2.score > player1.score) {
-      winner = player2;
-      loser = player1;
+
+    if (disconnectedPlayer) {
+      // If a player disconnected and they were behind, apply the score difference
+      if (
+        disconnectedPlayer.score <
+        (disconnectedPlayer === player1 ? player2 : player1).score
+      ) {
+        loser = disconnectedPlayer;
+        winner = disconnectedPlayer === player1 ? player2 : player1;
+      } else {
+        // If the disconnected player was not behind, don't apply the difference
+        return;
+      }
     } else {
-      // In case of a tie, you may decide to handle this differently (e.g., no point difference applied)
-      return;
+      // Normal end game scenario
+      if (player1.score > player2.score) {
+        winner = player1;
+        loser = player2;
+      } else if (player2.score > player1.score) {
+        winner = player2;
+        loser = player1;
+      } else {
+        // Tie scenario, no score difference applied
+        return;
+      }
     }
 
     try {
@@ -218,7 +240,7 @@ export const generateGameState = (socket: any, _socket: any) => {
       turn: playersStatus.startingPlayer === 1,
       sessionId: socket.sessionId,
       score: 0,
-      passCount: 0,
+      closedPassCount: 0,
       timer: gameTime,
     },
     {
@@ -228,11 +250,13 @@ export const generateGameState = (socket: any, _socket: any) => {
       turn: playersStatus.startingPlayer === 2,
       sessionId: _socket.sessionId,
       score: 0,
-      passCount: 0,
+      closedPassCount: 0,
       timer: gameTime,
     },
   ];
   const roomId = uuidv6();
+  _socket.roomId = roomId;
+  socket.roomId = roomId;
 
   _socket.join(roomId);
   socket.join(roomId);
@@ -243,6 +267,7 @@ export const generateGameState = (socket: any, _socket: any) => {
       players,
       undrawnLetterPool: playersStatus.undrawnletterPool,
       roomId,
+      passCount: 0,
     },
     board: initialBoard,
     history: [],
@@ -298,6 +323,7 @@ export const setUpTimerInterval = (state: gameState, io: any) => {
     } else {
       clearTimerIfExist(roomId); // Clear the interval when timer runs out
       timerRanOutUnsuccessfully(state);
+      currentPlayer.closedPassCount += 1;
       switchTurns(state, io);
     }
   }, 1000);
@@ -353,7 +379,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
   const currentPlayer = state.game.players.find(
     (player) => player.turn
   ) as Player;
-  currentPlayer.passCount += 1;
+
   pass(currentPlayer.hand, state.board);
   state.history.push({
     playerSessionId: currentPlayer.sessionId,

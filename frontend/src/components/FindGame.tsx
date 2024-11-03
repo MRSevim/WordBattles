@@ -26,6 +26,7 @@ export const FindGame = () => {
     socket.disconnect();
     dispatch(setGameStatus("idle"));
     localStorage.removeItem("sessionId");
+    window.dispatchEvent(new Event("storage"));
   };
 
   const sessionId = localStorage.getItem("sessionId");
@@ -48,6 +49,7 @@ export const FindGame = () => {
     dispatch(setGameState(game));
     if (game.game) {
       localStorage.setItem("roomId", game.game.roomId);
+      window.dispatchEvent(new Event("storage"));
       socket.auth = { ...socket.auth, roomId };
     }
     socket.emit("Timer", game);

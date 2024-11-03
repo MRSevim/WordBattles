@@ -37,8 +37,9 @@ export const Rules = () => {
             hizalanmamış kelimeler kabul edilmez.
           </li>
           <li>
-            Oyun havuzdaki tüm harfler çekilince ve bir oyuncu elindeki harfleri
-            bitirince; veya 4 defa üstüste pas geçilince sonlanır.
+            Oyun devam eden durumlarda sonlanır: 1.Havuzdaki tüm harfler
+            çekilince ve bir oyuncu elindeki harfleri bitirince 2.Dört defa
+            üstüste pas geçilince 2.Bir oyuncu 2 tur boyuncu oyunu kapatınca
           </li>
         </ul>
       </div>

@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Rules } from "./pages/Rules";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { RankedPoints } from "./pages/RankedPoints";
+import { OngoingWarning } from "./components/OngoingWarning";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ const InnerApp = () => {
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />
       <Header />
+      <OngoingWarning />
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/oyun-hakkinda" element={<Rules />} />
