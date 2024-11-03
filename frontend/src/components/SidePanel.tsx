@@ -15,6 +15,9 @@ import { toast } from "react-toastify";
 export const SidePanel = () => {
   const game = useAppSelector((state: RootState) => state.game.game);
   const state = useAppSelector((state: RootState) => state.game);
+  const sidePanelOpen = useAppSelector(
+    (state: RootState) => state.sidePanelOpen
+  );
   const dispatch = useAppDispatch();
 
   const leave = () => {
@@ -24,7 +27,12 @@ export const SidePanel = () => {
   };
 
   return (
-    <div className="w-1/3 bg-slate-400">
+    <div
+      className={
+        "w-full absolute h-[621px] sm:h-[604px] lg:h-[672px] lg:relative lg:w-1/3 bg-slate-400 z-30 " +
+        (sidePanelOpen ? "block" : "hidden lg:block")
+      }
+    >
       {game && (
         <>
           <div className="flex justify-end">

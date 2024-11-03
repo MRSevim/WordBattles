@@ -31,7 +31,7 @@ export const Homepage = () => {
   });
 
   return (
-    <div className="container mx-auto flex">
+    <div className="container mx-auto flex relative">
       <GameBoard />
       <SidePanel />
     </div>

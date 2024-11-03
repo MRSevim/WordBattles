@@ -12,6 +12,7 @@ import {
 } from "../lib/redux/slices/gameSlice";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 import { useDroppable } from "@dnd-kit/core";
+import { toggleSidePanel } from "../lib/redux/slices/sidePanelToggleSlice";
 
 export const BottomPanel = ({
   setLetterPoolOpen,
@@ -36,8 +37,8 @@ export const BottomPanel = ({
   );
 
   if (playerHand) {
-    return (
-      <div className="p-4 bg-slate-500 w-full flex justify-between">
+    const LeftPanel = () => {
+      return (
         <div className="flex gap-2">
           <Button
             classes="bi bi-archive"
@@ -67,28 +68,18 @@ export const BottomPanel = ({
             }}
           />
         </div>
-
+      );
+    };
+    const RightPanel = () => {
+      return (
         <div className="flex gap-2">
-          {playerHand.map((letter, i) => {
-            return (
-              <Letter
-                letter={letter}
-                key={i + letter.letter}
-                draggable={game.status !== "ended"}
-                droppable={game.status !== "ended"}
-                i={i}
-              />
-            );
-          })}
-          {playerHand.length !== 7 && (
-            <LastLetterSpot
-              handLength={playerHand.length}
-              droppable={game.status !== "ended"}
-            />
-          )}
-        </div>
-
-        <div className="flex gap-2">
+          <Button
+            classes="bi bi bi-three-dots-vertical block lg:hidden"
+            title="Yan Paneli Aç"
+            onClick={() => {
+              dispatch(toggleSidePanel());
+            }}
+          />{" "}
           <Button
             classes="bi bi-arrow-right"
             title="Geç"
@@ -116,23 +107,57 @@ export const BottomPanel = ({
             }}
           />
         </div>
+      );
+    };
+    return (
+      <div className="p-4 bg-slate-500 w-full flex flex-col sm:flex-row justify-between">
+        <div className="hidden sm:block">
+          <LeftPanel />
+        </div>
+
+        <div className="flex gap-2 self-center">
+          {playerHand.map((letter, i) => {
+            return (
+              <Letter
+                letter={letter}
+                key={i + letter.letter}
+                draggable={game.status !== "ended"}
+                droppable={game.status !== "ended"}
+                i={i}
+              />
+            );
+          })}
+          {playerHand.length !== 7 && (
+            <LastLetterSpot
+              handLength={playerHand.length}
+              droppable={game.status !== "ended"}
+            />
+          )}
+        </div>
+        <div className="block sm:hidden flex pt-2 justify-between">
+          <LeftPanel />
+          <RightPanel />
+        </div>
+        <div className="hidden sm:block">
+          <RightPanel />
+        </div>
       </div>
     );
   }
 };
 
-export const Button = ({
+const Button = ({
   onClick,
   classes,
   title,
 }: {
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
   classes: string;
   title: string;
 }) => {
   return (
     <i
-      onClick={onClick}
+      onMouseDown={onClick}
       title={title}
       className={
         "bg-orange-900 rounded-lg w-9 h-9 text-center leading-9 text-white cursor-pointer " +

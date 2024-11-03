@@ -19,7 +19,7 @@ export const OngoingWarning = () => {
 
   if (open) {
     return (
-      <div className="absolute left-5 z-50 bg-green-800 text-white p-4 rounded-lg mt-2">
+      <div className="absolute left-5 z-30 bg-green-800 text-white p-4 rounded-lg mt-2">
         <span
           onClick={() => setOpen(false)}
           className="absolute top-0 right-0 me-1 text-red-400 cursor-pointer"

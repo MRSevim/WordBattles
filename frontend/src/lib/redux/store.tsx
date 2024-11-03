@@ -3,6 +3,7 @@ import gameSlice from "./slices/gameSlice";
 import dragSlice from "./slices/dragSlice";
 import switchSlice from "./slices/switchSlice";
 import userSlice from "./slices/userSlice";
+import sidePanelToggleSlice from "./slices/sidePanelToggleSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     draggingValues: dragSlice,
     switch: switchSlice,
     user: userSlice,
+    sidePanelOpen: sidePanelToggleSlice,
   },
 });
 

@@ -22,25 +22,28 @@ export const GameBoard = () => {
   }, [game]);
 
   return (
-    <div className="w-2/3 flex flex-col items-center">
-      <div className="relative">
-        {!game.game && (
-          <Modal>
-            <FindGame />
-          </Modal>
-        )}
-        {letterPoolOpen && (
-          <Modal z={40}>
-            <LetterPool />
-          </Modal>
-        )}
-        {gameEnded && (
-          <Modal>
-            <GameEnded />
-          </Modal>
-        )}
-        <Cells />
+    <div className="w-full lg:w-2/3 flex flex-col items-center">
+      <div className="relative sm:flex sm:justify-center w-full overflow-auto">
+        <div className="w-[600px] h-[600px] sm:h-[604px]">
+          {!game.game && (
+            <Modal>
+              <FindGame />
+            </Modal>
+          )}
+          {letterPoolOpen && (
+            <Modal z={40}>
+              <LetterPool />
+            </Modal>
+          )}
+          {gameEnded && (
+            <Modal>
+              <GameEnded />
+            </Modal>
+          )}
+          <Cells />
+        </div>
       </div>
+
       <BottomPanel setLetterPoolOpen={setLetterPoolOpen} />
     </div>
   );
