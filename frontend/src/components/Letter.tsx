@@ -149,15 +149,14 @@ export const LetterSkeleton = ({
   letter: LetterType;
   onChange?: (e: any) => void;
 }) => {
-  const [activeInput, setActiveInput] = useState<boolean>(false);
+  const [activeInput, setActiveInput] = useState<boolean>(
+    letter.letter === "" && !letter.fixed
+  );
   useEffect(() => {
-    if (letter.letter === "" && !letter.fixed) {
-      setActiveInput(true);
-    }
     if (letter.fixed) {
       setActiveInput(false);
     }
-  }, [letter]);
+  }, [letter.fixed]);
 
   return (
     <div
