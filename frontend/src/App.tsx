@@ -2,22 +2,24 @@ import { Header } from "./components/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Homepage } from "./pages/Homepage";
 import { Provider } from "react-redux";
-import { store } from "./lib/redux/store";
+import { RootState, store } from "./lib/redux/store";
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { handleDragEnd } from "./lib/helpers";
-import { useAppDispatch } from "./lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "./lib/redux/hooks";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Rules } from "./pages/Rules";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { RankedPoints } from "./pages/RankedPoints";
 import { OngoingWarning } from "./components/OngoingWarning";
+import { LetterSkeleton } from "./components/Letter";
 
 function App() {
   return (
@@ -49,6 +51,10 @@ const InnerApp = () => {
       },
     })
   );
+  const draggingValues = useAppSelector(
+    (state: RootState) => state.draggingValues
+  );
+
   return (
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />
@@ -59,6 +65,12 @@ const InnerApp = () => {
         <Route path="/oyun-hakkinda" element={<Rules />} />
         <Route path="/dereceli-puanlari" element={<RankedPoints />} />
       </Routes>
+
+      <DragOverlay>
+        {draggingValues.activeLetter ? (
+          <LetterSkeleton letter={draggingValues.activeLetter} />
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };

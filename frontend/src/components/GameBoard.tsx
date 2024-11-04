@@ -15,6 +15,7 @@ export const GameBoard = () => {
   const game = useAppSelector((state: RootState) => state.game);
   const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState(false);
+
   useEffect(() => {
     if (game.status === "ended") {
       setGameEnded(true);
@@ -23,8 +24,8 @@ export const GameBoard = () => {
 
   return (
     <div className="w-full lg:w-2/3 flex flex-col items-center">
-      <div className="relative sm:flex sm:justify-center w-full overflow-auto">
-        <div className="w-[600px] h-[600px] sm:h-[604px]">
+      <div className="sm:flex sm:justify-center w-full overflow-auto ">
+        <div className="relative w-[600px] h-[600px] sm:h-[604px]">
           {!game.game && (
             <Modal>
               <FindGame />

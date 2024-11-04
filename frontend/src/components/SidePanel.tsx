@@ -11,6 +11,7 @@ import { GameHistory } from "./GameHistory";
 import { useEffect, useState } from "react";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 import { toast } from "react-toastify";
+import { toggleSidePanel } from "../lib/redux/slices/sidePanelToggleSlice";
 
 export const SidePanel = () => {
   const game = useAppSelector((state: RootState) => state.game.game);
@@ -22,6 +23,7 @@ export const SidePanel = () => {
 
   const leave = () => {
     dispatch(leaveGame());
+    dispatch(toggleSidePanel());
     socket.emit("Leave Game", { state });
     socket.disconnect();
   };

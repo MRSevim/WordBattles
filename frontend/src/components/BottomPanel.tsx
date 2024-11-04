@@ -1,4 +1,3 @@
-import { LettersArray } from "../lib/helpers";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
@@ -7,6 +6,7 @@ import {
   _switch,
   makePlay,
   pass,
+  Player,
   returnEverythingToHand,
   shuffleHand,
 } from "../lib/redux/slices/gameSlice";
@@ -21,14 +21,16 @@ export const BottomPanel = ({
 }) => {
   const dispatch = useAppDispatch();
   const game = useAppSelector((state) => state.game);
-  const playerHand: LettersArray | null =
+  const player: Player | null =
     useAppSelector((state: RootState) => {
       let sessionId = socket.sessionId;
       const player = state.game?.game?.players.find((player) => {
         return player.sessionId === sessionId;
       });
-      return player?.hand;
+      return player;
     }) ?? null;
+
+  const playerHand = player?.hand || null;
   const switching = useAppSelector(
     (state: RootState) => state.switch.switching
   );
@@ -36,7 +38,7 @@ export const BottomPanel = ({
     (state: RootState) => state.switch.switchValues
   );
 
-  if (playerHand) {
+  if (playerHand && player) {
     const LeftPanel = () => {
       return (
         <div className="flex gap-2">
@@ -110,7 +112,18 @@ export const BottomPanel = ({
       );
     };
     return (
-      <div className="p-4 bg-slate-500 w-full flex flex-col sm:flex-row justify-between">
+      <div
+        className={
+          "p-4 bg-slate-500 w-full flex flex-col sm:flex-row justify-between " +
+          (player.turn
+            ? player.timer > 30
+              ? "border-green-500 border border-4 rounded"
+              : player.timer > 10
+              ? "border-yellow-500 border border-4 rounded"
+              : "border-red-500 border border-4 rounded"
+            : "")
+        }
+      >
         <div className="hidden sm:block">
           <LeftPanel />
         </div>

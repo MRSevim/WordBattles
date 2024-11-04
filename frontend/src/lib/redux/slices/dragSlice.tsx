@@ -1,14 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { Letter } from "../../helpers";
 
 export interface DraggingValues {
   active: number | null;
   over: number | null;
+  activeLetter: Letter | null;
 }
 
 const initialState: DraggingValues = {
   active: null,
   over: null,
+  activeLetter: null,
 };
 export const dragSlice = createSlice({
   name: "dragValues",

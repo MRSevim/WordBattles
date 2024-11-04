@@ -717,7 +717,7 @@ export const generateLetterPool = (array: LettersArray): LettersArray => {
 
   array.forEach((letter) => {
     for (let i = 0; i < letter.amount; i++) {
-      newArr.push({ ...letter, drawn: false });
+      newArr.push({ ...letter, drawn: false, letter: "" });
     }
   });
   return newArr;

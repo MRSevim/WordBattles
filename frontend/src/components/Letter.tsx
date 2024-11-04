@@ -1,6 +1,5 @@
-import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { Letter as LetterType, validTurkishLetters } from "../lib/helpers";
-import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
 import { changeEmptyLetter, Coordinates } from "../lib/redux/slices/gameSlice";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
@@ -8,6 +7,7 @@ import { RootState } from "../lib/redux/store";
 import { setDraggingValues } from "../lib/redux/slices/dragSlice";
 import { toast } from "react-toastify";
 import { changeSwitchValue } from "../lib/redux/slices/switchSlice";
+import { Draggable } from "./Draggable";
 
 interface props {
   letter: LetterType;
@@ -47,13 +47,6 @@ export const Letter = ({
     id = `letter-${coordinates.row}-${coordinates.col}`;
   }
 
-  const { isDragging, active, attributes, listeners, setNodeRef, transform } =
-    useDraggable({
-      id,
-      data: { letter, coordinates },
-      disabled: !draggable || isSwitching,
-    });
-
   const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
     id,
     disabled: !droppable || isSwitching,
@@ -66,18 +59,7 @@ export const Letter = ({
     if (isOver) {
       dispatch(setDraggingValues({ over: i !== undefined ? i : null }));
     }
-
-    if (active) {
-      dispatch(setDraggingValues({ active: +active.id - 1 }));
-    } else {
-      dispatch(
-        setDraggingValues({
-          over: null,
-          active: null,
-        })
-      );
-    }
-  }, [isOver, active, dispatch, i, draggingValues.over]);
+  }, [isOver, dispatch, i, draggingValues.over]);
 
   let translateValue = 0,
     draggingActive = draggingValues ? draggingValues.active : null,
@@ -117,21 +99,6 @@ export const Letter = ({
     ? `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem)`
     : undefined;
   const translateY = isActive ? `translateY(-10px)` : undefined;
-  const style = {
-    transform: CSS.Translate.toString(transform) || translateX || translateY,
-    zIndex: isDragging ? 11 : 10,
-    touchAction: "none",
-  };
-  const [activeInput, setActiveInput] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (letter.letter === "" && !letter.fixed) {
-      setActiveInput(true);
-    }
-    if (letter.fixed) {
-      setActiveInput(false);
-    }
-  }, [letter]);
 
   return (
     <div className="relative">
@@ -142,50 +109,78 @@ export const Letter = ({
         }`}
       ></div>
 
-      <div
+      <Draggable
         onClick={() => {
           dispatch(changeSwitchValue(i as number));
         }}
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        className={
-          "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
-          (letter.fixed ? "bg-stone-700" : "")
-        }
+        id={id}
+        letter={letter}
+        coordinates={coordinates}
+        draggable={draggable}
+        isSwitching={isSwitching}
+        translateX={translateX}
+        translateY={translateY}
       >
-        <div className="flex items-center justify-center h-full text-lg text-white">
-          {activeInput ? (
-            <input
-              type="text"
-              maxLength={1}
-              className="w-full h-full bg-transparent text-center text-white"
-              value={letter.letter}
-              onChange={(e) => {
-                const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
+        <LetterSkeleton
+          letter={letter}
+          onChange={(e) => {
+            const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
 
-                if (
-                  !validTurkishLetters.includes(newLetter) &&
-                  newLetter !== ""
-                ) {
-                  toast.error("Lütfen geçerli bir türkçe harf giriniz");
-                }
-                dispatch(
-                  changeEmptyLetter({
-                    newLetter,
-                    target: { coordinates, i },
-                  })
-                );
-              }}
-            />
-          ) : (
-            <>{letter.letter}</>
-          )}
-        </div>
-        <div className="absolute bottom-0 right-0.5 text-xxs text-white">
-          {letter.point}
-        </div>
+            if (!validTurkishLetters.includes(newLetter) && newLetter !== "") {
+              toast.error("Lütfen geçerli bir türkçe harf giriniz");
+            }
+            dispatch(
+              changeEmptyLetter({
+                newLetter,
+                target: { coordinates, i },
+              })
+            );
+          }}
+        ></LetterSkeleton>
+      </Draggable>
+    </div>
+  );
+};
+
+export const LetterSkeleton = ({
+  letter,
+  onChange,
+}: {
+  letter: LetterType;
+  onChange?: (e: any) => void;
+}) => {
+  const [activeInput, setActiveInput] = useState<boolean>(false);
+  useEffect(() => {
+    if (letter.letter === "" && !letter.fixed) {
+      setActiveInput(true);
+    }
+    if (letter.fixed) {
+      setActiveInput(false);
+    }
+  }, [letter]);
+
+  return (
+    <div
+      className={
+        "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
+        (letter.fixed ? "bg-stone-700" : "")
+      }
+    >
+      <div className="flex items-center justify-center h-full text-lg text-white">
+        {activeInput ? (
+          <input
+            type="text"
+            maxLength={1}
+            className="w-full h-full bg-transparent text-center text-white"
+            value={letter.letter}
+            onChange={(e) => onChange && onChange(e)}
+          />
+        ) : (
+          <div className="cursor-pointer">{letter.letter}</div>
+        )}
+      </div>
+      <div className="absolute bottom-0 right-0.5 text-xxs text-white">
+        {letter.point}
       </div>
     </div>
   );
