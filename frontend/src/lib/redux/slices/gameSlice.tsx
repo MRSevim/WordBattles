@@ -25,6 +25,8 @@ export interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
+  passCount: number;
+  emptyLetterIds: string[];
 }
 interface Word {
   word: string;

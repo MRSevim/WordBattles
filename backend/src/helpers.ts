@@ -1,5 +1,11 @@
 const { v6: uuidv6 } = require("uuid");
 
+interface InitialLetters {
+  letter: string;
+  point: number;
+  amount: number;
+}
+
 interface Letter {
   letter: string;
   point: number;
@@ -7,6 +13,7 @@ interface Letter {
   drawn?: boolean;
   fixed?: boolean;
   class?: string;
+  id: string;
 }
 
 const HAND_SIZE = 7;
@@ -31,6 +38,7 @@ interface Game {
   undrawnLetterPool: LettersArray;
   roomId: string;
   passCount: number;
+  emptyLetterIds: string[];
 }
 interface Word {
   word: string;
@@ -61,7 +69,7 @@ export interface WordWithCoordinates {
 
 export const gameTime = 10000;
 
-export const letters: LettersArray = [
+export const letters: InitialLetters[] = [
   { letter: "", point: 0, amount: 2 },
   { letter: "A", point: 1, amount: 12 },
   { letter: "B", point: 3, amount: 2 },
@@ -228,8 +236,17 @@ export const generateInitialBoard = (): Board => {
   return Array.from({ length: 15 }, () => Array(15).fill(null));
 };
 
+export const generateEmptyLetterIdsArray = (
+  letterPool: LettersArray
+): string[] => {
+  return letterPool
+    .filter((letter) => letter.letter === "") // Find letters with an empty `letter` property
+    .map((letter) => letter.id); // Return an array of their `id`s
+};
+
 export const generateGameState = (socket: any, _socket: any) => {
   const letterPool = generateLetterPool(letters);
+  const emptyLetterIds = generateEmptyLetterIdsArray(letterPool);
   const playersStatus = generateGame(letterPool);
   const initialBoard = generateInitialBoard();
   const players = [
@@ -268,6 +285,7 @@ export const generateGameState = (socket: any, _socket: any) => {
       undrawnLetterPool: playersStatus.undrawnletterPool,
       roomId,
       passCount: 0,
+      emptyLetterIds,
     },
     board: initialBoard,
     history: [],
@@ -712,12 +730,12 @@ export const completePlayerHand = (
   }
 };
 
-export const generateLetterPool = (array: LettersArray): LettersArray => {
+export const generateLetterPool = (array: InitialLetters[]): LettersArray => {
   let newArr: LettersArray = [];
 
   array.forEach((letter) => {
     for (let i = 0; i < letter.amount; i++) {
-      newArr.push({ ...letter, drawn: false, letter: "" });
+      newArr.push({ ...letter, drawn: false, id: uuidv6() });
     }
   });
   return newArr;

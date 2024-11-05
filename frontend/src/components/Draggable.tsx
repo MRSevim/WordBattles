@@ -28,7 +28,6 @@ export function Draggable({
   translateX,
   translateY,
   onClick,
-
   children,
 }: Props) {
   const dispatch = useAppDispatch();
@@ -51,14 +50,6 @@ export function Draggable({
         setDraggingValues({
           active: +active.id - 1,
           activeLetter: active.data?.current?.letter,
-        })
-      );
-    } else {
-      dispatch(
-        setDraggingValues({
-          over: null,
-          active: null,
-          activeLetter: null,
         })
       );
     }

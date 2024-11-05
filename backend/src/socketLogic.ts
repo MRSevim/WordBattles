@@ -50,6 +50,7 @@ export const runSocketLogic = (io: any) => {
         socket.leave(roomId);
       }
     } else {
+      console.log(waitingPlayer);
       if (waitingPlayer) {
         startGame(socket, waitingPlayer);
         waitingPlayer = null;

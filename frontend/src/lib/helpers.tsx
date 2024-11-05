@@ -1,6 +1,7 @@
 import { DragEndEvent } from "@dnd-kit/core";
 import { AppDispatch } from "./redux/store";
 import { moveLetter } from "./redux/slices/gameSlice";
+import { setDraggingValues } from "./redux/slices/dragSlice";
 
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -12,6 +13,13 @@ export interface Letter {
   drawn?: boolean;
   fixed?: boolean;
   class?: string;
+  id: string;
+}
+
+interface InitialLetters {
+  letter: string;
+  point: number;
+  amount: number;
 }
 
 export const boardSizes = {
@@ -21,7 +29,7 @@ export const boardSizes = {
 
 export type LettersArray = Letter[];
 
-const letters: LettersArray = [
+const letters: InitialLetters[] = [
   { letter: "A", point: 1, amount: 12 },
   { letter: "B", point: 3, amount: 2 },
   { letter: "C", point: 4, amount: 2 },
@@ -75,7 +83,13 @@ export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
       coordinates: over.data.current?.coordinates,
       class: over.data.current?.class,
     };
-
+    dispatch(
+      setDraggingValues({
+        over: null,
+        active: null,
+        activeLetter: null,
+      })
+    );
     dispatch(moveLetter({ targetData, activeData }));
   }
 };

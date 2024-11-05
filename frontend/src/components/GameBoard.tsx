@@ -12,25 +12,21 @@ import { socket } from "../lib/socketio";
 import { GameEnded } from "./GameEnded";
 
 export const GameBoard = () => {
-  const game = useAppSelector((state: RootState) => state.game);
+  const gameStatus = useAppSelector((state: RootState) => state.game.status);
   const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState(false);
 
   useEffect(() => {
-    if (game.status === "ended") {
+    if (gameStatus === "ended") {
       setGameEnded(true);
     } else setGameEnded(false);
-  }, [game]);
+  }, [gameStatus]);
 
   return (
     <div className="w-full lg:w-2/3 flex flex-col items-center">
-      <div className="sm:flex sm:justify-center w-full overflow-auto ">
-        <div className="relative w-[600px] h-[600px] sm:h-[604px]">
-          {!game.game && (
-            <Modal>
-              <FindGame />
-            </Modal>
-          )}
+      <div className="w-full flex sm:justify-center overflow-auto">
+        <div className="relative w-[600px] h-[604px]">
+          <FindGameContainer />
           {letterPoolOpen && (
             <Modal z={40}>
               <LetterPool />
@@ -47,6 +43,19 @@ export const GameBoard = () => {
 
       <BottomPanel setLetterPoolOpen={setLetterPoolOpen} />
     </div>
+  );
+};
+
+const FindGameContainer = () => {
+  const game = useAppSelector((state: RootState) => state.game.game);
+  return (
+    <>
+      {!game && (
+        <Modal>
+          <FindGame />
+        </Modal>
+      )}
+    </>
   );
 };
 

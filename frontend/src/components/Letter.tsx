@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { Letter as LetterType, validTurkishLetters } from "../lib/helpers";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { changeEmptyLetter, Coordinates } from "../lib/redux/slices/gameSlice";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -111,7 +111,7 @@ export const Letter = ({
 
       <Draggable
         onClick={() => {
-          dispatch(changeSwitchValue(i as number));
+          if (isSwitching) dispatch(changeSwitchValue(i as number));
         }}
         id={id}
         letter={letter}
@@ -122,6 +122,7 @@ export const Letter = ({
         translateY={translateY}
       >
         <LetterSkeleton
+          draggable={draggable}
           letter={letter}
           onChange={(e) => {
             const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
@@ -145,18 +146,17 @@ export const Letter = ({
 export const LetterSkeleton = ({
   letter,
   onChange,
+  draggable,
 }: {
   letter: LetterType;
   onChange?: (e: any) => void;
+  draggable?: boolean;
 }) => {
-  const [activeInput, setActiveInput] = useState<boolean>(
-    letter.letter === "" && !letter.fixed
+  const emptyLetterIds = useAppSelector(
+    (state) => state.game.game?.emptyLetterIds
   );
-  useEffect(() => {
-    if (letter.fixed) {
-      setActiveInput(false);
-    }
-  }, [letter.fixed]);
+
+  const activeInput = emptyLetterIds?.includes(letter.id) && draggable;
 
   return (
     <div
