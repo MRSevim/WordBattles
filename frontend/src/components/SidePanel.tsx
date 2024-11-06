@@ -67,28 +67,19 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   const playerTurn = player?.turn;
   const timer = player?.timer;
   const dispatch = useAppDispatch();
-  const [ran, setRan] = useState<boolean>(false);
   const switching = useAppSelector(
     (state: RootState) => state.switch.switching
   );
 
   useEffect(() => {
-    if (!playerTurn) setRan(false);
-
-    if (
-      playerTurn &&
-      timer === 0 &&
-      player?.sessionId === socket.sessionId &&
-      !ran
-    ) {
+    if (playerTurn && timer === 0 && player?.sessionId === socket.sessionId) {
       if (switching) {
         dispatch(pass());
         toast.error("Zamanında değişmediğiniz için sıranız pas geçildi");
         dispatch(toggleSwitching());
       } else dispatch(makePlay(true));
-      setRan(true);
     }
-  }, [playerTurn, timer, dispatch, ran]);
+  }, [playerTurn, timer, dispatch]);
 
   return (
     <div

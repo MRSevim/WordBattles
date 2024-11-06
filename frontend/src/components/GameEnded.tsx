@@ -4,10 +4,8 @@ import { RootState } from "../lib/redux/store";
 import { capitalizeFirstLetter } from "../lib/helpers";
 
 export const GameEnded = () => {
-  const gameState = useAppSelector((state: RootState) => state.game);
-
-  // Extract players from the game state
-  const players = gameState.game?.players || [];
+  const players =
+    useAppSelector((state: RootState) => state.game.game?.players) || [];
 
   // Determine the winner and handle ties
   let winner: Player | null = null;

@@ -27,9 +27,13 @@ export const Letter = ({
 }: props) => {
   let id: number | string = 0;
 
-  const draggingValues = useAppSelector(
-    (state: RootState) => state.draggingValues
+  const draggingActive = useAppSelector(
+    (state: RootState) => state.draggingValues.active
   );
+  const draggingOver = useAppSelector(
+    (state: RootState) => state.draggingValues.over
+  );
+
   const isActive = useAppSelector((state: RootState) => {
     return (
       state.switch.switchValues.includes(i as number) && state.switch.switching
@@ -53,17 +57,15 @@ export const Letter = ({
   });
 
   useEffect(() => {
-    if (draggingValues.over === i && !isOver) {
+    if (draggingOver === i && !isOver) {
       dispatch(setDraggingValues({ over: null }));
     }
     if (isOver) {
       dispatch(setDraggingValues({ over: i !== undefined ? i : null }));
     }
-  }, [isOver, dispatch, i, draggingValues.over]);
+  }, [isOver, dispatch, i, draggingOver]);
 
-  let translateValue = 0,
-    draggingActive = draggingValues ? draggingValues.active : null,
-    draggingOver = draggingValues ? draggingValues.over : null;
+  let translateValue = 0;
 
   if (
     draggingActive !== null &&

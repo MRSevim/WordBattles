@@ -6,8 +6,9 @@ import { socket } from "../lib/socketio";
 
 export const GameHistory = () => {
   const history = useAppSelector((state: RootState) => state.game.history);
-  const game = useAppSelector((state: RootState) => state.game.game);
-  const players = game?.players;
+  const players = useAppSelector(
+    (state: RootState) => state.game.game?.players
+  );
 
   const [mousePosition, setMousePosition] = useState<{
     x: number;

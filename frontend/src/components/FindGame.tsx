@@ -14,7 +14,7 @@ import { useEffect } from "react";
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
-  const _game = useAppSelector((state: RootState) => state.game);
+  const gameStatus = useAppSelector((state: RootState) => state.game.status);
   const user = useAppSelector((state: RootState) => state.user);
 
   const findGame = () => {
@@ -44,16 +44,23 @@ export const FindGame = () => {
       findGame();
     }
   }, [sessionId, socket]);
+  useEffect(() => {
+    socket.on("Start Game", (game: GameState) => {
+      dispatch(setGameState(game));
+      if (game.game) {
+        localStorage.setItem("roomId", game.game.roomId);
+        window.dispatchEvent(new Event("storage"));
+        socket.auth = { ...socket.auth, roomId };
+      }
+      socket.emit("Timer", game);
+    });
 
-  socket.on("Start Game", (game: GameState) => {
-    dispatch(setGameState(game));
-    if (game.game) {
-      localStorage.setItem("roomId", game.game.roomId);
-      window.dispatchEvent(new Event("storage"));
-      socket.auth = { ...socket.auth, roomId };
-    }
-    socket.emit("Timer", game);
-  });
+    // Cleanup listeners on unmount
+    return () => {
+      socket.off("Start Game");
+    };
+  }, [dispatch]);
+
   if (roomId) {
     return (
       <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
@@ -61,7 +68,7 @@ export const FindGame = () => {
       </div>
     );
   }
-  if (_game.status === "looking") {
+  if (gameStatus === "looking") {
     return (
       <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
         Oyun aranıyor...
