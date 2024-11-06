@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { Letter } from "./Letter";
-import { socket } from "../lib/socketio";
 import {
   _switch,
   makePlay,
@@ -12,15 +11,7 @@ import {
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 import { useDroppable } from "@dnd-kit/core";
 import { toggleSidePanel } from "../lib/redux/slices/sidePanelToggleSlice";
-import { LettersArray } from "../lib/helpers";
-
-const getPlayer = (state: RootState) => {
-  const sessionId = socket.sessionId;
-  const player = state.game?.game?.players.find((player) => {
-    return player.sessionId === sessionId;
-  });
-  return player;
-};
+import { getPlayer, LettersArray } from "../lib/helpers";
 
 export const BottomPanel = ({
   setLetterPoolOpen,
@@ -28,6 +19,7 @@ export const BottomPanel = ({
   setLetterPoolOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const dispatch = useAppDispatch();
+
   const gameStatus = useAppSelector((state) => state.game.status);
   const playerHand: LettersArray | null =
     useAppSelector((state: RootState) => {
@@ -57,7 +49,7 @@ export const BottomPanel = ({
             classes={
               "bi bi-arrow-down-up " + (switching ? "animate-bounce" : "")
             }
-            title="Değiştir"
+            title="Harf Havuzu İle Harf Değiştir"
             onClick={() => {
               if (gameStatus !== "ended") {
                 dispatch(toggleSwitching(playerHand));
@@ -66,10 +58,19 @@ export const BottomPanel = ({
           />
           <Button
             classes="bi bi-arrow-left-right"
-            title="Karıştır"
+            title="Eldeki Harfleri Karıştır"
             onClick={() => {
               if (gameStatus !== "ended") {
                 dispatch(shuffleHand());
+              }
+            }}
+          />
+          <Button
+            classes="bi bi-arrow-down"
+            title="Harfleri Ele Geri Getir"
+            onClick={() => {
+              if (gameStatus !== "ended") {
+                dispatch(returnEverythingToHand());
               }
             }}
           />
@@ -88,7 +89,7 @@ export const BottomPanel = ({
           />{" "}
           <Button
             classes="bi bi-arrow-right"
-            title="Geç"
+            title="Sıra Geç"
             onClick={() => {
               if (gameStatus !== "ended") {
                 dispatch(pass());
@@ -97,7 +98,7 @@ export const BottomPanel = ({
           />{" "}
           <Button
             classes="bi bi-arrow-right-square"
-            title="Gönder"
+            title="Oyunu Gönder"
             onClick={() => {
               if (gameStatus !== "ended") {
                 if (switching) {
@@ -117,9 +118,9 @@ export const BottomPanel = ({
     };
 
     return (
-      <div className="p-4 bg-slate-500 w-full flex flex-col sm:flex-row justify-between relative">
+      <div className="p-4 bg-slate-500 w-full flex flex-col md:flex-row justify-between relative">
         <TimerIndicator />
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <LeftPanel />
         </div>
 
@@ -142,11 +143,11 @@ export const BottomPanel = ({
             />
           )}
         </div>
-        <div className="block sm:hidden flex pt-2 justify-between">
+        <div className="block md:hidden flex pt-2 justify-between">
           <LeftPanel />
           <RightPanel />
         </div>
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <RightPanel />
         </div>
       </div>

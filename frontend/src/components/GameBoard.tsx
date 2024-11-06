@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { boardSizes } from "../lib/helpers";
+import { useEffect, useRef, useState } from "react";
+import { boardSizes, getPlayer } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";
@@ -16,6 +16,23 @@ export const GameBoard = () => {
   const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState(false);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      // Calculate the center position
+      const scrollX =
+        (scrollContainer.scrollWidth - scrollContainer.clientWidth) / 2;
+      const scrollY =
+        (scrollContainer.scrollHeight - scrollContainer.clientHeight) / 2;
+
+      // Set scroll to the calculated center
+      scrollContainer.scrollLeft = scrollX;
+      scrollContainer.scrollTop = scrollY;
+    }
+  }, []); // Empty dependency to run only once on mount
+
   useEffect(() => {
     if (gameStatus === "ended") {
       setGameEnded(true);
@@ -24,7 +41,10 @@ export const GameBoard = () => {
 
   return (
     <div className="w-full lg:w-2/3 flex flex-col items-center">
-      <div className="w-full flex sm:justify-center overflow-auto">
+      <div
+        className="w-full flex sm:justify-center overflow-auto"
+        ref={scrollContainerRef}
+      >
         <div className="relative w-[600px] h-[604px]">
           <FindGameContainer />
           {letterPoolOpen && (
@@ -61,9 +81,20 @@ const FindGameContainer = () => {
 
 const Cells = () => {
   const [bingo, setBingo] = useState<boolean>(false);
+  const [playerTurn, setPlayerTurn] = useState<boolean>(false);
   socket.on("Bingo", () => {
     setBingo(true);
   });
+
+  const playerTurnState: boolean | null =
+    useAppSelector((state: RootState) => {
+      const player = getPlayer(state);
+      return player?.turn;
+    }) ?? null;
+
+  useEffect(() => {
+    if (playerTurnState !== null) setPlayerTurn(playerTurnState);
+  }, [playerTurnState]);
 
   useEffect(() => {
     if (bingo) {
@@ -71,13 +102,19 @@ const Cells = () => {
         setBingo(false);
       }, 3000);
     }
-  }, [bingo]);
+    if (playerTurn) {
+      setTimeout(() => {
+        setPlayerTurn(false);
+      }, 3000);
+    }
+  }, [bingo, playerTurn]);
 
   return (
     <div className="mt-1 ml-1 relative">
-      {bingo && (
+      {(bingo || playerTurn) && (
         <div className="absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2">
-          Bingo yaptınız. Tebrikler.
+          {playerTurn && "Sıranız geldi"}
+          {bingo && "Bingo yaptınız. Tebrikler."}
         </div>
       )}
 

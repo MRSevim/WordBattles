@@ -26,6 +26,7 @@ export const Homepage = () => {
 
     socket.on("No Game In Memory", () => {
       dispatch(leaveGame());
+      socket.disconnect();
     });
 
     socket.on("Timer Runs", (players: Player[]) => {

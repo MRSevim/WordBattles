@@ -43,7 +43,6 @@ export function Draggable({
     opacity: isDragging ? 0 : 1,
     touchAction: "none",
   };
-
   useEffect(() => {
     if (active) {
       dispatch(
@@ -56,14 +55,10 @@ export function Draggable({
   }, [active]);
 
   return (
-    <div
-      style={style}
-      onClick={onClick}
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-    >
-      {children}
+    <div ref={setNodeRef}>
+      <div style={style} onClick={onClick} {...listeners} {...attributes}>
+        {children}
+      </div>
     </div>
   );
 }

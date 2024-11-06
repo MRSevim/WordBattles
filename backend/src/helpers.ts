@@ -67,7 +67,7 @@ export interface WordWithCoordinates {
   end: [number, number];
 }
 
-export const gameTime = 10000;
+export const gameTime = 60;
 
 export const letters: InitialLetters[] = [
   { letter: "", point: 0, amount: 2 },
@@ -399,6 +399,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
   ) as Player;
 
   pass(currentPlayer.hand, state.board);
+  state.game.passCount += 1;
   state.history.push({
     playerSessionId: currentPlayer.sessionId,
     words: [],

@@ -66,7 +66,7 @@ const InnerApp = () => {
         <Route path="/dereceli-puanlari" element={<RankedPoints />} />
       </Routes>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {draggingValues.activeLetter ? (
           <LetterSkeleton letter={draggingValues.activeLetter} />
         ) : null}

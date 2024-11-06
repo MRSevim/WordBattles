@@ -99,7 +99,6 @@ export const Letter = ({
     ? `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem)`
     : undefined;
   const translateY = isActive ? `translateY(-10px)` : undefined;
-
   return (
     <div className="relative">
       <div

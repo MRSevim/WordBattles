@@ -1,7 +1,8 @@
 import { DragEndEvent } from "@dnd-kit/core";
-import { AppDispatch } from "./redux/store";
+import { AppDispatch, RootState } from "./redux/store";
 import { moveLetter } from "./redux/slices/gameSlice";
 import { setDraggingValues } from "./redux/slices/dragSlice";
+import { socket } from "./socketio";
 
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -65,6 +66,14 @@ const letters: InitialLetters[] = [
 export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
+
+export const getPlayer = (state: RootState) => {
+  const sessionId = socket.sessionId;
+  const player = state.game?.game?.players.find((player) => {
+    return player.sessionId === sessionId;
+  });
+  return player;
+};
 
 export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
   const { active, over } = e;

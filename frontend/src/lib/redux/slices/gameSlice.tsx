@@ -241,6 +241,7 @@ export const gameSlice = createSlice({
         timerRanOut: action.payload,
       });
     },
+
     changeEmptyLetter: (
       state,
       action: PayloadAction<{

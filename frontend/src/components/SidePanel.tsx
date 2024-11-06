@@ -35,6 +35,12 @@ export const SidePanel = () => {
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
+      {!game && (
+        <div id="loader">
+          <div id="box"></div>
+          <div id="hill"></div>
+        </div>
+      )}
       {game && (
         <>
           <div className="flex justify-end">
