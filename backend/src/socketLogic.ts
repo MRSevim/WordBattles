@@ -82,7 +82,7 @@ export const runSocketLogic = (io: any) => {
           game: { players, roomId, undrawnLetterPool },
         } = state;
         const currentPlayer = players.find((player) => player.turn) as Player;
-
+        if (state.status === "ended") return;
         // Append to history
         state.history.push({
           playerSessionId: currentPlayer.sessionId,
@@ -109,7 +109,7 @@ export const runSocketLogic = (io: any) => {
       } = state;
       const currentPlayer = players.find((player) => player.turn) as Player;
       pass(currentPlayer.hand, board);
-
+      if (state.status === "ended") return;
       // Append to history
       state.history.push({
         playerSessionId: currentPlayer.sessionId,
@@ -178,7 +178,7 @@ export const runSocketLogic = (io: any) => {
         const id = socket.id;
         // Find the player who made the play
         const currentPlayer = players.find((player) => player.turn) as Player;
-
+        if (state.status === "ended") return;
         if (state.board[7][7] === null) {
           io.to(id).emit("Game Error", {
             error: "Merkez hücre kullanılmalıdır",
