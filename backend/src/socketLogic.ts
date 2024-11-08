@@ -118,6 +118,7 @@ export const runSocketLogic = (io: any) => {
       });
 
       state.game.passCount += 1;
+      currentPlayer.closedPassCount = 0;
       switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
     });
@@ -151,6 +152,10 @@ export const runSocketLogic = (io: any) => {
     });
 
     const handleUnsuccessfull = (state: gameState) => {
+      const currentPlayer = state.game.players.find(
+        (player) => player.turn
+      ) as Player;
+      currentPlayer.closedPassCount = 0;
       timerRanOutUnsuccessfully(state);
       switchTurns(state, io);
       io.to(state.game.roomId).emit("Play Made", state);
