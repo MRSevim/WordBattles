@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { boardSizes, getPlayer } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
 import { BottomPanel } from "./BottomPanel";
 import { FindGame } from "./FindGame";
-import { Letter } from "./Letter";
+import { Letter, LetterSkeleton } from "./Letter";
 import { Modal } from "./Modal";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterPool } from "./LetterPool";
@@ -113,6 +113,15 @@ const Cells = () => {
     <div className="mt-1 ml-1 relative">
       {(bingo || playerTurn) && (
         <div className="absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2">
+          <div
+            className="absolute end-0 top-0 me-1 -mt-1 cursor-pointer"
+            onClick={() => {
+              setBingo(false);
+              setPlayerTurn(false);
+            }}
+          >
+            x
+          </div>
           {playerTurn && "Sıranız geldi"}
           {bingo && "Bingo yaptınız. Tebrikler."}
         </div>
@@ -207,23 +216,25 @@ const Cell = ({ row, col }: CellProps) => {
       cls = "triple-letter";
     }
   });
-  const coordinates = { row, col };
+
+  const coordinates = useMemo<CellProps>(() => ({ row, col }), [row, col]);
 
   const letter = useAppSelector(
     (state: RootState) => state.game.board[row - 1][col - 1]
+  );
+  const activeLetter = useAppSelector(
+    (state: RootState) => state.draggingValues.activeLetter
   );
 
   const { setNodeRef } = useDroppable({
     id: `${row}-${col}`,
     data: { coordinates, class: cls },
-    disabled: !!letter,
+    disabled: !!letter && activeLetter?.id !== letter.id,
   });
 
   return (
     <div
-      ref={(el) => {
-        setNodeRef(el);
-      }}
+      ref={setNodeRef}
       className={
         "-mt-1 -ml-1 w-11 h-11 bg-amber-300 border-4 border-black relative " +
         cls
@@ -236,7 +247,13 @@ const Cell = ({ row, col }: CellProps) => {
             droppable={false}
             draggable={!letter.fixed}
             coordinates={coordinates}
-          />
+          >
+            <LetterSkeleton
+              draggable={!letter.fixed}
+              letter={letter}
+              coordinates={coordinates}
+            ></LetterSkeleton>
+          </Letter>
         </div>
       )}
     </div>

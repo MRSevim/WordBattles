@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { Letter as LetterType, validTurkishLetters } from "../lib/helpers";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { changeEmptyLetter, Coordinates } from "../lib/redux/slices/gameSlice";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -16,7 +16,9 @@ interface props {
   handLength?: number;
   coordinates?: Coordinates;
   i?: number;
+  children: React.ReactNode;
 }
+type Id = number | string;
 
 export const Letter = ({
   letter,
@@ -24,8 +26,9 @@ export const Letter = ({
   coordinates,
   draggable,
   i,
+  children,
 }: props) => {
-  let id: number | string = 0;
+  let id: Id = 0;
 
   const draggingActive = useAppSelector(
     (state: RootState) => state.draggingValues.active
@@ -50,20 +53,6 @@ export const Letter = ({
   } else if (coordinates) {
     id = `letter-${coordinates.row}-${coordinates.col}`;
   }
-
-  const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
-    id,
-    disabled: !droppable || isSwitching,
-  });
-
-  useEffect(() => {
-    if (draggingOver === i && !isOver) {
-      dispatch(setDraggingValues({ over: null }));
-    }
-    if (isOver) {
-      dispatch(setDraggingValues({ over: i !== undefined ? i : null }));
-    }
-  }, [isOver, dispatch, i, draggingOver]);
 
   let translateValue = 0;
 
@@ -101,14 +90,16 @@ export const Letter = ({
     ? `translateX(calc(${translateValue * 100}% + ${translateValue * 0.5}rem)`
     : undefined;
   const translateY = isActive ? `translateY(-10px)` : undefined;
+
   return (
     <div className="relative">
-      <div
-        ref={setDroppableNodeRef}
-        className={`w-9 h-9 absolute ${
-          isOver ? "bg-green-400 rounded-lg" : ""
-        }`}
-      ></div>
+      <Droppable
+        id={id}
+        draggingOver={draggingOver}
+        isSwitching={isSwitching}
+        i={i}
+        droppable={droppable}
+      />
 
       <Draggable
         onClick={() => {
@@ -122,66 +113,104 @@ export const Letter = ({
         translateX={translateX}
         translateY={translateY}
       >
-        <LetterSkeleton
-          draggable={draggable}
-          letter={letter}
-          onChange={(e) => {
-            const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
-
-            if (!validTurkishLetters.includes(newLetter) && newLetter !== "") {
-              toast.error("Lütfen geçerli bir türkçe harf giriniz");
-            }
-            dispatch(
-              changeEmptyLetter({
-                newLetter,
-                target: { coordinates, i },
-              })
-            );
-          }}
-        ></LetterSkeleton>
+        {children}
       </Draggable>
     </div>
   );
 };
 
-export const LetterSkeleton = ({
-  letter,
-  onChange,
-  draggable,
+const Droppable = ({
+  id,
+  droppable,
+  isSwitching,
+  draggingOver,
+  i,
 }: {
-  letter: LetterType;
-  onChange?: (e: any) => void;
-  draggable?: boolean;
+  id: Id;
+  droppable: boolean;
+  isSwitching: boolean;
+  draggingOver: number | null;
+  i: number | undefined;
 }) => {
-  const emptyLetterIds = useAppSelector(
-    (state) => state.game.game?.emptyLetterIds
-  );
+  const dispatch = useAppDispatch();
+  const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
+    id,
+    disabled: !droppable || isSwitching,
+  });
 
-  const activeInput = emptyLetterIds?.includes(letter.id) && draggable;
-
+  useEffect(() => {
+    if (draggingOver === i && !isOver) {
+      dispatch(setDraggingValues({ over: null }));
+    }
+    if (isOver) {
+      dispatch(setDraggingValues({ over: i !== undefined ? i : null }));
+    }
+  }, [isOver, dispatch, i, draggingOver]);
   return (
     <div
-      className={
-        "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
-        (letter.fixed ? "bg-stone-700" : "")
-      }
-    >
-      <div className="flex items-center justify-center h-full text-lg text-white">
-        {activeInput ? (
-          <input
-            type="text"
-            maxLength={1}
-            className="w-full h-full bg-transparent text-center text-white"
-            value={letter.letter}
-            onChange={(e) => onChange && onChange(e)}
-          />
-        ) : (
-          <div className="cursor-pointer">{letter.letter}</div>
-        )}
-      </div>
-      <div className="absolute bottom-0 right-0.5 text-xxs text-white">
-        {letter.point}
-      </div>
-    </div>
+      ref={setDroppableNodeRef}
+      className={`w-9 h-9 absolute ${isOver ? "bg-green-400 rounded-lg" : ""}`}
+    ></div>
   );
 };
+
+export const LetterSkeleton = memo(
+  ({
+    letter,
+    coordinates,
+    i,
+    draggable,
+  }: {
+    letter: LetterType;
+    coordinates?: Coordinates;
+    i?: number;
+    draggable?: boolean;
+  }) => {
+    const emptyLetterIds = useAppSelector(
+      (state) => state.game.game?.emptyLetterIds
+    );
+    const dispatch = useAppDispatch();
+    const activeInput = emptyLetterIds?.includes(letter.id) && draggable;
+
+    return (
+      <div
+        className={
+          "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
+          (letter.fixed ? "bg-stone-700" : "")
+        }
+      >
+        <div className="flex items-center justify-center h-full text-lg text-white">
+          {activeInput ? (
+            <input
+              type="text"
+              maxLength={1}
+              className="w-full h-full bg-transparent text-center text-white"
+              value={letter.letter}
+              onChange={(e) => {
+                const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
+
+                if (
+                  !validTurkishLetters.includes(newLetter) &&
+                  newLetter !== ""
+                ) {
+                  toast.error("Lütfen geçerli bir türkçe harf giriniz");
+                }
+                dispatch(
+                  changeEmptyLetter({
+                    newLetter,
+                    target: { coordinates, i },
+                  })
+                );
+              }}
+            />
+          ) : (
+            <div className="cursor-pointer">{letter.letter}</div>
+          )}
+        </div>
+        <div className="absolute bottom-0 right-0.5 text-xxs text-white">
+          {letter.point}
+        </div>
+      </div>
+    );
+  }
+);

@@ -92,6 +92,7 @@ export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
       coordinates: over.data.current?.coordinates,
       class: over.data.current?.class,
     };
+
     dispatch(
       setDraggingValues({
         over: null,

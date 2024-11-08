@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
-import { Letter } from "./Letter";
+import { Letter, LetterSkeleton } from "./Letter";
 import {
   _switch,
   makePlay,
@@ -126,14 +126,21 @@ export const BottomPanel = ({
 
         <div className="flex gap-2 self-center">
           {playerHand.map((letter, i) => {
+            const draggable = gameStatus !== "ended" && !letter.fixed;
             return (
               <Letter
                 letter={letter}
                 key={letter.id}
-                draggable={gameStatus !== "ended" && !letter.fixed}
+                draggable={draggable}
                 droppable={gameStatus !== "ended" && !letter.fixed}
                 i={i}
-              />
+              >
+                <LetterSkeleton
+                  draggable={draggable}
+                  letter={letter}
+                  i={i}
+                ></LetterSkeleton>
+              </Letter>
             );
           })}
           {playerHand.length !== 7 && (
