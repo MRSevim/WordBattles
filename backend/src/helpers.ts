@@ -675,7 +675,7 @@ export const calculatePoints = (
         wordPoints += letterPoints;
 
         // Track used letters for bonus calculation
-        if (cell.letter) {
+        if (cell.letter && !cell.fixed) {
           usedLetters.add(cell.letter);
         }
 
