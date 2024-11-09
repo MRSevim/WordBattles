@@ -1,0 +1,27 @@
+name: Deploy Backend to VPS
+
+on:
+  push:
+    branches:
+      - main # Trigger only on pushes to the 'main' branch
+    paths:
+      - "backend/**" # Trigger only if files in the 'backend' directory are changed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH agent
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd apps/kelimesavaslari-backend/backend 
+            git pull origin main
+            npm i 
+            npm run build
+            pm2 restart kelimesavaslari-backend
