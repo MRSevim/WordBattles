@@ -1,9 +1,13 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://kelimesavaslaribackend.flickarticles.com/api/$1"
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "https://kelimesavaslaribackend.flickarticles.com/api/$1"
     }
-  ],
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+  ]
 }
