@@ -34,7 +34,7 @@ useSocketAuthMiddleware(io);
 app.use("/api/user", userRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Bu Kelime savaşları backendidir. xdd");
+  res.send("Bu Kelime savaşları backendidir.");
 });
 
 runSocketLogic(io);
