@@ -4,5 +4,6 @@
       "source": "/api/(.*)",
       "destination": "https://kelimesavaslaribackend.flickarticles.com/api/$1"
     }
-  ]
+  ],
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
 }
