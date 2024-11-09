@@ -75,7 +75,7 @@ export const gameSlice = createSlice({
     setGameStatus: (state, action: PayloadAction<string>) => {
       state.status = action.payload;
     },
-    leaveGame: (state) => {
+    leaveGame: () => {
       localStorage.removeItem("roomId");
       localStorage.removeItem("sessionId");
       window.dispatchEvent(new Event("storage"));
@@ -83,7 +83,7 @@ export const gameSlice = createSlice({
       socket.sessionId = undefined;
       return initialState;
     },
-    setGameState: (state, action: PayloadAction<GameState>) => {
+    setGameState: (_state, action: PayloadAction<GameState>) => {
       return action.payload;
     },
     setTimer: (state, action: PayloadAction<Player[]>) => {

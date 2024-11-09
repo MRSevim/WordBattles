@@ -127,12 +127,12 @@ const Cells = () => {
         </div>
       )}
 
-      {[...Array(boardSizes.width)].map((e, i1) => {
+      {[...Array(boardSizes.width)].map((_e, i1) => {
         const row = i1 + 1;
 
         return (
           <div key={"row-" + row} className="flex">
-            {[...Array(boardSizes.height)].map((e, i2) => {
+            {[...Array(boardSizes.height)].map((_e, i2) => {
               const col = i2 + 1;
 
               return (

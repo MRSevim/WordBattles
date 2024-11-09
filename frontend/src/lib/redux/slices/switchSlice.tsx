@@ -18,7 +18,7 @@ export const switchSlice = createSlice({
       if (!state.switching) {
         state.switching = true;
         if (action.payload) {
-          action.payload.forEach((letter, i) => {
+          action.payload.forEach((_letter, i) => {
             state.switchValues.push(i);
           });
         }

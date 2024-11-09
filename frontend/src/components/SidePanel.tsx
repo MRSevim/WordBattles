@@ -8,7 +8,7 @@ import {
 } from "../lib/redux/slices/gameSlice";
 import { socket } from "../lib/socketio";
 import { GameHistory } from "./GameHistory";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toggleSwitching } from "../lib/redux/slices/switchSlice";
 import { toast } from "react-toastify";
 import { toggleSidePanel } from "../lib/redux/slices/sidePanelToggleSlice";
