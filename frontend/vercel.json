@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "http://167.235.242.227:8080/api/$1"
+      "destination": "https://kelimesavaslaribackend.flickarticles.com/api/$1"
     }
   ]
 }
