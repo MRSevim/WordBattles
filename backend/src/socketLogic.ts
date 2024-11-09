@@ -125,7 +125,15 @@ export const runSocketLogic = (io: any) => {
 
     socket.on("Leave Game", ({ state }: { state: gameState }) => {
       const roomId = state.game.roomId;
-      if (state.status !== "ended") {
+      const [player1, player2] = state.game.players;
+      const leavingPlayer = state.game.players.find(
+        (player) => player.sessionId === socket.sessionId
+      ) as Player;
+      if (
+        state.status !== "ended" &&
+        leavingPlayer.score <
+          (leavingPlayer === player1 ? player2 : player1).score
+      ) {
         applyPointDifference(state);
       }
       state.status = "ended";
