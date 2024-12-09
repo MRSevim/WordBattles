@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { boardSizes, getPlayer } from "../lib/helpers";
 import { useAppSelector } from "../lib/redux/hooks";
 import { RootState } from "../lib/redux/store";
@@ -151,7 +151,7 @@ interface CellProps {
   col: number;
 }
 
-const Cell = ({ row, col }: CellProps) => {
+const Cell = memo(({ row, col }: CellProps) => {
   let cls = "";
   if (row === 1 || row === 8 || row === 15) {
     if (col === 1 || col === 8 || col === 15)
@@ -258,4 +258,4 @@ const Cell = ({ row, col }: CellProps) => {
       )}
     </div>
   );
-};
+});
