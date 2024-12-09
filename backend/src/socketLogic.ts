@@ -124,6 +124,7 @@ export const runSocketLogic = (io: any) => {
     });
 
     socket.on("Leave Game", ({ state }: { state: gameState }) => {
+      console.log("left game");
       const roomId = state.game.roomId;
       const [player1, player2] = state.game.players;
       const leavingPlayer = state.game.players.find(
@@ -149,7 +150,7 @@ export const runSocketLogic = (io: any) => {
 
       // Check how many sockets are in the room
       const roomSockets = io.sockets.adapter.rooms.get(roomId);
-      console.log(roomSockets);
+
       if (!roomSockets) {
         // If no sockets are left, remove the game from memory
         removeGameFromMemory(roomId);
