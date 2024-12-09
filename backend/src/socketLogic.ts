@@ -150,7 +150,7 @@ export const runSocketLogic = (io: any) => {
       // Check how many sockets are in the room
       const roomSockets = io.sockets.adapter.rooms.get(roomId);
 
-      if (roomSockets && roomSockets.size === 0) {
+      if (!roomSockets) {
         // If no sockets are left, remove the game from memory
         removeGameFromMemory(roomId);
       } else {
