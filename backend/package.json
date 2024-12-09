@@ -4,9 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "server": "nodemon src/index.ts",
+    "dev": "nodemon src/index.ts -L",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "serve": "node dist/index.js",
+    "docker": "docker-compose -f docker-compose.dev.yml up -d"
   },
   "keywords": [],
   "author": "",

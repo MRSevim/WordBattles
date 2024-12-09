@@ -1,0 +1,27 @@
+name: kelime-savaslari-backend-prod
+
+services:
+  mongo:
+    image: mongo:8.0.3
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - kelime-savaslari-backend
+  api:
+    build:
+      context: ./
+      target: production
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - kelime-savaslari-backend
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
+networks:
+  kelime-savaslari-backend:
+    driver: bridge

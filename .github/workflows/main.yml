@@ -22,6 +22,4 @@ jobs:
           script: |
             cd apps/kelimesavaslari-backend/backend 
             git pull origin main
-            npm i 
-            npm run build
-            pm2 restart kelimesavaslari-backend
+            docker compose up -d --build
