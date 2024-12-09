@@ -22,6 +22,7 @@ export const SidePanel = () => {
   const dispatch = useAppDispatch();
 
   const leave = () => {
+    console.log("leave function runs");
     dispatch(leaveGame());
     dispatch(toggleSidePanel());
     socket.emit("Leave Game", { state });
