@@ -8,6 +8,7 @@ interface ISocket extends Socket {
 
 export const socket: ISocket = io(import.meta.env.VITE_BACKEND_URL, {
   autoConnect: false,
+  transports: ["websocket", "polling", "flashsocket"],
 });
 
 socket.onAny((event, ...args) => {
