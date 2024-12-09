@@ -124,7 +124,6 @@ export const runSocketLogic = (io: any) => {
     });
 
     socket.on("Leave Game", ({ state }: { state: gameState }) => {
-      console.log("left game");
       const roomId = state.game.roomId;
       const [player1, player2] = state.game.players;
       const leavingPlayer = state.game.players.find(
