@@ -8,9 +8,17 @@ services:
       - mongo_data:/data/db
     networks:
       - kelime-savaslari-backend
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    env_file: ./.env
+  mongo-express:
+    restart: unless-stopped
+    image: mongo-express:1.0.2-20-alpine3.19
+    env_file: ./.env
+    ports:
+      - 127.0.0.1:${ME_EXPOSED_PORT}:8081 # Bind the port to localhost only
+    depends_on:
+      - mongo
+    networks:
+      - kelime-savaslari-backend
   api:
     build:
       context: ./
