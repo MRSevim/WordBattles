@@ -13,8 +13,7 @@ services:
     restart: unless-stopped
     image: mongo-express:1.0.2-20-alpine3.19
     env_file: ./.env
-    ports:
-      - 127.0.0.1:${ME_EXPOSED_PORT}:8081 # Bind the port to localhost only
+    ports: -${ME_EXPOSED_PORT}:8081 # Bind the port to localhost only  127.0.0.1:
     depends_on:
       - mongo
     networks:
