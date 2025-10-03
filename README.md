@@ -1,4 +1,4 @@
-These are kelime savaşlari codes. See website here: https://kelimesavaslari.vercel.app/
+These are WordBattles codes.
 
 To run the backend, go to backend file and run "npm run docker". You need docker running on your computer to run this command.
 
