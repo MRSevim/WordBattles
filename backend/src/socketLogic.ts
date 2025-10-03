@@ -2,15 +2,12 @@ import {
   applyPointDifference,
   areNewWordsCorrectlyPlaced,
   calculatePoints,
-  CheckedWords,
   clearTimerIfExist,
   completePlayerHand,
   findWordsOnBoard,
-  gameState,
   generateGameState,
   getGameFromMemory,
   pass,
-  Player,
   removeGameFromMemory,
   saveGameToMemory,
   setUpTimerInterval,
@@ -19,9 +16,14 @@ import {
   timerRanOutUnsuccessfully,
   updateBoard,
   validateWords,
+} from "./helpers/gameHelpers";
+import {
+  CheckedWords,
+  gameState,
+  Player,
   validTurkishLetters,
   WordWithCoordinates,
-} from "./helpers";
+} from "./types/gameTypes";
 
 export let waitingPlayer: any = null;
 

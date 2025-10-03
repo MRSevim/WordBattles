@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import { useSocketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
+import { getExpressAuth } from "./lib/authjs";
 const http = require("http");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const { instrument } = require("@socket.io/admin-ui");
@@ -32,9 +32,10 @@ app.use(cookieParser());
 useSocketAuthMiddleware(io);
 
 app.use("/api/user", userRoutes);
+app.use("/auth/{*any}", getExpressAuth());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Bu Kelime savaşları backendidir.");
+  res.send("This is WordBattles backend.");
 });
 
 runSocketLogic(io);
@@ -48,14 +49,7 @@ instrument(io, {
 app.use(notFound);
 app.use(errorHandler);
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    // listen for requests
-    server.listen(port, () => {
-      console.log("connected to db & listening on port", port);
-    });
-  })
-  .catch((error: string) => {
-    console.log(error);
-  });
+// listen for requests
+server.listen(port, () => {
+  console.log("connected to db & listening on port", port);
+});
