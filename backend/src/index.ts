@@ -1,21 +1,23 @@
 import express, { Request, Response } from "express";
 import { useSocketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
 import { getExpressAuth } from "./lib/authjs";
-const http = require("http");
-const dotenv = require("dotenv");
-const cookieParser = require("cookie-parser");
-const { Server } = require("socket.io");
-const { instrument } = require("@socket.io/admin-ui");
-const { runSocketLogic } = require("./socketLogic");
-const userRoutes = require("./routes/userRoutes");
-const { notFound, errorHandler } = require("./middlewares/errorMiddlewares");
+import http from "http";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
+import { runSocketLogic } from "./socketLogic";
+import userRoutes from "./routes/userRoutes";
+import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
+import { prisma } from "./lib/prisma";
+
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL],
+    origin: [process.env.FRONTEND_URL!],
   },
 });
 
@@ -42,7 +44,7 @@ runSocketLogic(io);
 
 instrument(io, {
   auth: false,
-  mode: process.env.ENV,
+  mode: process.env.ENV as "development" | "production",
 });
 
 //error middlewares
@@ -50,6 +52,13 @@ app.use(notFound);
 app.use(errorHandler);
 
 // listen for requests
-server.listen(port, () => {
-  console.log("connected to db & listening on port", port);
-});
+prisma
+  .$connect()
+  .then(() => {
+    server.listen(port, () => {
+      console.log("connected to db & listening on port", port);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to the database:", err);
+  });

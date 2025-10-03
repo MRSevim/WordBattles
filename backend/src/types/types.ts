@@ -1,3 +1,5 @@
+//Types for overall app data
+
 import { Request } from "express";
 
 export interface UserInterface {

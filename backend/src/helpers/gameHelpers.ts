@@ -1,3 +1,5 @@
+//Helper functions for the game logic
+
 import {
   Board,
   gameState,
@@ -10,8 +12,7 @@ import {
   letters,
   gameTime,
 } from "../types/gameTypes";
-
-const { v6: uuidv6 } = require("uuid");
+import { v6 as uuidv6 } from "uuid";
 
 type gameWithTimerInterval = {
   gameState: gameState;

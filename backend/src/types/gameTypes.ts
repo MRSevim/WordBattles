@@ -1,3 +1,5 @@
+//Types for game state management
+
 export interface InitialLetters {
   letter: string;
   point: number;
