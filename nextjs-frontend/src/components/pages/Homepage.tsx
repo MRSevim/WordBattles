@@ -4,9 +4,9 @@ import Container from "../Container";
 
 export const Homepage = () => {
   return (
-    <Container className="flex relative py-6">
+    <div className="flex relative py-6 mx-auto max-w-7xl">
       <GameBoard />
       <SidePanel />
-    </Container>
+    </div>
   );
 };

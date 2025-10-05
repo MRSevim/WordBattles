@@ -19,6 +19,7 @@ export const userSlice = createSlice({
       const user = action.payload;
       if (user) {
         sessionStorage.setItem("user", JSON.stringify(user));
+        //todo- add user to socket.auth
       } else {
         sessionStorage.removeItem("user");
         socket.auth = { ...socket.auth, user: null };

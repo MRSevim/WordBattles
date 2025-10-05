@@ -1,5 +1,5 @@
 "use client";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { BottomPanel } from "./BottomPanel";
 import { FindGame } from "./FindGame";
 import { RootState } from "@/lib/redux/store";
@@ -12,50 +12,24 @@ import { boardSizes, getPlayer } from "@/features/game/utils/helpers";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterComp, LetterSkeleton } from "./LetterComp";
 import useGameSockets from "../utils/hooks/useGameSockets";
+import { selectGameStatus } from "../lib/redux/selectors";
 
 export const GameBoard = () => {
   useGameSockets();
-  const gameStatus = useAppSelector((state: RootState) => state.game.status);
+  const gameStatus = useAppSelector(selectGameStatus);
   const [letterPoolOpen, setLetterPoolOpen] = useState<boolean>(false);
-  const [gameEnded, setGameEnded] = useState(false);
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      // Calculate the center position
-      const scrollX =
-        (scrollContainer.scrollWidth - scrollContainer.clientWidth) / 2;
-      const scrollY =
-        (scrollContainer.scrollHeight - scrollContainer.clientHeight) / 2;
-
-      // Set scroll to the calculated center
-      scrollContainer.scrollLeft = scrollX;
-      scrollContainer.scrollTop = scrollY;
-    }
-  }, []); // Empty dependency to run only once on mount
-
-  useEffect(() => {
-    if (gameStatus === "ended") {
-      setGameEnded(true);
-    } else setGameEnded(false);
-  }, [gameStatus]);
 
   return (
     <div className="w-full lg:w-2/3 flex flex-col items-center">
-      <div
-        className="w-full flex sm:justify-center overflow-auto"
-        ref={scrollContainerRef}
-      >
-        <div className="relative w-[600px] h-[604px]">
+      <div className="w-full flex justify-center overflow-auto">
+        <div className="relative ">
           <FindGameContainer />
           {letterPoolOpen && (
             <Modal z={40}>
               <LetterPool />
             </Modal>
           )}
-          {gameEnded && (
+          {gameStatus === "ended" && (
             <Modal>
               <GameEnded />
             </Modal>
@@ -239,7 +213,7 @@ const Cell = memo(({ row, col }: CellProps) => {
     <div
       ref={setNodeRef}
       className={
-        "-mt-1 -ml-1 w-11 h-11 bg-amber-300 border-4 border-black relative " +
+        "-mt-1 -ml-1 text-xs xxs:text-base h-6.5 w-6.5 xxs:w-8 xxs:h-8 xs:h-9 xs:w-9 sm:w-11 sm:h-11 bg-amber-300 border-4 border-black relative " +
         cls
       }
     >

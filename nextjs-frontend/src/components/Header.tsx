@@ -5,41 +5,35 @@ import { RootState } from "@/lib/redux/store";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { routeStrings } from "@/utils/routeStrings";
+import Container from "./Container";
 
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="bg-primary text-white">
-      <div className="container mx-auto p-4 py-3 flex justify-between">
+      <Container className="py-3 flex justify-between">
         <Link href={routeStrings.home} className="font-bold">
-          Kelime Savaşları
+          WordBattles
         </Link>
         <button
-          className="lg:hidden text-white"
+          className="md:hidden text-white cursor-pointer"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           ☰
         </button>
-        <div className="hidden lg:block">
+        <div className="hidden md:block">
           <Links />
         </div>
 
         <div
-          className={`fixed top-[48px] lg:hidden right-0 h-full w-full sm:w-1/2 bg-primary z-50 transition-transform duration-300 ${
+          className={`fixed top-[48px] md:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-transform duration-300 ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           } `}
         >
           <Links mobile={true} closeMenu={() => setMenuOpen(false)} />
         </div>
-        {/* Overlay to close menu */}
-        {menuOpen && (
-          <div
-            className="fixed top-[48px] right-0 h-full w-full bg-black opacity-50 z-40 lg:hidden"
-            onClick={() => setMenuOpen(false)}
-          />
-        )}
-      </div>
+      </Container>
     </header>
   );
 };
@@ -75,16 +69,29 @@ const Links = ({
   };
 
   const user = useAppSelector((state: RootState) => state.user);
+
+  const LinkClasses = `${
+    mobile ? "py-2" : ""
+  } hover:scale-105 transition-transform`;
+
   return (
     <nav
-      className={`gap-4 flex ${
-        mobile ? "flex-col h-full w-full items-center text-2xl" : ""
+      className={`flex ${
+        mobile ? "flex-col h-full w-full items-center text-2xl" : "gap-4"
       }`}
     >
-      <Link href={routeStrings.about} onClick={closeMenu}>
+      <Link
+        className={LinkClasses}
+        href={routeStrings.about}
+        onClick={closeMenu}
+      >
         Oyun Hakkında
       </Link>
-      <Link href={routeStrings.ladder} onClick={closeMenu}>
+      <Link
+        className={LinkClasses}
+        href={routeStrings.ladder}
+        onClick={closeMenu}
+      >
         Dereceli Puanları
       </Link>
     </nav>

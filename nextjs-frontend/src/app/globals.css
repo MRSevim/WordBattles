@@ -6,6 +6,8 @@
   --primary-foreground: #ffffff;
 }
 @theme inline {
+  --breakpoint-xxs: 28rem;
+  --breakpoint-xs: 35rem;
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 }

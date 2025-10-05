@@ -24,7 +24,6 @@ export interface Player {
   score: number;
   timer: number;
   passCount: number;
-  email?: string;
 }
 
 export interface Game {
