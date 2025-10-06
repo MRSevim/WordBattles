@@ -1,21 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
-import gameSlice from "./slices/gameSlice";
-import dragSlice from "./slices/dragSlice";
-import switchSlice from "./slices/switchSlice";
-import userSlice from "./slices/userSlice";
-import sidePanelToggleSlice from "./slices/sidePanelToggleSlice";
+import gameSlice from "@/features/game/lib/redux/slices/gameSlice";
+import dragSlice from "@/features/game/lib/redux/slices/dragSlice";
+import switchSlice from "@/features/game/lib/redux/slices/switchSlice";
+import sidePanelToggleSlice from "@/features/game/lib/redux/slices/sidePanelToggleSlice";
+import userSlice from "@/features/auth/lib/redux/slices/userSlice";
+import letterPoolToggleSlice from "@/features/game/lib/redux/slices/letterPoolToggleSlice";
 
 export const store = configureStore({
   reducer: {
     game: gameSlice,
     draggingValues: dragSlice,
     switch: switchSlice,
-    user: userSlice,
     sidePanelOpen: sidePanelToggleSlice,
+    user: userSlice,
+    letterPoolOpen: letterPoolToggleSlice,
   },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

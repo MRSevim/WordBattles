@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://kelimesavaslaribackend.flickarticles.com/api/$1"
-    },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
