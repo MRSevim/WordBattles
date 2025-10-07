@@ -25,11 +25,6 @@ const io = new Server(server, {
 
 const port = process.env.PORT || 3000;
 
-//logging middleware
-app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
-});
 // Configure CORS middleware
 app.use(
   cors({
@@ -38,6 +33,12 @@ app.use(
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   })
 );
+
+//logging middleware
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
+});
 
 //better-auth catchall route needs to be before express.json() middleware
 app.all("/api/auth/*splat", toNodeHandler(auth));

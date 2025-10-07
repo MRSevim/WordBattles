@@ -1,6 +1,6 @@
 "use server";
 
-import { fetchFromBackend } from "@/utils/helpers";
+import { fetchFromBackend } from "@/utils/fetcher";
 
 export const fetchLadder = async ({
   page,

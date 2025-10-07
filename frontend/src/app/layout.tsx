@@ -3,6 +3,8 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Wrapper from "@/utils/Wrapper";
+import { Header } from "@/components/Header/Header";
+import LoadInitialData from "@/utils/dataInitializer/LoadInitialData";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -23,6 +25,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.className} antialiased`}>
         <Wrapper>
+          <LoadInitialData />
+          <Header />
           {children}
           <Analytics />
         </Wrapper>

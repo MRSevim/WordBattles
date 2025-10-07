@@ -3,5 +3,5 @@ export const routeStrings = {
   about: "/about",
   ladder: "/ladder",
   signin: "/signin",
-  signup: "/signup",
+  profile: "/profile",
 };

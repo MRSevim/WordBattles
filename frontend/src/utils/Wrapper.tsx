@@ -12,7 +12,6 @@ import {
 import { Provider } from "react-redux";
 import { handleDragEnd } from "../features/game/utils/helpers";
 import { ToastContainer } from "react-toastify";
-import { Header } from "@/components/Header";
 import { LetterSkeleton } from "@/features/game/components/GameBoard/LetterComp";
 import { OngoingWarning } from "@/features/game/components/OngoingWarning";
 
@@ -45,7 +44,6 @@ function WrapperInner({ children }: { children: React.ReactNode }) {
   return (
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
       <ToastContainer />
-      <Header />
       <OngoingWarning />
 
       {children}

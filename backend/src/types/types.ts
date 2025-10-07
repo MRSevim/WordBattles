@@ -1,14 +1,8 @@
 //Types for overall app data
 
+import { User } from "better-auth/*";
 import { Request } from "express";
 
-export interface UserInterface {
-  _id: string;
-  username: string;
-  email: string;
-  image?: string;
-  rankedScore: number;
-}
 export interface ExtendedRequest extends Request {
-  user?: UserInterface;
+  user?: User;
 }

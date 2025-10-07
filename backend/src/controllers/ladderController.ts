@@ -1,11 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { ExtendedRequest } from "../types/types";
+import { RequestHandler } from "express";
 
-export const ladderController = async (
-  req: ExtendedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const ladderController: RequestHandler = async (req, res, next) => {
   /*    let user: UserInterface | undefined = undefined;
     const token = req.cookies.jwt;
 
@@ -41,4 +36,5 @@ export const ladderController = async (
           : undefined,
         totalUsers: allUsers.length,
       }); */
+  return res.json({ message: "Ladder endpoint is under construction." });
 };

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 
 export default function useIds() {
-  const [sessionId, setSessionId] = useState<string | null>(
-    localStorage.getItem("sessionId")
-  );
-  const [roomId, setRoomId] = useState<string | null>(
-    localStorage.getItem("roomId")
-  );
+  const [sessionId, setSessionId] = useState<string | null>();
+  /* localStorage.getItem("sessionId") */
+  const [roomId, setRoomId] = useState<string | null>();
+  /*     localStorage.getItem("roomId") */
 
   useEffect(() => {
     function checkLocalStorage() {

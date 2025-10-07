@@ -3,13 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { socket } from "@/lib/socket.io/socketio";
 import { User } from "@/features/auth/utils/types";
 
-const userFromStorage = sessionStorage.getItem("user");
-let parsed = null;
-if (userFromStorage) {
-  parsed = JSON.parse(userFromStorage);
-}
-
-const initialState: User = parsed;
+const initialState: User = null;
 
 export const userSlice = createSlice({
   name: "user",
@@ -18,10 +12,8 @@ export const userSlice = createSlice({
     setUser: (_state, action: PayloadAction<User>) => {
       const user = action.payload;
       if (user) {
-        sessionStorage.setItem("user", JSON.stringify(user));
         //todo- add user to socket.auth
       } else {
-        sessionStorage.removeItem("user");
         socket.auth = { ...socket.auth, user: null };
       }
       return user;

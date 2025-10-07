@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import useIds from "../utils/hooks/useIds";
 import Link from "next/link";
@@ -16,7 +17,7 @@ export const OngoingWarning = () => {
     if (pathname === "/") {
       setOpen(false);
     }
-  }, [location, roomId, sessionId]);
+  }, [pathname, roomId, sessionId]);
 
   if (open) {
     return (
