@@ -10,7 +10,7 @@ import { instrument } from "@socket.io/admin-ui";
 import { runSocketLogic } from "./socketLogic";
 import ladderRoutes from "./routes/ladderRoutes";
 import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
-import { prisma } from "./lib/prisma";
+import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
 
 dotenv.config();

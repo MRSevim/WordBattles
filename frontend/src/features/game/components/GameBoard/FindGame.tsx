@@ -48,8 +48,8 @@ export const FindGame = () => {
   useEffect(() => {
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
-      if (game.game) {
-        localStorage.setItem("roomId", game.game.roomId);
+      if (game) {
+        localStorage.setItem("roomId", game.roomId);
         window.dispatchEvent(new Event("storage"));
         socket.auth = { ...socket.auth, roomId };
       }

@@ -19,6 +19,7 @@ export interface Letter {
 export const HAND_SIZE = 7;
 
 export type LettersArray = Letter[];
+export type HistoryArray = History[];
 
 export type Board = (Letter | null)[][];
 
@@ -63,7 +64,7 @@ export interface gameState {
   passCount: number;
   emptyLetterIds: string[];
   board: Board;
-  history: History[];
+  history: HistoryArray;
 }
 
 export interface WordWithCoordinates {

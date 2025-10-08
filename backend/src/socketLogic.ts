@@ -2,21 +2,23 @@ import {
   applyPointDifference,
   areNewWordsCorrectlyPlaced,
   calculatePoints,
-  clearTimerIfExist,
   completePlayerHand,
   findWordsOnBoard,
   generateGameState,
-  getGameFromMemory,
   pass,
-  removeGameFromMemory,
-  saveGameToMemory,
-  setUpTimerInterval,
   switchLetters,
   switchTurns,
   timerRanOutUnsuccessfully,
   updateBoard,
   validateWords,
 } from "./helpers/gameHelpers";
+import {
+  getGameFromMemory,
+  saveGameToMemory,
+  removeGameFromMemory,
+} from "./helpers/memoryGameHelpers";
+import { clearTimerIfExist, setUpTimerInterval } from "./helpers/timerRelated";
+import { loadGameFromDB } from "./lib/prisma/dbCalls";
 import {
   CheckedWords,
   gameState,
@@ -28,7 +30,7 @@ import {
 export let waitingPlayer: any = null;
 
 export const runSocketLogic = (io: any) => {
-  io.on("connection", (socket: any) => {
+  io.on("connection", async (socket: any) => {
     console.log("a user connected");
 
     socket.emit("session", {
@@ -42,7 +44,15 @@ export const runSocketLogic = (io: any) => {
 
     if (socket.roomId) {
       const roomId = socket.roomId;
-      const game = getGameFromMemory(socket.roomId);
+      let game = getGameFromMemory(socket.roomId);
+
+      if (!game) {
+        const gameStateFromDB = await loadGameFromDB(roomId);
+        if (gameStateFromDB) {
+          saveGameToMemory(gameStateFromDB, io);
+          game = getGameFromMemory(roomId);
+        }
+      }
 
       if (game) {
         io.to(roomId).emit("Play Made", game.gameState);
@@ -138,10 +148,7 @@ export const runSocketLogic = (io: any) => {
       const game = getGameFromMemory(roomId);
       if (game) {
         clearTimerIfExist(roomId);
-        saveGameToMemory({
-          gameState: state,
-          timerInterval: game.timerInterval,
-        });
+        saveGameToMemory(state, io);
       }
 
       // Check how many sockets are in the room

@@ -14,6 +14,7 @@ model User {
   id            String    @id
   name          String
   email         String 
+  currentRoomId String?
   emailVerified Boolean   @default(false)
   rankedScore   Int       @default(3000)
   image         String?
@@ -69,4 +70,18 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model Game {
+  id              String   @id @default(cuid())
+  roomId          String   @unique
+  status          String
+  players         Json
+  undrawnLetters  Json
+  passCount       Int
+  emptyLetterIds  Json
+  board           Json
+  history         Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

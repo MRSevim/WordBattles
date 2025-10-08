@@ -12,39 +12,10 @@ import {
   letters,
   gameTime,
 } from "../types/gameTypes";
+import { clearTimerIfExist } from "./timerRelated";
 import { v6 as uuidv6 } from "uuid";
-
-type gameWithTimerInterval = {
-  gameState: gameState;
-  timerInterval: ReturnType<typeof setInterval>;
-};
-let ongoingGames: gameWithTimerInterval[] = [];
-
-export const saveGameToMemory = (game: gameWithTimerInterval) => {
-  const foundGameIndex = ongoingGames.findIndex(
-    (g) => g.gameState.roomId === game.gameState.roomId
-  );
-
-  if (foundGameIndex !== -1) {
-    // Replace the existing game with the new game
-    ongoingGames[foundGameIndex] = game;
-  } else {
-    // If not found, push the new game to the ongoingGames array
-    ongoingGames.push(game);
-  }
-};
-export const getGameFromMemory = (roomId: string) => {
-  const foundGame = ongoingGames.find(
-    (game) => game.gameState.roomId === roomId
-  );
-
-  return foundGame;
-};
-export const removeGameFromMemory = (roomId: string) => {
-  ongoingGames = ongoingGames.filter(
-    (game) => game.gameState.roomId !== roomId
-  );
-};
+import { getGameFromMemory, saveGameToMemory } from "./memoryGameHelpers";
+import { setUpTimerInterval } from "./timerRelated";
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
@@ -219,36 +190,8 @@ export const switchTurns = (state: gameState, io: any) => {
   }
   const game = getGameFromMemory(roomId);
   if (game) {
-    saveGameToMemory({ gameState: state, timerInterval: game.timerInterval });
+    saveGameToMemory(state, io);
   }
-};
-export const clearTimerIfExist = (roomId: string) => {
-  const game = getGameFromMemory(roomId);
-  const timer = game?.timerInterval;
-  if (timer) {
-    clearInterval(timer);
-  }
-};
-
-export const setUpTimerInterval = (state: gameState, io: any) => {
-  const { players, roomId } = state;
-  const currentPlayer = players.find((player) => player.turn) as Player;
-
-  clearTimerIfExist(roomId);
-  // Set a new interval for the opponent's timer
-  const timerInterval = setInterval(() => {
-    if (currentPlayer.timer > 0) {
-      currentPlayer.timer -= 1;
-      io.to(roomId).emit("Timer Runs", players);
-    } else {
-      clearTimerIfExist(roomId); // Clear the interval when timer runs out
-      timerRanOutUnsuccessfully(state);
-      currentPlayer.closedPassCount += 1;
-      switchTurns(state, io);
-    }
-  }, 1000);
-
-  saveGameToMemory({ gameState: state, timerInterval });
 };
 
 export const switchLetters = (
