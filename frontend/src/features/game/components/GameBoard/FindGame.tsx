@@ -1,8 +1,6 @@
-import { RootState } from "@/lib/redux/store";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { setGameStatus, setGameState } from "../../lib/redux/slices/gameSlice";
-import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { GameState } from "../../utils/types/gameTypes";
 import { Modal } from "@/components/Modal";
@@ -97,34 +95,11 @@ export const FindGame = () => {
         )}
         {!user && (
           <>
-            {/*          <GoogleLogin
-            onSuccess={async (credentialResponse) => {
-              const response = await fetch("/api/user/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  googleCredential: credentialResponse,
-                  }),
-                  });
-                  
-              const json = await response.json();
-              if (!response.ok) {
-                toast.error(json.message);
-                return;
-                }
-                socket.auth = { ...socket.auth, user: json };
-                dispatch(setUser(json));
-                findGame();
-                }}
-                onError={() => {
-              toast.error("Google girişi başarısız");
-              }}
-          /> */}
             <Link href={routeStrings.signin} className={buttonClasses}>
               Sign in to your account{" "}
             </Link>
-            veya
-            <FindButton onClick={findGame} text="Konuk olarak oyun bul" />
+            or
+            <FindButton onClick={findGame} text="Find Game as guest" />
           </>
         )}
       </div>

@@ -7,9 +7,10 @@ import { toast } from "react-toastify";
 import { toggleSidePanel } from "../../lib/redux/slices/sidePanelToggleSlice";
 import { RootState } from "@/lib/redux/store";
 import { leaveGame, makePlay, pass } from "../../lib/redux/slices/gameSlice";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { Player } from "../../utils/types/gameTypes";
 import { selectGame, selectSidePanelOpen } from "../../lib/redux/selectors";
+import "./SidePanel.css";
 
 export const SidePanel = () => {
   const game = useAppSelector(selectGame);
@@ -25,7 +26,7 @@ export const SidePanel = () => {
   return (
     <div
       className={
-        "w-full absolute h-[621px] sm:h-[604px] lg:h-[672px] lg:relative lg:w-1/3 bg-slate-400 z-30 " +
+        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-slate-400 z-30 " +
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
@@ -40,13 +41,13 @@ export const SidePanel = () => {
           <div className="flex justify-end">
             <div
               onClick={leave}
-              className="bg-orange-900 rounded-lg p-2 w-16 m-3 text-white cursor-pointer"
+              className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
             >
               <span>Ayrıl</span>
               <i className="bi bi-door-open"></i>
             </div>
           </div>
-          <div className="flex align-center justify-around mb-8">
+          <div className="flex align-center justify-around mb-2 xxs:mb-8">
             <PlayerContainer player={game?.players[0]} />
             <PlayerContainer player={game?.players[1]} />
           </div>
@@ -78,7 +79,7 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   return (
     <div
       className={
-        "flex flex-col items-center justify-center bg-white text-center border-solid border-2 rounded p-4 w-36	" +
+        "flex flex-col items-center justify-center bg-white text-center border-solid border-2 rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
         (player?.sessionId === socket.sessionId ? "border-amber-500" : "")
       }
     >
@@ -88,7 +89,7 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
         <div className="mt-2 w-20">
           <p
             className={
-              "text-lg font-semibold " +
+              "text-base xxs:text-lg font-semibold " +
               (player.timer > 30
                 ? "text-green-500"
                 : player.timer > 10

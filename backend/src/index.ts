@@ -21,6 +21,7 @@ const io = new Server(server, {
   cors: {
     origin: [process.env.FRONTEND_URL!],
   },
+  connectionStateRecovery: {},
 });
 
 const port = process.env.PORT || 3000;

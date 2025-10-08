@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { RootState } from "@/lib/redux/store";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { selectGameHistory, selectPlayers } from "../../lib/redux/selectors";
 
 export const GameHistory = () => {
@@ -15,8 +14,8 @@ export const GameHistory = () => {
   }>({ x: 0, y: 0 });
 
   return (
-    <div className="p-4 bg-gray-100 rounded-lg shadow-md m-3 max-h-96 overflow-auto">
-      <h2 className="text-xl font-bold text-center mb-6 text-gray-800">
+    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 max-h-96 overflow-auto">
+      <h2 className="text-base xxs:text-xl font-bold text-center mb-6 text-gray-800">
         Oyun Geçmişi
       </h2>
       {history

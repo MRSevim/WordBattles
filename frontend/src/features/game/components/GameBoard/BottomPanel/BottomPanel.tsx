@@ -12,7 +12,6 @@ import { toggleSwitching } from "../../../lib/redux/slices/switchSlice";
 import { useDroppable } from "@dnd-kit/core";
 import { toggleSidePanel } from "../../../lib/redux/slices/sidePanelToggleSlice";
 import { getPlayer } from "@/features/game/utils/helpers";
-import { LettersArray } from "../../../utils/types/gameTypes";
 import { toggleLetterPool } from "../../../lib/redux/slices/letterPoolToggleSlice";
 import { selectGameStatus } from "@/features/game/lib/redux/selectors";
 
@@ -116,7 +115,7 @@ export const BottomPanel = () => {
     };
 
     return (
-      <div className="p-4 bg-slate-500 w-full flex flex-col md:flex-row justify-between relative">
+      <div className="p-2 xxs:p-4 bg-gray w-full flex flex-col md:flex-row justify-between relative">
         <TimerIndicator />
         <div className="hidden md:block">
           <LeftPanel />
@@ -174,7 +173,7 @@ const Button = ({
       onMouseDown={onClick}
       title={title}
       className={
-        "bg-orange-900 rounded-lg w-9 h-9 text-center leading-9 text-white cursor-pointer " +
+        "bg-brown rounded-lg w-7 h-7 flex items-center justify-center xs:w-9 xs:h-9 text-center leading-9 text-white cursor-pointer " +
         classes
       }
     ></i>
@@ -214,18 +213,33 @@ const TimerIndicator = () => {
       const player = getPlayer(state);
       return player?.timer;
     }) ?? null;
+
   if (playerTimer && playerTurn) {
     return (
-      <div
-        className={
-          "w-4 h-4 rounded-full absolute right-0 top-0  me-0.5 mt-0.5 " +
-          (playerTimer > 30
-            ? "bg-green-500"
-            : playerTimer > 10
-            ? "bg-yellow-500"
-            : "bg-red-500")
-        }
-      ></div>
+      <div className="flex justify-center items-center gap-2 absolute right-0 top-0 me-0.5 mt-0.5">
+        <div
+          className={
+            "text-sm xxs:text-base " +
+            (playerTimer > 30
+              ? "text-green-700"
+              : playerTimer > 10
+              ? "text-yellow-700"
+              : "text-red-700")
+          }
+        >
+          {playerTimer}
+        </div>
+        <div
+          className={
+            "w-4 h-4 rounded-full " +
+            (playerTimer > 30
+              ? "bg-green-700"
+              : playerTimer > 10
+              ? "bg-yellow-700"
+              : "bg-red-700")
+          }
+        />
+      </div>
     );
   }
 };

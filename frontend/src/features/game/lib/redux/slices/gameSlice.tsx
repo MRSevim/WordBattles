@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { shuffle } from "@/features/game/utils/helpers";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { toast } from "react-toastify";
 import {
   Board,

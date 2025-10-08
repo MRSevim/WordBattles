@@ -54,8 +54,14 @@ export function Draggable({
   }, [active]);
 
   return (
-    <div ref={setNodeRef}>
-      <div style={style} onClick={onClick} {...listeners} {...attributes}>
+    <div className="w-full h-full" ref={setNodeRef}>
+      <div
+        className="w-full h-full"
+        style={style}
+        onClick={onClick}
+        {...listeners}
+        {...attributes}
+      >
         {children}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { DragEndEvent } from "@dnd-kit/core";
 import { AppDispatch, RootState } from "@/lib/redux/store";
 import { InitialLetters } from "@/features/game/utils/types/gameTypes";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { setDraggingValues } from "@/features/game/lib/redux/slices/dragSlice";
 import { moveLetter } from "@/features/game/lib/redux/slices/gameSlice";
 

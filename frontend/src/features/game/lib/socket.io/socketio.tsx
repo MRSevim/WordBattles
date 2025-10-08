@@ -6,7 +6,7 @@ interface ISocket extends Socket {
   user?: User;
 }
 
-export const socket: ISocket = io(process.env.BACKEND_URL, {
+export const socket: ISocket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
   autoConnect: false,
   transports: ["websocket", "polling", "flashsocket"],
 });

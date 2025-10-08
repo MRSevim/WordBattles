@@ -1,4 +1,4 @@
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { boardSizes, getPlayer } from "@/features/game/utils/helpers";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterComp, LetterSkeleton } from "./LetterComp";
@@ -6,6 +6,7 @@ import { RootState } from "@/lib/redux/store";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { memo, useEffect, useMemo, useState } from "react";
 import { selectPlayerTurnState } from "../../lib/redux/selectors";
+import "./Cells.css";
 
 export const Cells = () => {
   const [bingo, setBingo] = useState<boolean>(false);
@@ -160,7 +161,7 @@ const Cell = memo(({ row, col }: CellProps) => {
     <div
       ref={setNodeRef}
       className={
-        "-mt-1 -ml-1 text-xs xxs:text-base h-6.5 w-6.5 xxs:w-8 xxs:h-8 xs:h-9 xs:w-9 sm:w-11 sm:h-11 bg-amber-300 border-4 border-black relative " +
+        "-mt-1 -ml-1 text-xs xxs:text-base h-6.5 w-6.5 xxs:w-8 xxs:h-8 xs:h-9 xs:w-9 sm:w-11 sm:h-11 bg-amber-300 border-2 xxs:border-4 border-black relative " +
         cls
       }
     >

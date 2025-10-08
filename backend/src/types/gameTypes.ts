@@ -67,7 +67,7 @@ export interface WordWithCoordinates {
   end: [number, number];
 }
 
-export const gameTime = 60;
+export const gameTime = 100000;
 
 export const letters: InitialLetters[] = [
   { letter: "", point: 0, amount: 2 },

@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch } from "@/lib/redux/hooks";
-import { socket } from "@/lib/socket.io/socketio";
+import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useEffect } from "react";
 import { GameState, Player } from "../types/gameTypes";
 import {

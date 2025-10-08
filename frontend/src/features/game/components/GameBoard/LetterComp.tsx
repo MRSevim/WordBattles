@@ -91,7 +91,7 @@ export const LetterComp = ({
   const translateY = isSwitchingActive ? `translateY(-10px)` : undefined;
 
   return (
-    <div className="relative">
+    <div className="relative h-5.25 w-5.25 xxs:w-6 xxs:h-6 xs:h-7 xs:w-7 sm:w-9 sm:h-9">
       <Droppable
         id={id}
         draggingOver={draggingOver}
@@ -148,7 +148,9 @@ const Droppable = ({
   return (
     <div
       ref={setDroppableNodeRef}
-      className={`w-9 h-9 absolute ${isOver ? "bg-green-400 rounded-lg" : ""}`}
+      className={`w-full h-full absolute ${
+        isOver ? "bg-green-400 rounded-lg" : ""
+      }`}
     ></div>
   );
 };
@@ -172,11 +174,11 @@ export const LetterSkeleton = memo(
     return (
       <div
         className={
-          "w-9 h-9 bg-orange-900 rounded-lg relative z-10 " +
+          "w-full h-full bg-brown rounded-lg relative z-10 " +
           (letter.fixed ? "bg-stone-700" : "")
         }
       >
-        <div className="flex items-center justify-center h-full text-lg text-white">
+        <div className="flex items-center justify-center h-full text-xxs xxs:text-xs xs:text-base sm:text-lg text-white">
           {activeInput ? (
             <input
               type="text"
@@ -204,7 +206,7 @@ export const LetterSkeleton = memo(
             <div className="cursor-pointer">{letter.letter}</div>
           )}
         </div>
-        <div className="absolute bottom-0 right-0.5 text-xxs text-white">
+        <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
           {letter.point}
         </div>
       </div>
