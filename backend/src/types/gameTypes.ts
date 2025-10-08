@@ -49,16 +49,21 @@ export interface CheckedWords {
   invalidWords: string[];
 }
 
+interface History {
+  playerSessionId: string;
+  words: Word[];
+  playerPoints: number;
+  type?: string;
+}
 export interface gameState {
   status: string;
-  game: Game;
+  players: Player[];
+  undrawnLetterPool: LettersArray;
+  roomId: string;
+  passCount: number;
+  emptyLetterIds: string[];
   board: Board;
-  history: {
-    playerSessionId: string;
-    words: Word[];
-    playerPoints: number;
-    type?: string;
-  }[];
+  history: History[];
 }
 
 export interface WordWithCoordinates {

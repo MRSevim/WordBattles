@@ -53,7 +53,7 @@ export const validTurkishLetters: string[] = letters
 
 export const getPlayer = (state: RootState) => {
   const sessionId = socket.sessionId;
-  const player = state.game?.game?.players.find((player) => {
+  const player = state.game.players.find((player) => {
     return player.sessionId === sessionId;
   });
   return player;

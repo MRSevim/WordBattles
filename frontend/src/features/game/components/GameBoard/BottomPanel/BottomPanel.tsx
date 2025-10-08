@@ -115,7 +115,7 @@ export const BottomPanel = () => {
     };
 
     return (
-      <div className="p-2 xxs:p-4 bg-gray w-full flex flex-col md:flex-row justify-between relative">
+      <div className="p-2 xxs:p-4 md:pt-7 bg-gray w-full flex flex-col md:flex-row justify-between relative">
         <TimerIndicator />
         <div className="hidden md:block">
           <LeftPanel />

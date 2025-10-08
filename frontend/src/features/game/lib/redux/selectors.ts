@@ -2,10 +2,10 @@ import { RootState } from "@/lib/redux/store";
 import { getPlayer } from "../../utils/helpers";
 
 export const selectGameStatus = (state: RootState) => state.game.status;
-export const selectGame = (state: RootState) => state.game.game;
+export const selectGame = (state: RootState) => state.game;
 export const selectLetterPoolOpen = (state: RootState) => state.letterPoolOpen;
 export const selectUndrawnLetterPool = (state: RootState) =>
-  state.game.game?.undrawnLetterPool;
+  state.game.undrawnLetterPool;
 export const selectDraggingActive = (state: RootState) =>
   state.draggingValues.active;
 export const selectDraggingOver = (state: RootState) =>
@@ -18,10 +18,10 @@ export const selectIsSwitchingActive =
   };
 export const selectIsSwitching = (state: RootState) => state.switch.switching;
 export const selectEmptyLetterIds = (state: RootState) =>
-  state.game.game?.emptyLetterIds;
+  state.game.emptyLetterIds;
 export const selectSidePanelOpen = (state: RootState) => state.sidePanelOpen;
 
-export const selectPlayers = (state: RootState) => state.game.game?.players;
+export const selectPlayers = (state: RootState) => state.game.players;
 export const selectPlayerTurnState = (state: RootState) => {
   const player = getPlayer(state);
   return player?.turn;

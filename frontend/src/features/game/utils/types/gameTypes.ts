@@ -42,16 +42,22 @@ export type Board = (Letter | null)[][];
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 
+interface History {
+  playerSessionId: string;
+  words: Word[];
+  playerPoints: number;
+  type?: string;
+}
+
 export interface GameState {
   status: GameStatus;
-  game: Game | null;
+  players: Player[];
+  undrawnLetterPool: LettersArray;
+  roomId: string;
+  passCount: number;
+  emptyLetterIds: string[];
   board: Board;
-  history: {
-    playerSessionId: string;
-    words: Word[];
-    playerPoints: number;
-    type?: string;
-  }[];
+  history: History[];
 }
 export interface Coordinates {
   row: number;

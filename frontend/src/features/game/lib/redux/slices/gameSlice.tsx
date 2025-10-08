@@ -18,7 +18,11 @@ const initialBoard: Board = Array.from({ length: 15 }, () =>
 
 const initialState: GameState = {
   status: "idle",
-  game: null,
+  players: [],
+  undrawnLetterPool: [],
+  roomId: "",
+  passCount: 0,
+  emptyLetterIds: [],
   board: initialBoard,
   history: [],
 };
@@ -44,7 +48,7 @@ export const gameSlice = createSlice({
     },
     setTimer: (state, action: PayloadAction<Player[]>) => {
       action.payload.forEach((player) => {
-        const _player = state.game?.players.find((Player) => {
+        const _player = state.players.find((Player) => {
           return Player.sessionId === player.sessionId;
         });
         if (_player) {
@@ -54,7 +58,7 @@ export const gameSlice = createSlice({
     },
 
     moveLetter: (state, action: PayloadAction<MoveAction>) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
 
@@ -114,7 +118,7 @@ export const gameSlice = createSlice({
       }
     },
     shuffleHand: (state) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
       if (player) {
@@ -122,7 +126,7 @@ export const gameSlice = createSlice({
       }
     },
     _switch: (state, action: PayloadAction<number[]>) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
       const switchedIndices = action.payload;
@@ -138,10 +142,7 @@ export const gameSlice = createSlice({
           return;
         }
 
-        if (
-          state.game &&
-          switchedIndices.length > state.game.undrawnLetterPool.length
-        ) {
+        if (switchedIndices.length > state.undrawnLetterPool.length) {
           toast.error("Havuzda yeterli harf yok");
           return;
         }
@@ -156,7 +157,7 @@ export const gameSlice = createSlice({
       }
     },
     pass: (state) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
 
@@ -168,7 +169,7 @@ export const gameSlice = createSlice({
       });
     },
     returnEverythingToHand: (state) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
       if (player) {
@@ -185,7 +186,7 @@ export const gameSlice = createSlice({
       }
     },
     makePlay: (state, action) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
 
@@ -208,7 +209,7 @@ export const gameSlice = createSlice({
         };
       }>
     ) => {
-      const player = state.game?.players.find((player) => {
+      const player = state.players.find((player) => {
         return player.sessionId === socket.sessionId;
       });
 

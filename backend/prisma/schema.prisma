@@ -15,7 +15,7 @@ model User {
   name          String
   email         String 
   emailVerified Boolean   @default(false)
-  rankedScore Int  @default(3000)
+  rankedScore   Int       @default(3000)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt

@@ -37,7 +37,7 @@ export const runSocketLogic = (io: any) => {
 
     const startGame = (socket: any, _socket: any) => {
       const gameState = generateGameState(socket, _socket);
-      io.to(gameState.game.roomId).emit("Start Game", gameState);
+      io.to(gameState.roomId).emit("Start Game", gameState);
     };
 
     if (socket.roomId) {
@@ -80,9 +80,7 @@ export const runSocketLogic = (io: any) => {
         switchedIndices: number[];
         state: gameState;
       }) => {
-        const {
-          game: { players, roomId, undrawnLetterPool },
-        } = state;
+        const { players, roomId, undrawnLetterPool } = state;
         const currentPlayer = players.find((player) => player.turn) as Player;
         if (state.status === "ended") return;
         // Append to history
@@ -96,7 +94,7 @@ export const runSocketLogic = (io: any) => {
         switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
 
         currentPlayer.closedPassCount = 0;
-        state.game.passCount = 0;
+        state.passCount = 0;
 
         switchTurns(state, io);
 
@@ -105,10 +103,7 @@ export const runSocketLogic = (io: any) => {
     );
 
     socket.on("Pass", ({ state }: { state: gameState }) => {
-      const {
-        board,
-        game: { players, roomId },
-      } = state;
+      const { board, players, roomId } = state;
       const currentPlayer = players.find((player) => player.turn) as Player;
       pass(currentPlayer.hand, board);
       if (state.status === "ended") return;
@@ -119,16 +114,16 @@ export const runSocketLogic = (io: any) => {
         playerPoints: 0,
       });
 
-      state.game.passCount += 1;
+      state.passCount += 1;
       currentPlayer.closedPassCount = 0;
       switchTurns(state, io);
       io.to(roomId).emit("Play Made", state);
     });
 
     socket.on("Leave Game", ({ state }: { state: gameState }) => {
-      const roomId = state.game.roomId;
-      const [player1, player2] = state.game.players;
-      const leavingPlayer = state.game.players.find(
+      const roomId = state.roomId;
+      const [player1, player2] = state.players;
+      const leavingPlayer = state.players.find(
         (player) => player.sessionId === socket.sessionId
       ) as Player;
       if (
@@ -162,13 +157,13 @@ export const runSocketLogic = (io: any) => {
     });
 
     const handleUnsuccessfull = (state: gameState) => {
-      const currentPlayer = state.game.players.find(
+      const currentPlayer = state.players.find(
         (player) => player.turn
       ) as Player;
       currentPlayer.closedPassCount = 0;
       timerRanOutUnsuccessfully(state);
       switchTurns(state, io);
-      io.to(state.game.roomId).emit("Play Made", state);
+      io.to(state.roomId).emit("Play Made", state);
     };
 
     socket.on(
@@ -180,10 +175,7 @@ export const runSocketLogic = (io: any) => {
         state: gameState;
         timerRanOut: boolean;
       }) => {
-        const {
-          board,
-          game: { players, roomId, undrawnLetterPool },
-        } = state;
+        const { board, players, roomId, undrawnLetterPool } = state;
 
         const id = socket.id;
         // Find the player who made the play
@@ -291,7 +283,7 @@ export const runSocketLogic = (io: any) => {
 
         // Switch turns
         currentPlayer.closedPassCount = 0;
-        state.game.passCount = 0;
+        state.passCount = 0;
         completePlayerHand(currentPlayer, undrawnLetterPool);
         switchTurns(state, io);
 

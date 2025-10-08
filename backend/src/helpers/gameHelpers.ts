@@ -22,7 +22,7 @@ let ongoingGames: gameWithTimerInterval[] = [];
 
 export const saveGameToMemory = (game: gameWithTimerInterval) => {
   const foundGameIndex = ongoingGames.findIndex(
-    (g) => g.gameState.game.roomId === game.gameState.game.roomId
+    (g) => g.gameState.roomId === game.gameState.roomId
   );
 
   if (foundGameIndex !== -1) {
@@ -35,21 +35,21 @@ export const saveGameToMemory = (game: gameWithTimerInterval) => {
 };
 export const getGameFromMemory = (roomId: string) => {
   const foundGame = ongoingGames.find(
-    (game) => game.gameState.game.roomId === roomId
+    (game) => game.gameState.roomId === roomId
   );
 
   return foundGame;
 };
 export const removeGameFromMemory = (roomId: string) => {
   ongoingGames = ongoingGames.filter(
-    (game) => game.gameState.game.roomId !== roomId
+    (game) => game.gameState.roomId !== roomId
   );
 };
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
   let gameEnded = false;
-  const { players, undrawnLetterPool } = state.game;
+  const { players, undrawnLetterPool } = state;
 
   // Check if the letter pool is empty and one player has no tiles left
   const isLetterPoolEmpty = undrawnLetterPool.length === 0;
@@ -68,7 +68,7 @@ const checkGameEnd = (state: gameState) => {
   const playerPassedEnough = players.some(
     (player) => player.closedPassCount >= 2
   );
-  const playersPassedEnough = state.game.passCount >= 4;
+  const playersPassedEnough = state.passCount >= 4;
   if (playerPassedEnough || playersPassedEnough) {
     // Logic for ending the game due to passes
     state.status = "ended";
@@ -83,15 +83,15 @@ const checkGameEnd = (state: gameState) => {
 };
 
 export const applyPointDifference = async (state: gameState) => {
-  const everyoneIsUser = state.game.players.every((player) => player.email);
-  const disconnectedPlayer = state.game.players.find(
+  const everyoneIsUser = state.players.every((player) => player.email);
+  const disconnectedPlayer = state.players.find(
     (player) => player.closedPassCount >= 2
   );
 
   if (everyoneIsUser) {
     const { User } = require("./models/userModel");
     // Calculate score difference
-    const [player1, player2] = state.game.players;
+    const [player1, player2] = state.players;
     const scoreDifference = Math.abs(player1.score - player2.score);
     // Determine the winner and loser
     let winner, loser;
@@ -188,13 +188,11 @@ export const generateGameState = (socket: any, _socket: any) => {
   console.log("Game found", roomId);
   const state: gameState = {
     status: "found",
-    game: {
-      players,
-      undrawnLetterPool: playersStatus.undrawnletterPool,
-      roomId,
-      passCount: 0,
-      emptyLetterIds,
-    },
+    players,
+    undrawnLetterPool: playersStatus.undrawnletterPool,
+    roomId,
+    passCount: 0,
+    emptyLetterIds,
     board: initialBoard,
     history: [],
   };
@@ -202,9 +200,7 @@ export const generateGameState = (socket: any, _socket: any) => {
 };
 
 export const switchTurns = (state: gameState, io: any) => {
-  const {
-    game: { players, roomId },
-  } = state;
+  const { players, roomId } = state;
 
   const currentPlayer = players.find((player) => player.turn) as Player;
   const opponentPlayer = players.find((player) => !player.turn) as Player;
@@ -235,9 +231,7 @@ export const clearTimerIfExist = (roomId: string) => {
 };
 
 export const setUpTimerInterval = (state: gameState, io: any) => {
-  const {
-    game: { players, roomId },
-  } = state;
+  const { players, roomId } = state;
   const currentPlayer = players.find((player) => player.turn) as Player;
 
   clearTimerIfExist(roomId);
@@ -302,12 +296,10 @@ export const pass = (playerHand: LettersArray, board: Board) => {
 };
 
 export const timerRanOutUnsuccessfully = (state: gameState) => {
-  const currentPlayer = state.game.players.find(
-    (player) => player.turn
-  ) as Player;
+  const currentPlayer = state.players.find((player) => player.turn) as Player;
 
   pass(currentPlayer.hand, state.board);
-  state.game.passCount += 1;
+  state.passCount += 1;
   state.history.push({
     playerSessionId: currentPlayer.sessionId,
     words: [],
