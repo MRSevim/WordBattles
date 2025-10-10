@@ -17,7 +17,8 @@ export type SocketNext = (err?: ExtendedError) => void;
 
 declare module "socket.io" {
   interface Socket {
-    user: User;
+    user?: User;
     roomId?: string;
+    sessionId: string;
   }
 }

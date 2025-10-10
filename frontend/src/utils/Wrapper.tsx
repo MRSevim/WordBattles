@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RootState, store } from "@/lib/redux/store";
+import { AppStore, makeStore, RootState } from "@/lib/redux/store";
 import {
   DndContext,
   DragOverlay,
@@ -14,10 +14,16 @@ import { handleDragEnd } from "../features/game/utils/helpers";
 import { ToastContainer } from "react-toastify";
 import { LetterSkeleton } from "@/features/game/components/GameBoard/LetterComp";
 import { OngoingWarning } from "@/features/game/components/OngoingWarning";
+import { useRef } from "react";
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const storeRef = useRef<AppStore>(undefined);
+  if (!storeRef.current) {
+    // Create the store instance the first time this renders
+    storeRef.current = makeStore();
+  }
   return (
-    <Provider store={store}>
+    <Provider store={storeRef.current}>
       <WrapperInner>{children}</WrapperInner>
     </Provider>
   );

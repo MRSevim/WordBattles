@@ -3,20 +3,17 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { User } from "@/features/auth/utils/types";
 
-const initialState: User = null;
+type InitialState = { value: User };
+const initialState: InitialState = { value: null };
 
 export const userSlice = createSlice({
   name: "user",
-  initialState: initialState as User,
+  initialState: initialState as InitialState,
   reducers: {
     setUser: (_state, action: PayloadAction<User>) => {
       const user = action.payload;
-      if (user) {
-        //todo- add user to socket.auth
-      } else {
-        socket.auth = { ...socket.auth, user: null };
-      }
-      return user;
+
+      _state.value = user;
     },
   },
 });

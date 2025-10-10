@@ -6,17 +6,21 @@ import sidePanelToggleSlice from "@/features/game/lib/redux/slices/sidePanelTogg
 import userSlice from "@/features/auth/lib/redux/slices/userSlice";
 import letterPoolToggleSlice from "@/features/game/lib/redux/slices/letterPoolToggleSlice";
 
-export const store = configureStore({
-  reducer: {
-    game: gameSlice,
-    draggingValues: dragSlice,
-    switch: switchSlice,
-    sidePanelOpen: sidePanelToggleSlice,
-    user: userSlice,
-    letterPoolOpen: letterPoolToggleSlice,
-  },
-});
+export const makeStore = () => {
+  return configureStore({
+    reducer: {
+      game: gameSlice,
+      draggingValues: dragSlice,
+      switch: switchSlice,
+      sidePanelOpen: sidePanelToggleSlice,
+      user: userSlice,
+      letterPoolOpen: letterPoolToggleSlice,
+    },
+  });
+};
 
+// Infer the type of makeStore
+export type AppStore = ReturnType<typeof makeStore>;
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];

@@ -3,11 +3,12 @@ import { User } from "@/features/auth/utils/types";
 
 interface ISocket extends Socket {
   user?: User;
+  sessionId?: string;
 }
 
 export const socket: ISocket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
   autoConnect: false,
-  transports: ["websocket", "polling", "flashsocket"],
+  transports: ["websocket"],
 });
 
 socket.onAny((event, ...args) => {

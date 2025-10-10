@@ -9,6 +9,7 @@ import {
   setTimer,
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
+import { setCookie } from "../serverActions";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
@@ -35,6 +36,17 @@ export default function useGameSockets() {
       toast.error(error);
     });
 
+    socket.on("Start Game", (game: GameState) => {
+      dispatch(setGameState(game));
+      socket.emit("Timer", game);
+    });
+
+    socket.on("session", async ({ sessionId }) => {
+      socket.sessionId = sessionId;
+      // store it in a cookie
+      await setCookie("sessionId", sessionId, 7);
+    });
+
     // Cleanup listeners on unmount
     return () => {
       socket.off("connect_error");
@@ -42,6 +54,8 @@ export default function useGameSockets() {
       socket.off("No Game In Memory");
       socket.off("Timer Runs");
       socket.off("Game Error");
+      socket.off("Start Game");
+      socket.off("session");
     };
   }, [dispatch]);
 }

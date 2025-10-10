@@ -16,7 +16,7 @@ import { clearTimerIfExist } from "./timerRelated";
 import { v6 as uuidv6 } from "uuid";
 import { getGameFromMemory, saveGameToMemory } from "./memoryGameHelpers";
 import { setUpTimerInterval } from "./timerRelated";
-import { Io, Socket } from "../types/types";
+import { Socket } from "../types/types";
 import { generateGuestId } from "./misc";
 
 // Function to check game end conditions
@@ -136,7 +136,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       username: socket.user?.name || generateGuestId(),
       email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
-      id: socket.user.id,
+      id: socket.sessionId,
       score: 0,
       closedPassCount: 0,
       timer: gameTime,
@@ -146,7 +146,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       username: _socket.user?.name || generateGuestId(),
       email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
-      id: _socket.id,
+      id: _socket.sessionId,
       score: 0,
       closedPassCount: 0,
       timer: gameTime,

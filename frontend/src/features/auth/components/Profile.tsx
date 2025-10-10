@@ -26,7 +26,7 @@ const Profile = () => {
     if (!error) {
       setOpen(false);
       setConfirmation("");
-      dispatch(setUser(null));
+      dispatch(setUser(undefined));
       router.push(routeStrings.home);
     }
     return error;

@@ -9,6 +9,7 @@ export const selectUndrawnLetterPool = (state: RootState) =>
   state.game.undrawnLetterPool;
 export const selectEmptyLetterIds = (state: RootState) =>
   state.game.emptyLetterIds;
+export const selectGameRoomId = (state: RootState) => state.game.roomId;
 
 //dragging over
 export const selectDraggingActive = (state: RootState) =>

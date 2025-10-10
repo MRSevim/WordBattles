@@ -1,16 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { setGameStatus, setGameState } from "../../lib/redux/slices/gameSlice";
-import { useEffect } from "react";
-import { GameState } from "../../utils/types/gameTypes";
+import { setGameStatus } from "../../lib/redux/slices/gameSlice";
 import { Modal } from "@/components/Modal";
-import { selectGameStatus } from "../../lib/redux/selectors";
+import { selectGameRoomId, selectGameStatus } from "../../lib/redux/selectors";
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
-import {
-  selectUserName,
-  selectUserRoomId,
-} from "@/features/auth/lib/redux/selectors";
+import { selectUser } from "@/features/auth/lib/redux/selectors";
+import Spinner from "@/components/Spinner";
 
 const buttonClasses =
   "bg-slate-700 focus:ring-4 font-medium rounded-lg px-5 py-2.5";
@@ -18,8 +14,8 @@ const buttonClasses =
 export const GameFinder = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
-  const roomId = useAppSelector(selectUserRoomId);
-  const name = useAppSelector(selectUserName);
+  const roomId = useAppSelector(selectGameRoomId);
+  const user = useAppSelector(selectUser);
 
   const findGame = () => {
     socket.connect();
@@ -30,18 +26,6 @@ export const GameFinder = () => {
     socket.disconnect();
     dispatch(setGameStatus("idle"));
   };
-
-  useEffect(() => {
-    socket.on("Start Game", (game: GameState) => {
-      dispatch(setGameState(game));
-      socket.emit("Timer", game);
-    });
-
-    // Cleanup listeners on unmount
-    return () => {
-      socket.off("Start Game");
-    };
-  }, [dispatch]);
 
   if (gameStatus === "playing") return null;
 
@@ -68,10 +52,14 @@ export const GameFinder = () => {
   return (
     <Modal>
       <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center	items-center">
-        {name && (
-          <FindButton onClick={findGame} text={name + " olarak oyun bul"} />
+        {user === null && <Spinner className="w-12 h-12" variant="white" />}
+        {user && (
+          <FindButton
+            onClick={findGame}
+            text={user.name + " olarak oyun bul"}
+          />
         )}
-        {!name && (
+        {user === undefined && (
           <>
             <Link href={routeStrings.signin} className={buttonClasses}>
               Sign in to your account{" "}

@@ -1,7 +1,7 @@
 import { gameState, Player } from "../types/gameTypes";
 import { Io } from "../types/types";
 import { pass, switchTurns } from "./gameHelpers";
-import { getGameFromMemory, saveGameToMemory } from "./memoryGameHelpers";
+import { getGameFromMemory } from "./memoryGameHelpers";
 
 export const timerRanOutUnsuccessfully = (state: gameState) => {
   const currentPlayer = state.players.find((player) => player.turn) as Player;

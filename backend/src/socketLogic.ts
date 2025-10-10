@@ -34,6 +34,10 @@ export const runSocketLogic = (io: Io) => {
   io.on("connection", async (socket: Socket) => {
     console.log("a user connected");
 
+    socket.emit("session", {
+      sessionId: socket.sessionId,
+    });
+
     const startGame = (socket: Socket, _socket: Socket) => {
       const gameState = generateGameState(socket, _socket);
       io.to(gameState.roomId).emit("Start Game", gameState);
@@ -129,7 +133,7 @@ export const runSocketLogic = (io: Io) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
-        (player) => player.id === socket.user.id
+        (player) => player.id === socket.sessionId
       ) as Player;
       if (
         state.status !== "ended" &&

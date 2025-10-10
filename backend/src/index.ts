@@ -4,7 +4,6 @@ import { auth } from "./lib/auth";
 import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
 import { runSocketLogic } from "./socketLogic";
@@ -12,6 +11,7 @@ import ladderRoutes from "./routes/ladderRoutes";
 import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
 import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
+import { parseCookies } from "./middlewares/parseCookieMiddleware";
 
 dotenv.config();
 
@@ -21,6 +21,7 @@ const io = new Server(server, {
   cors: {
     origin: [process.env.FRONTEND_URL!],
   },
+  /*   cookie: true, */
   connectionStateRecovery: {},
 });
 
@@ -46,7 +47,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 // middlewares
 app.use(express.json());
-app.use(cookieParser());
+app.use(parseCookies);
 
 useSocketAuthMiddleware(io);
 

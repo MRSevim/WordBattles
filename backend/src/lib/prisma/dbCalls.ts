@@ -71,3 +71,21 @@ export async function removeGameFromDB(roomId: string) {
     console.error(`❌ [removeGameFromDB] Failed for room ${roomId}:`, error);
   }
 }
+
+export async function updateCurrentRoomIdInDB(
+  userId: string | undefined,
+  roomId: string
+) {
+  if (!userId) return;
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { currentRoomId: roomId },
+    });
+  } catch (error) {
+    console.error(
+      `❌ [updateCurrentRoomIdInDB] Failed for user ${userId}:`,
+      error
+    );
+  }
+}

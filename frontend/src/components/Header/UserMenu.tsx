@@ -33,7 +33,7 @@ const UserMenu = ({ onClick }: { onClick?: () => void }) => {
     if (error) {
       return toast.error(error);
     }
-    dispatch(setUser(null));
+    dispatch(setUser(undefined));
     router.push(routeStrings.home);
   };
 
@@ -53,14 +53,19 @@ const UserMenu = ({ onClick }: { onClick?: () => void }) => {
 
   return (
     <>
-      {!user ? (
+      {user === undefined ? (
         <Link
-          className="flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 my-2 md:my-0 hover:bg-gray-100 hover:text-black transition-colors"
+          className="h-[46px] flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 my-2 md:my-0 hover:bg-gray-100 hover:text-black transition-colors"
           href={routeStrings.signin}
           onClick={onClick}
         >
           Sign In
         </Link>
+      ) : user === null ? (
+        <div
+          className="flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 my-2 md:my-0 animate-pulse bg-gray-200"
+          style={{ width: "150px", height: "46px" }}
+        ></div>
       ) : (
         <div className="relative" ref={dropdownRef}>
           <button
