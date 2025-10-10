@@ -2,6 +2,7 @@
 import { selectUser } from "@/features/auth/lib/redux/selectors";
 import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
 import { logout } from "@/features/auth/utils/apiCallsClient";
+import { selectGameStatus } from "@/features/game/lib/redux/selectors";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
@@ -13,18 +14,17 @@ const UserMenu = ({ onClick }: { onClick?: () => void }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const user = useAppSelector(selectUser);
+  const gameStatus = useAppSelector(selectGameStatus);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   const handleLogout = async () => {
-    const sessionId = localStorage.getItem("sessionId");
-    const roomId = localStorage.getItem("roomId");
-    if (roomId) {
+    if (gameStatus === "playing") {
       toast.error("Oyun içindeyken çıkış yapamazsınız");
       return;
     }
 
-    if (sessionId) {
+    if (gameStatus === "looking") {
       toast.error("Oyun ararken çıkış yapamazsınız");
       return;
     }
