@@ -1,4 +1,5 @@
 import { gameState } from "../types/gameTypes";
+import { Io } from "../types/types";
 import { setUpTimerInterval } from "./timerRelated";
 
 type gameWithTimerInterval = {
@@ -7,7 +8,7 @@ type gameWithTimerInterval = {
 };
 let ongoingGames: gameWithTimerInterval[] = [];
 
-export const saveGameToMemory = (game: gameState, io: any) => {
+export const saveGameToMemory = (game: gameState, io: Io) => {
   const foundGameIndex = ongoingGames.findIndex(
     (g) => g.gameState.roomId === game.roomId
   );

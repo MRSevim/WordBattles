@@ -20,9 +20,7 @@ export const GameHistory = () => {
       </h2>
       {history
         .map((item, i) => {
-          const player = players?.find(
-            (player) => player.sessionId === item.playerSessionId
-          );
+          const player = players?.find((player) => player.id === item.playerId);
           const wordsLength = item.words.length;
           const points = item.playerPoints;
           const words = item.words.map((word, i) => (
@@ -66,9 +64,7 @@ export const GameHistory = () => {
                   <div
                     className={
                       "inline " +
-                      (player?.sessionId === socket.sessionId
-                        ? "font-bold"
-                        : "")
+                      (player?.id === socket.user?.id ? "font-bold" : "")
                     }
                   >
                     {capitalizeFirstLetter(player.username)}

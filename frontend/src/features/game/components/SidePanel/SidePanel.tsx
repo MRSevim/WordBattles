@@ -5,16 +5,21 @@ import { useEffect } from "react";
 import { toggleSwitching } from "../../lib/redux/slices/switchSlice";
 import { toast } from "react-toastify";
 import { toggleSidePanel } from "../../lib/redux/slices/sidePanelToggleSlice";
-import { RootState } from "@/lib/redux/store";
 import { leaveGame, makePlay, pass } from "../../lib/redux/slices/gameSlice";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { Player } from "../../utils/types/gameTypes";
-import { selectGame, selectSidePanelOpen } from "../../lib/redux/selectors";
+import {
+  selectGameStatus,
+  selectIsSwitching,
+  selectPlayers,
+  selectSidePanelOpen,
+} from "../../lib/redux/selectors";
 import "./SidePanel.css";
 
 export const SidePanel = () => {
-  const game = useAppSelector(selectGame);
+  const gameOngoing = useAppSelector(selectGameStatus) === "playing";
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
+  const players = useAppSelector(selectPlayers);
   const dispatch = useAppDispatch();
 
   const leave = () => {
@@ -30,13 +35,13 @@ export const SidePanel = () => {
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
-      {!game && (
+      {!gameOngoing && (
         <div id="loader">
           <div id="box"></div>
           <div id="hill"></div>
         </div>
       )}
-      {game && (
+      {gameOngoing && (
         <>
           <div className="flex justify-end">
             <div
@@ -48,8 +53,8 @@ export const SidePanel = () => {
             </div>
           </div>
           <div className="flex align-center justify-around mb-2 xxs:mb-8">
-            <PlayerContainer player={game?.players[0]} />
-            <PlayerContainer player={game?.players[1]} />
+            <PlayerContainer player={players[0]} />
+            <PlayerContainer player={players[1]} />
           </div>
           <GameHistory />
         </>
@@ -62,12 +67,12 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   const playerTurn = player?.turn;
   const timer = player?.timer;
   const dispatch = useAppDispatch();
-  const switching = useAppSelector(
-    (state: RootState) => state.switch.switching
-  );
+  const switching = useAppSelector(selectIsSwitching);
+
+  const socketUserId = socket.user?.id;
 
   useEffect(() => {
-    if (playerTurn && timer === 0 && player?.sessionId === socket.sessionId) {
+    if (playerTurn && timer === 0 && player?.id === socketUserId) {
       if (switching) {
         dispatch(pass());
         toast.error("Zamanında değişmediğiniz için sıranız pas geçildi");
@@ -80,7 +85,7 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
     <div
       className={
         "flex flex-col items-center justify-center bg-white text-center border-solid border-2 rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
-        (player?.sessionId === socket.sessionId ? "border-amber-500" : "")
+        (player?.id === socketUserId ? "border-amber-500" : "")
       }
     >
       <p>{player?.username}</p>

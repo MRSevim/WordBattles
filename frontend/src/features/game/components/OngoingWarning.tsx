@@ -1,23 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
-import useIds from "../utils/hooks/useIds";
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
 import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { selectGameStatus } from "../lib/redux/selectors";
 
 export const OngoingWarning = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { roomId, sessionId } = useIds();
+  const gameStatus = useAppSelector(selectGameStatus);
+  const gameIsOngoing = gameStatus === "playing" || gameStatus === "ended";
+  const lookingForGame = gameStatus === "looking";
 
   useEffect(() => {
-    if (pathname !== "/" && (roomId || sessionId)) {
+    if (pathname !== "/" && (gameIsOngoing || lookingForGame)) {
       setOpen(true);
     }
     if (pathname === "/") {
       setOpen(false);
     }
-  }, [pathname, roomId, sessionId]);
+  }, [pathname, gameIsOngoing, lookingForGame]);
 
   if (open) {
     return (
@@ -28,9 +31,9 @@ export const OngoingWarning = () => {
         >
           X
         </span>
-        {roomId && "Şu anda devam eden oyununuz bulunmaktadır"}
-        {!roomId &&
-          sessionId &&
+        {gameIsOngoing && "Şu anda devam eden oyununuz bulunmaktadır"}
+        {!gameIsOngoing &&
+          lookingForGame &&
           "Şu anda devam eden oyun arayışınız bulunmaktadır"}
         <div className="flex items-center justify-center">
           <Link className="underline" href={routeStrings.home}>

@@ -1,9 +1,14 @@
 import { DragEndEvent } from "@dnd-kit/core";
-import { AppDispatch, RootState } from "@/lib/redux/store";
-import { InitialLetters } from "@/features/game/utils/types/gameTypes";
+import { AppDispatch } from "@/lib/redux/store";
+import {
+  GameState,
+  InitialLetters,
+  Player,
+} from "@/features/game/utils/types/gameTypes";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { setDraggingValues } from "@/features/game/lib/redux/slices/dragSlice";
 import { moveLetter } from "@/features/game/lib/redux/slices/gameSlice";
+import { toast } from "react-toastify";
 
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -51,12 +56,16 @@ export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
 
-export const getPlayer = (state: RootState) => {
-  const sessionId = socket.sessionId;
-  const player = state.game.players.find((player) => {
-    return player.sessionId === sessionId;
-  });
-  return player;
+export const checkPlayersTurn = (player: Player | undefined) => {
+  if (player) {
+    if (!player.turn) {
+      toast.error("Sizin sıranız değil");
+      return false;
+    } else return true;
+  }
+};
+export const findSocketPlayer = (state: GameState) => {
+  return state.players.find((player) => player.id === socket.user?.id);
 };
 
 export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {

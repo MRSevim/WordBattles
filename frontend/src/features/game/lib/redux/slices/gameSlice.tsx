@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { shuffle } from "@/features/game/utils/helpers";
+import {
+  checkPlayersTurn,
+  findSocketPlayer,
+  shuffle,
+} from "@/features/game/utils/helpers";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { toast } from "react-toastify";
 import {
@@ -35,11 +39,7 @@ export const gameSlice = createSlice({
       state.status = action.payload;
     },
     leaveGame: (state) => {
-      localStorage.removeItem("roomId");
-      localStorage.removeItem("sessionId");
-      window.dispatchEvent(new Event("storage"));
-      socket.auth = { ...socket.auth, sessionId: undefined, roomId: undefined };
-      socket.sessionId = undefined;
+      state.status = "idle";
       socket.emit("Leave Game", { state });
       return initialState;
     },
@@ -49,7 +49,7 @@ export const gameSlice = createSlice({
     setTimer: (state, action: PayloadAction<Player[]>) => {
       action.payload.forEach((player) => {
         const _player = state.players.find((Player) => {
-          return Player.sessionId === player.sessionId;
+          return Player.id === player.id;
         });
         if (_player) {
           _player.timer = player.timer;
@@ -58,9 +58,7 @@ export const gameSlice = createSlice({
     },
 
     moveLetter: (state, action: PayloadAction<MoveAction>) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
 
       if (player) {
         const { activeData, targetData } = action.payload;
@@ -118,17 +116,13 @@ export const gameSlice = createSlice({
       }
     },
     shuffleHand: (state) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
       if (player) {
         shuffle(player.hand);
       }
     },
     _switch: (state, action: PayloadAction<number[]>) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
       const switchedIndices = action.payload;
 
       if (player) {
@@ -157,9 +151,7 @@ export const gameSlice = createSlice({
       }
     },
     pass: (state) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
 
       const playersTurn = checkPlayersTurn(player);
       if (!playersTurn) return;
@@ -169,9 +161,7 @@ export const gameSlice = createSlice({
       });
     },
     returnEverythingToHand: (state) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
       if (player) {
         let board = state.board;
         for (let row = 0; row < board.length; row++) {
@@ -186,9 +176,7 @@ export const gameSlice = createSlice({
       }
     },
     makePlay: (state, action) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
 
       const playersTurn = checkPlayersTurn(player);
       if (!playersTurn) return;
@@ -209,9 +197,7 @@ export const gameSlice = createSlice({
         };
       }>
     ) => {
-      const player = state.players.find((player) => {
-        return player.sessionId === socket.sessionId;
-      });
+      const player = findSocketPlayer(state);
 
       const { newLetter } = action.payload;
 
@@ -230,19 +216,6 @@ export const gameSlice = createSlice({
       }
     },
   },
-});
-
-const checkPlayersTurn = (player: Player | undefined) => {
-  if (player) {
-    if (!player.turn) {
-      toast.error("Sizin sıranız değil");
-      return false;
-    } else return true;
-  }
-};
-
-socket.on("Game Error", ({ error }: { error: string }) => {
-  toast.error(error);
 });
 
 // Action creators are generated for each case reducer function

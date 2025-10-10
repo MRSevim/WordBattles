@@ -11,25 +11,22 @@ import {
 import { toggleSwitching } from "../../../lib/redux/slices/switchSlice";
 import { useDroppable } from "@dnd-kit/core";
 import { toggleSidePanel } from "../../../lib/redux/slices/sidePanelToggleSlice";
-import { getPlayer } from "@/features/game/utils/helpers";
+import { findSocketPlayer } from "@/features/game/utils/helpers";
 import { toggleLetterPool } from "../../../lib/redux/slices/letterPoolToggleSlice";
-import { selectGameStatus } from "@/features/game/lib/redux/selectors";
+import {
+  selectGameStatus,
+  selectIsSwitching,
+  selectPlayerHand,
+  selectSwitchValues,
+} from "@/features/game/lib/redux/selectors";
 
 export const BottomPanel = () => {
   const dispatch = useAppDispatch();
-
   const gameStatus = useAppSelector(selectGameStatus);
-  const playerHand = useAppSelector((state: RootState) => {
-    const player = getPlayer(state);
-    return player?.hand;
-  });
+  const playerHand = useAppSelector(selectPlayerHand);
 
-  const switching = useAppSelector(
-    (state: RootState) => state.switch.switching
-  );
-  const switchValues = useAppSelector(
-    (state: RootState) => state.switch.switchValues
-  );
+  const switching = useAppSelector(selectIsSwitching);
+  const switchValues = useAppSelector(selectSwitchValues);
 
   if (playerHand) {
     const LeftPanel = () => {
@@ -205,12 +202,12 @@ const LastLetterSpot = ({
 const TimerIndicator = () => {
   const playerTurn: boolean | null =
     useAppSelector((state: RootState) => {
-      const player = getPlayer(state);
+      const player = findSocketPlayer(state.game);
       return player?.turn;
     }) ?? null;
   const playerTimer: number | null =
     useAppSelector((state: RootState) => {
-      const player = getPlayer(state);
+      const player = findSocketPlayer(state.game);
       return player?.timer;
     }) ?? null;
 

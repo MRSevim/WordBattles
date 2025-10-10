@@ -16,6 +16,8 @@ import { clearTimerIfExist } from "./timerRelated";
 import { v6 as uuidv6 } from "uuid";
 import { getGameFromMemory, saveGameToMemory } from "./memoryGameHelpers";
 import { setUpTimerInterval } from "./timerRelated";
+import { Io, Socket } from "../types/types";
+import { generateGuestId } from "./misc";
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
@@ -123,7 +125,7 @@ export const generateEmptyLetterIdsArray = (
     .map((letter) => letter.id); // Return an array of their `id`s
 };
 
-export const generateGameState = (socket: any, _socket: any) => {
+export const generateGameState = (socket: Socket, _socket: Socket) => {
   const letterPool = generateLetterPool(letters);
   const emptyLetterIds = generateEmptyLetterIdsArray(letterPool);
   const playersStatus = generateGame(letterPool);
@@ -131,20 +133,20 @@ export const generateGameState = (socket: any, _socket: any) => {
   const players = [
     {
       hand: playersStatus.players[0],
-      username: socket.user?.username || "konuk",
+      username: socket.user?.name || generateGuestId(),
       email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
-      sessionId: socket.sessionId,
+      id: socket.user.id,
       score: 0,
       closedPassCount: 0,
       timer: gameTime,
     },
     {
       hand: playersStatus.players[1],
-      username: _socket.user?.username || "konuk",
+      username: _socket.user?.name || generateGuestId(),
       email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
-      sessionId: _socket.sessionId,
+      id: _socket.id,
       score: 0,
       closedPassCount: 0,
       timer: gameTime,
@@ -244,7 +246,7 @@ export const timerRanOutUnsuccessfully = (state: gameState) => {
   pass(currentPlayer.hand, state.board);
   state.passCount += 1;
   state.history.push({
-    playerSessionId: currentPlayer.sessionId,
+    playerId: currentPlayer.id,
     words: [],
     playerPoints: 0,
   });

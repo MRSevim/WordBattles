@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { useSocketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
 import { auth } from "./lib/auth";
 import http from "http";
@@ -52,7 +52,7 @@ useSocketAuthMiddleware(io);
 
 app.use("/api/ladder", ladderRoutes);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req, res) => {
   res.send("This is WordBattles backend.");
 });
 

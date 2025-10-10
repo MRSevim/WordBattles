@@ -31,12 +31,17 @@ export default function useGameSockets() {
       dispatch(setTimer(players));
     });
 
+    socket.on("Game Error", ({ error }: { error: string }) => {
+      toast.error(error);
+    });
+
     // Cleanup listeners on unmount
     return () => {
       socket.off("connect_error");
       socket.off("Play Made");
       socket.off("No Game In Memory");
       socket.off("Timer Runs");
+      socket.off("Game Error");
     };
   }, [dispatch]);
 }

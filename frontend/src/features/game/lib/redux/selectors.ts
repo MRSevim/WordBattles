@@ -1,15 +1,22 @@
 import { RootState } from "@/lib/redux/store";
-import { getPlayer } from "../../utils/helpers";
+import { findSocketPlayer } from "../../utils/helpers";
 
+//game
 export const selectGameStatus = (state: RootState) => state.game.status;
 export const selectGame = (state: RootState) => state.game;
-export const selectLetterPoolOpen = (state: RootState) => state.letterPoolOpen;
+export const selectGameHistory = (state: RootState) => state.game.history;
 export const selectUndrawnLetterPool = (state: RootState) =>
   state.game.undrawnLetterPool;
+export const selectEmptyLetterIds = (state: RootState) =>
+  state.game.emptyLetterIds;
+
+//dragging over
 export const selectDraggingActive = (state: RootState) =>
   state.draggingValues.active;
 export const selectDraggingOver = (state: RootState) =>
   state.draggingValues.over;
+
+//switching
 export const selectIsSwitchingActive =
   (state: RootState) => (i: number | undefined) => {
     return (
@@ -17,18 +24,20 @@ export const selectIsSwitchingActive =
     );
   };
 export const selectIsSwitching = (state: RootState) => state.switch.switching;
-export const selectEmptyLetterIds = (state: RootState) =>
-  state.game.emptyLetterIds;
-export const selectSidePanelOpen = (state: RootState) => state.sidePanelOpen;
+export const selectSwitchValues = (state: RootState) =>
+  state.switch.switchValues;
 
+//players
 export const selectPlayers = (state: RootState) => state.game.players;
 export const selectPlayerTurnState = (state: RootState) => {
-  const player = getPlayer(state);
+  const player = findSocketPlayer(state.game);
   return player?.turn;
 };
 export const selectPlayerHand = (state: RootState) => {
-  const player = getPlayer(state);
+  const player = findSocketPlayer(state.game);
   return player?.hand;
 };
 
-export const selectGameHistory = (state: RootState) => state.game.history;
+//other
+export const selectSidePanelOpen = (state: RootState) => state.sidePanelOpen;
+export const selectLetterPoolOpen = (state: RootState) => state.letterPoolOpen;

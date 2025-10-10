@@ -1,7 +1,7 @@
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "../lib/auth";
 import { RequestHandler } from "express";
-import { ExtendedRequest } from "../types/types";
+import { ExtendedRequest, User } from "../types/types";
 
 export const protect: RequestHandler = async (
   req: ExtendedRequest,
@@ -12,11 +12,12 @@ export const protect: RequestHandler = async (
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
+    const user = session?.user as User | undefined;
 
-    if (!session?.user) throw new Error("Not authorized, Sign in please");
+    if (!user) throw new Error("Not authorized, Sign in please");
 
-    // ✅ Attach the session or user to req if you need it later
-    req.user = session.user;
+    // ✅ Attach the user to req if you need it later
+    req.user = user;
 
     next();
   } catch (error) {

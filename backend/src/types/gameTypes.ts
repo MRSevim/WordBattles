@@ -27,7 +27,7 @@ export interface Player {
   hand: LettersArray;
   username: string;
   turn: boolean;
-  sessionId: string;
+  id: string;
   score: number;
   timer: number;
   closedPassCount: number;
@@ -51,7 +51,7 @@ export interface CheckedWords {
 }
 
 interface History {
-  playerSessionId: string;
+  playerId: string;
   words: Word[];
   playerPoints: number;
   type?: string;

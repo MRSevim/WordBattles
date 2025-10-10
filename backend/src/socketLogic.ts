@@ -26,18 +26,15 @@ import {
   validTurkishLetters,
   WordWithCoordinates,
 } from "./types/gameTypes";
+import { Io, Socket } from "./types/types";
 
-export let waitingPlayer: any = null;
+export let waitingPlayers: Socket[] = [];
 
-export const runSocketLogic = (io: any) => {
-  io.on("connection", async (socket: any) => {
+export const runSocketLogic = (io: Io) => {
+  io.on("connection", async (socket: Socket) => {
     console.log("a user connected");
 
-    socket.emit("session", {
-      sessionId: socket.sessionId,
-    });
-
-    const startGame = (socket: any, _socket: any) => {
+    const startGame = (socket: Socket, _socket: Socket) => {
       const gameState = generateGameState(socket, _socket);
       io.to(gameState.roomId).emit("Start Game", gameState);
     };
@@ -62,19 +59,17 @@ export const runSocketLogic = (io: any) => {
         socket.leave(roomId);
       }
     } else {
-      if (waitingPlayer) {
-        startGame(socket, waitingPlayer);
-        waitingPlayer = null;
+      if (waitingPlayers.length > 0) {
+        startGame(socket, waitingPlayers[0]);
+        waitingPlayers.shift();
       } else {
-        waitingPlayer = socket;
+        waitingPlayers.push(socket);
       }
     }
     socket.on("disconnect", () => {
       console.log("A user disconnected");
 
-      if (waitingPlayer === socket) {
-        waitingPlayer = null;
-      }
+      waitingPlayers = waitingPlayers.filter((s) => s !== socket);
     });
 
     socket.on("Timer", (state: gameState) => {
@@ -95,7 +90,7 @@ export const runSocketLogic = (io: any) => {
         if (state.status === "ended") return;
         // Append to history
         state.history.push({
-          playerSessionId: currentPlayer.sessionId,
+          playerId: currentPlayer.id,
           words: [],
           type: "switch",
           playerPoints: 0,
@@ -119,7 +114,7 @@ export const runSocketLogic = (io: any) => {
       if (state.status === "ended") return;
       // Append to history
       state.history.push({
-        playerSessionId: currentPlayer.sessionId,
+        playerId: currentPlayer.id,
         words: [],
         playerPoints: 0,
       });
@@ -134,7 +129,7 @@ export const runSocketLogic = (io: any) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
-        (player) => player.sessionId === socket.sessionId
+        (player) => player.id === socket.user.id
       ) as Player;
       if (
         state.status !== "ended" &&
@@ -283,7 +278,7 @@ export const runSocketLogic = (io: any) => {
 
         // Append to history
         state.history.push({
-          playerSessionId: currentPlayer.sessionId,
+          playerId: currentPlayer.id,
           words: checkedWords.validWords,
           playerPoints,
         });

@@ -20,7 +20,7 @@ export interface Player {
   hand: LettersArray;
   username: string;
   turn: boolean;
-  sessionId: string;
+  id: string;
   score: number;
   timer: number;
   passCount: number;
@@ -43,7 +43,7 @@ export type Board = (Letter | null)[][];
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 
 interface History {
-  playerSessionId: string;
+  playerId: string;
   words: Word[];
   playerPoints: number;
   type?: string;

@@ -1,5 +1,5 @@
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { boardSizes, getPlayer } from "@/features/game/utils/helpers";
+import { boardSizes } from "@/features/game/utils/helpers";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterComp, LetterSkeleton } from "./LetterComp";
 import { RootState } from "@/lib/redux/store";
@@ -10,16 +10,26 @@ import "./Cells.css";
 
 export const Cells = () => {
   const [bingo, setBingo] = useState<boolean>(false);
-  const [playerTurn, setPlayerTurn] = useState<boolean>(false);
-  socket.on("Bingo", () => {
-    setBingo(true);
-  });
-
-  const playerTurnState = useAppSelector(selectPlayerTurnState);
+  const playerTurn = useAppSelector(selectPlayerTurnState);
+  const [playerTurnPopup, setPlayerTurnPopup] = useState<boolean>(false);
 
   useEffect(() => {
-    if (playerTurnState) setPlayerTurn(playerTurnState);
-  }, [playerTurnState]);
+    socket.on("Bingo", () => {
+      setBingo(true);
+    });
+    return () => {
+      socket.off("Bingo");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (playerTurn) {
+      setPlayerTurnPopup(true);
+      setTimeout(() => {
+        setPlayerTurnPopup(false);
+      }, 3000);
+    }
+  }, [playerTurn]);
 
   useEffect(() => {
     if (bingo) {
@@ -27,12 +37,7 @@ export const Cells = () => {
         setBingo(false);
       }, 3000);
     }
-    if (playerTurn) {
-      setTimeout(() => {
-        setPlayerTurn(false);
-      }, 3000);
-    }
-  }, [bingo, playerTurn]);
+  }, [bingo]);
 
   return (
     <div className="mt-1 ml-1 relative">
@@ -42,12 +47,12 @@ export const Cells = () => {
             className="absolute end-0 top-0 me-1 -mt-1 cursor-pointer"
             onClick={() => {
               setBingo(false);
-              setPlayerTurn(false);
+              setPlayerTurnPopup(false);
             }}
           >
             x
           </div>
-          {playerTurn && "Sıranız geldi"}
+          {playerTurnPopup && "Sıranız geldi"}
           {bingo && "Bingo yaptınız. Tebrikler."}
         </div>
       )}

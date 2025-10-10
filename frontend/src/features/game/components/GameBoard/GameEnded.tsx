@@ -1,5 +1,4 @@
 import { useAppSelector } from "@/lib/redux/hooks";
-import { RootState } from "@/lib/redux/store";
 import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
 import { Player } from "../../utils/types/gameTypes";
 import { Modal } from "@/components/Modal";
@@ -21,6 +20,7 @@ export const GameEnded = () => {
       winner = null;
     }
   });
+
   if (gameStatus === "ended") {
     return (
       <Modal>

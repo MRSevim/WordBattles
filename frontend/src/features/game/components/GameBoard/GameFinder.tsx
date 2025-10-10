@@ -4,18 +4,22 @@ import { setGameStatus, setGameState } from "../../lib/redux/slices/gameSlice";
 import { useEffect } from "react";
 import { GameState } from "../../utils/types/gameTypes";
 import { Modal } from "@/components/Modal";
-import { selectGame, selectGameStatus } from "../../lib/redux/selectors";
+import { selectGameStatus } from "../../lib/redux/selectors";
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
+import {
+  selectUserName,
+  selectUserRoomId,
+} from "@/features/auth/lib/redux/selectors";
 
 const buttonClasses =
   "bg-slate-700 focus:ring-4 font-medium rounded-lg px-5 py-2.5";
 
-export const FindGame = () => {
-  const game = useAppSelector(selectGame);
+export const GameFinder = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
-  const user = undefined;
+  const roomId = useAppSelector(selectUserRoomId);
+  const name = useAppSelector(selectUserName);
 
   const findGame = () => {
     socket.connect();
@@ -25,34 +29,11 @@ export const FindGame = () => {
   const stopLooking = () => {
     socket.disconnect();
     dispatch(setGameStatus("idle"));
-    localStorage.removeItem("sessionId");
-    window.dispatchEvent(new Event("storage"));
   };
-
-  const sessionId = localStorage.getItem("sessionId");
-  const userFromStorage = sessionStorage.getItem("user");
-  let parsed = null;
-  if (userFromStorage) {
-    parsed = JSON.parse(userFromStorage);
-  }
-  const roomId = localStorage.getItem("roomId");
-
-  useEffect(() => {
-    if (sessionId) {
-      socket.auth = { user: parsed, sessionId, roomId };
-      socket.sessionId = sessionId;
-      findGame();
-    }
-  }, [sessionId, socket]);
 
   useEffect(() => {
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
-      if (game) {
-        localStorage.setItem("roomId", game.roomId);
-        window.dispatchEvent(new Event("storage"));
-        socket.auth = { ...socket.auth, roomId };
-      }
       socket.emit("Timer", game);
     });
 
@@ -62,7 +43,7 @@ export const FindGame = () => {
     };
   }, [dispatch]);
 
-  if (game) return null;
+  if (gameStatus === "playing") return null;
 
   if (roomId) {
     return (
@@ -87,13 +68,10 @@ export const FindGame = () => {
   return (
     <Modal>
       <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center	items-center">
-        {user && (
-          <FindButton
-            onClick={findGame}
-            text={/* user.username */ "" + " olarak oyun bul"}
-          />
+        {name && (
+          <FindButton onClick={findGame} text={name + " olarak oyun bul"} />
         )}
-        {!user && (
+        {!name && (
           <>
             <Link href={routeStrings.signin} className={buttonClasses}>
               Sign in to your account{" "}

@@ -1,6 +1,6 @@
 "use client";
 import { BottomPanel } from "./BottomPanel/BottomPanel";
-import { FindGame } from "./FindGame";
+import { GameFinder } from "./GameFinder";
 import { LetterPool } from "./LetterPool";
 import { GameEnded } from "./GameEnded";
 import useGameSockets from "../../utils/hooks/useGameSockets";
@@ -15,7 +15,7 @@ export const GameBoard = () => {
       <div className="w-full relative lg:flex">
         <div className="w-full lg:w-2/3 flex justify-center overflow-auto">
           <div className="relative">
-            <FindGame />
+            <GameFinder />
             <LetterPool />
             <GameEnded />
             <Cells />

@@ -14,6 +14,10 @@ export const auth = betterAuth({
     },
   },
   user: {
+    additionalFields: {
+      currentRoomId: { type: "string", optional: true, input: false },
+      rankedScore: { type: "number", optional: false, input: false },
+    },
     deleteUser: {
       enabled: true,
     },
