@@ -9,7 +9,7 @@ import {
   setTimer,
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
-import { setCookie } from "../serverActions";
+import { removeCookie, setCookie } from "../serverActions";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
@@ -26,6 +26,8 @@ export default function useGameSockets() {
     socket.on("No Game In Memory", () => {
       dispatch(leaveGame());
       socket.disconnect();
+      removeCookie("sessionId");
+      removeCookie("roomId");
     });
 
     socket.on("Timer Runs", (players: Player[]) => {
@@ -39,12 +41,13 @@ export default function useGameSockets() {
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
       socket.emit("Timer", game);
+      setCookie("roomId", game.roomId, 7);
     });
 
-    socket.on("session", async ({ sessionId }) => {
+    socket.on("session", ({ sessionId }) => {
       socket.sessionId = sessionId;
       // store it in a cookie
-      await setCookie("sessionId", sessionId, 7);
+      setCookie("sessionId", sessionId, 7);
     });
 
     // Cleanup listeners on unmount

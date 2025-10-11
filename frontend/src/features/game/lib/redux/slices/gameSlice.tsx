@@ -39,12 +39,14 @@ export const gameSlice = createSlice({
       state.status = action.payload;
     },
     leaveGame: (state) => {
-      state.status = "idle";
       socket.emit("Leave Game", { state });
       return initialState;
     },
     setGameState: (_state, action: PayloadAction<GameState>) => {
       return action.payload;
+    },
+    setGameRoomId: (state, action: PayloadAction<string>) => {
+      state.roomId = action.payload;
     },
     setTimer: (state, action: PayloadAction<Player[]>) => {
       action.payload.forEach((player) => {
@@ -231,6 +233,7 @@ export const {
   setTimer,
   returnEverythingToHand,
   leaveGame,
+  setGameRoomId,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

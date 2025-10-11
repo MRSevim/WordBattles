@@ -1,8 +1,6 @@
 import { io, Socket } from "socket.io-client";
-import { User } from "@/features/auth/utils/types";
 
 interface ISocket extends Socket {
-  user?: User;
   sessionId?: string;
 }
 

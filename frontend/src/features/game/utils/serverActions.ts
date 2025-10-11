@@ -13,3 +13,7 @@ export const setCookie = async (name: string, value: string, days: number) => {
     secure: process.env.NODE_ENV === "production",
   });
 };
+
+export const removeCookie = async (name: string) => {
+  (await cookies()).delete(name);
+};

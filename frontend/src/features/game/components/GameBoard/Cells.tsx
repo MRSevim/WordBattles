@@ -41,7 +41,7 @@ export const Cells = () => {
 
   return (
     <div className="mt-1 ml-1 relative">
-      {(bingo || playerTurn) && (
+      {(bingo || playerTurnPopup) && (
         <div className="absolute text-white p-4 z-20 top-1/3 left-1/2 bg-lime-900 rounded-lg -translate-x-1/2">
           <div
             className="absolute end-0 top-0 me-1 -mt-1 cursor-pointer"

@@ -65,7 +65,7 @@ export const checkPlayersTurn = (player: Player | undefined) => {
   }
 };
 export const findSocketPlayer = (state: GameState) => {
-  return state.players.find((player) => player.id === socket.user?.id);
+  return state.players.find((player) => player.id === socket.sessionId);
 };
 
 export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {

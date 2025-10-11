@@ -64,7 +64,7 @@ export const GameHistory = () => {
                   <div
                     className={
                       "inline " +
-                      (player?.id === socket.user?.id ? "font-bold" : "")
+                      (player?.id === socket.sessionId ? "font-bold" : "")
                     }
                   >
                     {capitalizeFirstLetter(player.username)}

@@ -8,6 +8,7 @@ import { routeStrings } from "@/utils/routeStrings";
 import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
 import useIsClient from "@/utils/hooks/isClient";
+import { removeCookie } from "../../utils/serverActions";
 
 const buttonClasses =
   "bg-slate-700 focus:ring-4 font-medium rounded-lg px-5 py-2.5";
@@ -27,11 +28,12 @@ export const GameFinder = () => {
   const stopLooking = () => {
     socket.disconnect();
     dispatch(setGameStatus("idle"));
+    removeCookie("sessionId");
   };
 
   if (gameStatus === "playing") return null;
 
-  if (roomId) {
+  if (roomId && isClient) {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
@@ -40,7 +42,7 @@ export const GameFinder = () => {
       </Modal>
     );
   }
-  if (gameStatus === "looking") {
+  if (gameStatus === "looking" && isClient) {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">

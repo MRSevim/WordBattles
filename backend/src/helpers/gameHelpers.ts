@@ -160,7 +160,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
   socket.join(roomId);
   console.log("Game found", roomId);
   const state: gameState = {
-    status: "found",
+    status: "playing",
     players,
     undrawnLetterPool: playersStatus.undrawnletterPool,
     roomId,

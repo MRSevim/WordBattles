@@ -56,8 +56,11 @@ interface History {
   playerPoints: number;
   type?: string;
 }
+
+type GameStatus = "looking" | "idle" | "playing" | "ended";
+
 export interface gameState {
-  status: string;
+  status: GameStatus;
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;

@@ -3,10 +3,12 @@ import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
 import { Player } from "../../utils/types/gameTypes";
 import { Modal } from "@/components/Modal";
 import { selectGameStatus, selectPlayers } from "../../lib/redux/selectors";
+import useIsClient from "@/utils/hooks/isClient";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
   const players = useAppSelector(selectPlayers) || [];
+  const isClient = useIsClient();
 
   // Determine the winner and handle ties
   let winner: Player | null = null;
@@ -21,7 +23,7 @@ export const GameEnded = () => {
     }
   });
 
-  if (gameStatus === "ended") {
+  if (gameStatus === "ended" && isClient) {
     return (
       <Modal>
         <div className="p-5 bg-slate-700 w-96 text-white">

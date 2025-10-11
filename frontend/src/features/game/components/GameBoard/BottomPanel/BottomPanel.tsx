@@ -19,16 +19,17 @@ import {
   selectPlayerHand,
   selectSwitchValues,
 } from "@/features/game/lib/redux/selectors";
+import useIsClient from "@/utils/hooks/isClient";
 
 export const BottomPanel = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
   const playerHand = useAppSelector(selectPlayerHand);
-
+  const isClient = useIsClient();
   const switching = useAppSelector(selectIsSwitching);
   const switchValues = useAppSelector(selectSwitchValues);
 
-  if (playerHand) {
+  if (playerHand && isClient) {
     const LeftPanel = () => {
       return (
         <div className="flex gap-2">

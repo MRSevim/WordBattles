@@ -9,23 +9,28 @@ import { leaveGame, makePlay, pass } from "../../lib/redux/slices/gameSlice";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { Player } from "../../utils/types/gameTypes";
 import {
-  selectGameStatus,
+  selectGameRoomId,
   selectIsSwitching,
   selectPlayers,
   selectSidePanelOpen,
 } from "../../lib/redux/selectors";
 import "./SidePanel.css";
+import useIsClient from "@/utils/hooks/isClient";
+import { removeCookie } from "../../utils/serverActions";
 
 export const SidePanel = () => {
-  const gameOngoing = useAppSelector(selectGameStatus) === "playing";
+  const gameOngoing = useAppSelector(selectGameRoomId);
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
   const players = useAppSelector(selectPlayers);
   const dispatch = useAppDispatch();
+  const isClient = useIsClient();
 
   const leave = () => {
     dispatch(leaveGame());
     dispatch(toggleSidePanel());
     socket.disconnect();
+    removeCookie("sessionId");
+    removeCookie("roomId");
   };
 
   return (
@@ -35,7 +40,7 @@ export const SidePanel = () => {
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
-      {!gameOngoing && (
+      {(!gameOngoing || !isClient) && (
         <div id="loader">
           <div id="box"></div>
           <div id="hill"></div>
@@ -69,7 +74,7 @@ const PlayerContainer = ({ player }: { player: Player | undefined }) => {
   const dispatch = useAppDispatch();
   const switching = useAppSelector(selectIsSwitching);
 
-  const socketUserId = socket.user?.id;
+  const socketUserId = socket.sessionId;
 
   useEffect(() => {
     if (playerTurn && timer === 0 && player?.id === socketUserId) {
