@@ -57,7 +57,7 @@ interface History {
   type?: string;
 }
 
-type GameStatus = "looking" | "idle" | "playing" | "ended";
+export type GameStatus = "looking" | "idle" | "playing" | "ended";
 
 export interface gameState {
   status: GameStatus;

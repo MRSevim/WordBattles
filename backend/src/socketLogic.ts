@@ -4,25 +4,32 @@ import {
   calculatePoints,
   completePlayerHand,
   findWordsOnBoard,
-  generateGameState,
-  pass,
+  returnToHand,
   switchLetters,
   switchTurns,
-  timerRanOutUnsuccessfully,
   updateBoard,
   validateWords,
 } from "./helpers/gameHelpers";
+import { generateGameState } from "./helpers/generators";
 import {
   getGameFromMemory,
   saveGameToMemory,
   removeGameFromMemory,
 } from "./helpers/memoryGameHelpers";
-import { clearTimerIfExist, setUpTimerInterval } from "./helpers/timerRelated";
-import { loadGameFromDB } from "./lib/prisma/dbCalls";
+import {
+  clearTimerIfExist,
+  setUpTimerInterval,
+  timerRanOutUnsuccessfully,
+} from "./helpers/timerRelated";
+import {
+  loadGameFromDB,
+  removeGameFromDB,
+  saveGameToDB,
+  updateCurrentRoomIdInDB,
+} from "./lib/prisma/dbCalls/gameCalls";
 import {
   CheckedWords,
   gameState,
-  Player,
   validTurkishLetters,
   WordWithCoordinates,
 } from "./types/gameTypes";
@@ -38,9 +45,17 @@ export const runSocketLogic = (io: Io) => {
       sessionId: socket.sessionId,
     });
 
+    const saveGame = (state: gameState, io: Io) => {
+      saveGameToMemory(state, io);
+      saveGameToDB(state);
+    };
+
     const startGame = (socket: Socket, _socket: Socket) => {
       const gameState = generateGameState(socket, _socket);
       io.to(gameState.roomId).emit("Start Game", gameState);
+      saveGame(gameState, io);
+      updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
+      updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
     };
 
     if (socket.roomId) {
@@ -48,6 +63,7 @@ export const runSocketLogic = (io: Io) => {
       let game = getGameFromMemory(socket.roomId);
 
       if (!game) {
+        //Extra check in case memory game is not present
         const gameStateFromDB = await loadGameFromDB(roomId);
         if (gameStateFromDB) {
           saveGameToMemory(gameStateFromDB, io);
@@ -76,7 +92,7 @@ export const runSocketLogic = (io: Io) => {
       waitingPlayers = waitingPlayers.filter((s) => s !== socket);
     });
 
-    socket.on("Timer", (state: gameState) => {
+    socket.on("Start Timer", (state: gameState) => {
       setUpTimerInterval(state, io);
     });
 
@@ -90,8 +106,8 @@ export const runSocketLogic = (io: Io) => {
         state: gameState;
       }) => {
         const { players, roomId, undrawnLetterPool } = state;
-        const currentPlayer = players.find((player) => player.turn) as Player;
-        if (state.status === "ended") return;
+        const currentPlayer = players.find((player) => player.turn);
+        if (state.status === "ended" || !currentPlayer) return;
         // Append to history
         state.history.push({
           playerId: currentPlayer.id,
@@ -107,14 +123,17 @@ export const runSocketLogic = (io: Io) => {
 
         switchTurns(state, io);
 
+        saveGame(state, io);
+
         io.to(roomId).emit("Play Made", state);
       }
     );
 
     socket.on("Pass", ({ state }: { state: gameState }) => {
       const { board, players, roomId } = state;
-      const currentPlayer = players.find((player) => player.turn) as Player;
-      pass(currentPlayer.hand, board);
+      const currentPlayer = players.find((player) => player.turn);
+      if (!currentPlayer) return;
+      returnToHand(currentPlayer.hand, board);
       if (state.status === "ended") return;
       // Append to history
       state.history.push({
@@ -126,6 +145,9 @@ export const runSocketLogic = (io: Io) => {
       state.passCount += 1;
       currentPlayer.closedPassCount = 0;
       switchTurns(state, io);
+
+      saveGame(state, io);
+
       io.to(roomId).emit("Play Made", state);
     });
 
@@ -134,8 +156,10 @@ export const runSocketLogic = (io: Io) => {
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
         (player) => player.id === socket.sessionId
-      ) as Player;
+      );
+
       if (
+        leavingPlayer &&
         state.status !== "ended" &&
         leavingPlayer.score <
           (leavingPlayer === player1 ? player2 : player1).score
@@ -144,11 +168,11 @@ export const runSocketLogic = (io: Io) => {
       }
       state.status = "ended";
       socket.leave(roomId);
-      const game = getGameFromMemory(roomId);
-      if (game) {
-        clearTimerIfExist(roomId);
-        saveGameToMemory(state, io);
-      }
+      updateCurrentRoomIdInDB(socket.user?.id, undefined);
+
+      clearTimerIfExist(roomId);
+
+      saveGame(state, io);
 
       // Check how many sockets are in the room
       const roomSockets = io.sockets.adapter.rooms.get(roomId);
@@ -156,6 +180,7 @@ export const runSocketLogic = (io: Io) => {
       if (!roomSockets) {
         // If no sockets are left, remove the game from memory
         removeGameFromMemory(roomId);
+        removeGameFromDB(roomId);
       } else {
         // Otherwise, notify remaining players
         io.to(roomId).emit("Play Made", state);
@@ -163,9 +188,8 @@ export const runSocketLogic = (io: Io) => {
     });
 
     const handleUnsuccessfull = (state: gameState) => {
-      const currentPlayer = state.players.find(
-        (player) => player.turn
-      ) as Player;
+      const currentPlayer = state.players.find((player) => player.turn);
+      if (!currentPlayer) return;
       currentPlayer.closedPassCount = 0;
       timerRanOutUnsuccessfully(state);
       switchTurns(state, io);
@@ -185,8 +209,9 @@ export const runSocketLogic = (io: Io) => {
 
         const id = socket.id;
         // Find the player who made the play
-        const currentPlayer = players.find((player) => player.turn) as Player;
-        if (state.status === "ended") return;
+        const currentPlayer = players.find((player) => player.turn);
+
+        if (state.status === "ended" || !currentPlayer) return;
         if (state.board[7][7] === null) {
           io.to(id).emit("Game Error", {
             error: "Merkez hücre kullanılmalıdır",

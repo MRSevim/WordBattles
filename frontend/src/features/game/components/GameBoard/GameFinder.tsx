@@ -9,6 +9,7 @@ import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
 import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "../../utils/serverActions";
+import { useEffect } from "react";
 
 const buttonClasses =
   "bg-slate-700 focus:ring-4 font-medium rounded-lg px-5 py-2.5";
@@ -19,6 +20,10 @@ export const GameFinder = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const user = useAppSelector(selectUser);
   const isClient = useIsClient();
+
+  useEffect(() => {
+    if (roomId) socket.connect();
+  }, [roomId]);
 
   const findGame = () => {
     socket.connect();

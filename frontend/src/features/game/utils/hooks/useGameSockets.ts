@@ -40,7 +40,8 @@ export default function useGameSockets() {
 
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
-      socket.emit("Timer", game);
+      //Timer should start when socket client receives start game event, not before
+      socket.emit("Start Timer", game);
       setCookie("roomId", game.roomId, 7);
     });
 

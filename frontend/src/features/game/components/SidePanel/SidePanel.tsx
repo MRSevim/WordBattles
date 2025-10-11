@@ -40,28 +40,37 @@ export const SidePanel = () => {
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
-      {(!gameOngoing || !isClient) && (
+      {!isClient ? (
         <div id="loader">
           <div id="box"></div>
           <div id="hill"></div>
         </div>
-      )}
-      {gameOngoing && (
+      ) : (
         <>
-          <div className="flex justify-end">
-            <div
-              onClick={leave}
-              className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
-            >
-              <span>Ayrıl</span>
-              <i className="bi bi-door-open"></i>
+          {!gameOngoing && (
+            <div id="loader">
+              <div id="box"></div>
+              <div id="hill"></div>
             </div>
-          </div>
-          <div className="flex align-center justify-around mb-2 xxs:mb-8">
-            <PlayerContainer player={players[0]} />
-            <PlayerContainer player={players[1]} />
-          </div>
-          <GameHistory />
+          )}
+          {gameOngoing && (
+            <>
+              <div className="flex justify-end">
+                <div
+                  onClick={leave}
+                  className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
+                >
+                  <span>Ayrıl</span>
+                  <i className="bi bi-door-open"></i>
+                </div>
+              </div>
+              <div className="flex align-center justify-around mb-2 xxs:mb-8">
+                <PlayerContainer player={players[0]} />
+                <PlayerContainer player={players[1]} />
+              </div>
+              <GameHistory />
+            </>
+          )}
         </>
       )}
     </div>

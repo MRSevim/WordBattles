@@ -5,7 +5,6 @@ import {
   gameState,
   CheckedWords,
   HAND_SIZE,
-  InitialLetters,
   LettersArray,
   Player,
   WordWithCoordinates,
@@ -13,11 +12,8 @@ import {
   gameTime,
 } from "../types/gameTypes";
 import { clearTimerIfExist } from "./timerRelated";
-import { v6 as uuidv6 } from "uuid";
-import { getGameFromMemory, saveGameToMemory } from "./memoryGameHelpers";
 import { setUpTimerInterval } from "./timerRelated";
-import { Socket } from "../types/types";
-import { generateGuestId } from "./misc";
+import { prisma } from "../lib/prisma/prisma";
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
@@ -57,28 +53,27 @@ const checkGameEnd = (state: gameState) => {
 
 export const applyPointDifference = async (state: gameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
-  const disconnectedPlayer = state.players.find(
+  const passedPlayer = state.players.find(
     (player) => player.closedPassCount >= 2
   );
 
   if (everyoneIsUser) {
-    const { User } = require("./models/userModel");
     // Calculate score difference
     const [player1, player2] = state.players;
     const scoreDifference = Math.abs(player1.score - player2.score);
     // Determine the winner and loser
     let winner, loser;
 
-    if (disconnectedPlayer) {
-      // If a player disconnected and they were behind, apply the score difference
+    if (passedPlayer) {
+      // If a player passed enough and they were behind, apply the score difference
       if (
-        disconnectedPlayer.score <
-        (disconnectedPlayer === player1 ? player2 : player1).score
+        passedPlayer.score <
+        (passedPlayer === player1 ? player2 : player1).score
       ) {
-        loser = disconnectedPlayer;
-        winner = disconnectedPlayer === player1 ? player2 : player1;
+        loser = passedPlayer;
+        winner = passedPlayer === player1 ? player2 : player1;
       } else {
-        // If the disconnected player was not behind, don't apply the difference
+        // If the passed player was not behind, don't apply the difference
         return;
       }
     } else {
@@ -97,86 +92,36 @@ export const applyPointDifference = async (state: gameState) => {
 
     try {
       // Update the winner's score
-      await User.findOneAndUpdate(
-        { email: winner.email },
-        { $inc: { rankedScore: scoreDifference } }
-      );
+      await prisma.user.update({
+        where: { id: winner.id },
+        data: {
+          rankedScore: {
+            increment: scoreDifference,
+          },
+        },
+      });
 
       // Update the loser's score
-      await User.findOneAndUpdate(
-        { email: loser.email },
-        { $inc: { rankedScore: -scoreDifference } }
-      );
+      await prisma.user.update({
+        where: { id: loser.id },
+        data: {
+          rankedScore: {
+            decrement: scoreDifference,
+          },
+        },
+      });
     } catch (error) {
       console.error("Error updating ranked scores:", error);
     }
   }
 };
 
-export const generateInitialBoard = (): Board => {
-  return Array.from({ length: 15 }, () => Array(15).fill(null));
-};
-
-export const generateEmptyLetterIdsArray = (
-  letterPool: LettersArray
-): string[] => {
-  return letterPool
-    .filter((letter) => letter.letter === "") // Find letters with an empty `letter` property
-    .map((letter) => letter.id); // Return an array of their `id`s
-};
-
-export const generateGameState = (socket: Socket, _socket: Socket) => {
-  const letterPool = generateLetterPool(letters);
-  const emptyLetterIds = generateEmptyLetterIdsArray(letterPool);
-  const playersStatus = generateGame(letterPool);
-  const initialBoard = generateInitialBoard();
-  const players = [
-    {
-      hand: playersStatus.players[0],
-      username: socket.user?.name || generateGuestId(),
-      email: socket.user?.email,
-      turn: playersStatus.startingPlayer === 1,
-      id: socket.sessionId,
-      score: 0,
-      closedPassCount: 0,
-      timer: gameTime,
-    },
-    {
-      hand: playersStatus.players[1],
-      username: _socket.user?.name || generateGuestId(),
-      email: _socket.user?.email,
-      turn: playersStatus.startingPlayer === 2,
-      id: _socket.sessionId,
-      score: 0,
-      closedPassCount: 0,
-      timer: gameTime,
-    },
-  ];
-  const roomId = uuidv6();
-  _socket.roomId = roomId;
-  socket.roomId = roomId;
-
-  _socket.join(roomId);
-  socket.join(roomId);
-  console.log("Game found", roomId);
-  const state: gameState = {
-    status: "playing",
-    players,
-    undrawnLetterPool: playersStatus.undrawnletterPool,
-    roomId,
-    passCount: 0,
-    emptyLetterIds,
-    board: initialBoard,
-    history: [],
-  };
-  return state;
-};
-
 export const switchTurns = (state: gameState, io: any) => {
   const { players, roomId } = state;
 
-  const currentPlayer = players.find((player) => player.turn) as Player;
-  const opponentPlayer = players.find((player) => !player.turn) as Player;
+  const currentPlayer = players.find((player) => player.turn);
+  const opponentPlayer = players.find((player) => !player.turn);
+  if (!currentPlayer || !opponentPlayer) return;
   const gameEnded = checkGameEnd(state);
   if (!gameEnded) {
     currentPlayer.turn = false;
@@ -190,10 +135,8 @@ export const switchTurns = (state: gameState, io: any) => {
     clearTimerIfExist(roomId);
     io.to(roomId).emit("Play Made", state);
   }
-  const game = getGameFromMemory(roomId);
-  if (game) {
-    saveGameToMemory(state, io);
-  }
+
+  /*   saveGameToMemory(state, io); */
 };
 
 export const switchLetters = (
@@ -228,7 +171,7 @@ export const switchLetters = (
   });
 };
 
-export const pass = (playerHand: LettersArray, board: Board) => {
+export const returnToHand = (playerHand: LettersArray, board: Board) => {
   for (let row = 0; row < board.length; row++) {
     for (let col = 0; col < board[row].length; col++) {
       const cell = board[row][col];
@@ -238,18 +181,6 @@ export const pass = (playerHand: LettersArray, board: Board) => {
       }
     }
   }
-};
-
-export const timerRanOutUnsuccessfully = (state: gameState) => {
-  const currentPlayer = state.players.find((player) => player.turn) as Player;
-
-  pass(currentPlayer.hand, state.board);
-  state.passCount += 1;
-  state.history.push({
-    playerId: currentPlayer.id,
-    words: [],
-    playerPoints: 0,
-  });
 };
 
 // Helper function for validating words using Promise.all
@@ -574,81 +505,4 @@ export const completePlayerHand = (
     // Add drawn letters to the player's hand
     player.hand.push(...drawnLetters);
   }
-};
-
-export const generateLetterPool = (array: InitialLetters[]): LettersArray => {
-  let newArr: LettersArray = [];
-
-  array.forEach((letter) => {
-    for (let i = 0; i < letter.amount; i++) {
-      newArr.push({ ...letter, drawn: false, id: uuidv6() });
-    }
-  });
-  return newArr;
-};
-
-export const generateGame = (letterPool: LettersArray) => {
-  const players: LettersArray[] = [[], []]; // Two players
-  const usedLetters = new Set();
-
-  // Distribute letters, one by one to each player until both have HAND_SIZE tiles
-  for (let i = 0; i < HAND_SIZE; i++) {
-    players.forEach((player) => {
-      let drawn = false;
-      while (!drawn) {
-        const randomIndex = Math.floor(Math.random() * letterPool.length);
-        const letter = letterPool[randomIndex];
-        if (!usedLetters.has(randomIndex)) {
-          player.push(letter);
-          letterPool[randomIndex].drawn = true;
-          usedLetters.add(randomIndex);
-          drawn = true;
-        }
-      }
-    });
-  }
-
-  const undrawnletterPool = letterPool.filter((letter) => !letter.drawn);
-
-  // Function to get the index of a letter in the 'letters' array
-  const getLetterIndex = (letter: string) => {
-    const index = letters.findIndex((item) => item.letter === letter);
-    return index !== -1 ? index : Infinity; // If letter isn't in the array, assign a high index
-  };
-
-  const getPlayersClosest = (player: LettersArray) =>
-    player.reduce(
-      (closest, letter) =>
-        getLetterIndex(letter.letter) < getLetterIndex(closest.letter)
-          ? letter
-          : closest,
-      player[0]
-    );
-
-  // Get the closest letter to "A" for each player
-  const player1Closest = getPlayersClosest(players[0]);
-
-  const player2Closest = getPlayersClosest(players[1]);
-
-  // Determine who starts
-  let startingPlayer;
-  if (
-    getLetterIndex(player1Closest.letter) <
-    getLetterIndex(player2Closest.letter)
-  ) {
-    startingPlayer = 1; // Player 1 starts
-  } else if (
-    getLetterIndex(player1Closest.letter) >
-    getLetterIndex(player2Closest.letter)
-  ) {
-    startingPlayer = 2; // Player 2 starts
-  } else {
-    startingPlayer = Math.random() < 0.5 ? 1 : 2; // 50-50 if the closest letters are equal
-  }
-
-  return {
-    players,
-    startingPlayer,
-    undrawnletterPool,
-  };
 };

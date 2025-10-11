@@ -1,11 +1,12 @@
 import {
   Board,
   gameState,
+  GameStatus,
   HistoryArray,
   LettersArray,
   Player,
-} from "../../types/gameTypes";
-import { prisma, Prisma } from "./prisma";
+} from "../../../types/gameTypes";
+import { prisma, Prisma } from "../prisma";
 
 const asJson = (value: any): Prisma.InputJsonValue => value;
 
@@ -46,7 +47,7 @@ export async function loadGameFromDB(
     if (!game) return null;
 
     return {
-      status: game.status,
+      status: game.status as GameStatus,
       players: game.players as any as Player[],
       undrawnLetterPool: game.undrawnLetters as any as LettersArray,
       roomId: game.roomId,
@@ -74,7 +75,7 @@ export async function removeGameFromDB(roomId: string) {
 
 export async function updateCurrentRoomIdInDB(
   userId: string | undefined,
-  roomId: string
+  roomId: string | undefined
 ) {
   if (!userId) return;
   try {

@@ -1,12 +1,13 @@
-import { gameState, Player } from "../types/gameTypes";
+import { gameState } from "../types/gameTypes";
 import { Io } from "../types/types";
-import { pass, switchTurns } from "./gameHelpers";
+import { returnToHand, switchTurns } from "./gameHelpers";
 import { getGameFromMemory } from "./memoryGameHelpers";
 
 export const timerRanOutUnsuccessfully = (state: gameState) => {
-  const currentPlayer = state.players.find((player) => player.turn) as Player;
+  const currentPlayer = state.players.find((player) => player.turn);
 
-  pass(currentPlayer.hand, state.board);
+  if (!currentPlayer) return;
+  returnToHand(currentPlayer.hand, state.board);
   state.passCount += 1;
   state.history.push({
     playerId: currentPlayer.id,
@@ -25,9 +26,12 @@ export const clearTimerIfExist = (roomId: string) => {
 
 export const setUpTimerInterval = (state: gameState, io: Io) => {
   const { players, roomId } = state;
-  const currentPlayer = players.find((player) => player.turn) as Player;
+  const currentPlayer = players.find((player) => player.turn);
 
   clearTimerIfExist(roomId);
+
+  if (!currentPlayer) return;
+
   // Set a new interval for the opponent's timer
   const timerInterval = setInterval(() => {
     if (currentPlayer.timer > 0) {

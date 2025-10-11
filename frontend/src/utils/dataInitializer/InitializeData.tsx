@@ -21,12 +21,13 @@ const InitializeData = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (sessionId) {
+    //RoomId takes precedence over sessionId
+    if (sessionId && !roomId) {
       socket.sessionId = sessionId;
       socket.connect();
       dispatch(setGameStatus("looking"));
     }
-  }, [sessionId, socket, dispatch]);
+  }, [sessionId, roomId, socket, dispatch]);
 
   useEffect(() => {
     if (roomId) {

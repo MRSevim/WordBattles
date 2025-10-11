@@ -4,7 +4,7 @@ import { setUpTimerInterval } from "./timerRelated";
 
 type gameWithTimerInterval = {
   gameState: gameState;
-  timerInterval: ReturnType<typeof setInterval>;
+  timerInterval?: ReturnType<typeof setInterval>;
 };
 let ongoingGames: gameWithTimerInterval[] = [];
 
@@ -22,7 +22,7 @@ export const saveGameToMemory = (game: gameState, io: Io) => {
       timerInterval: existingTimer, // Keep timer running
     };
   } else {
-    // 🆕 Create new game with fresh timer
+    // Create new game with fresh timer
     ongoingGames.push({
       gameState: game,
       timerInterval: setUpTimerInterval(game, io),
