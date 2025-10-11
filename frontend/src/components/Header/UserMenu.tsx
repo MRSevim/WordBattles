@@ -4,6 +4,7 @@ import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
 import { logout } from "@/features/auth/utils/apiCallsClient";
 import { selectGameStatus } from "@/features/game/lib/redux/selectors";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import useIsClient from "@/utils/hooks/isClient";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,21 @@ const UserMenu = ({ onClick }: { onClick?: () => void }) => {
   const gameStatus = useAppSelector(selectGameStatus);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const isClient = useIsClient();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     if (gameStatus === "playing") {
@@ -36,21 +52,14 @@ const UserMenu = ({ onClick }: { onClick?: () => void }) => {
     dispatch(setUser(undefined));
     router.push(routeStrings.home);
   };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
+  if (!isClient) {
+    return (
+      <div
+        className="flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 my-2 md:my-0 animate-pulse bg-gray-200"
+        style={{ width: "150px", height: "46px" }}
+      ></div>
+    );
+  }
   return (
     <>
       {user === undefined ? (
