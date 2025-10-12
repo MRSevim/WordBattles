@@ -23,7 +23,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       turn: playersStatus.startingPlayer === 1,
       id: socket.sessionId,
       score: 0,
-      closedPassCount: 0,
+      passCount: 0,
       timer: gameTime,
     },
     {
@@ -33,7 +33,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       turn: playersStatus.startingPlayer === 2,
       id: _socket.sessionId,
       score: 0,
-      closedPassCount: 0,
+      passCount: 0,
       timer: gameTime,
     },
   ];
@@ -100,7 +100,7 @@ export const generatePlayersStatus = (letterPool: LettersArray) => {
   // Function to get the index of the first matching letter in the 'letters' array
   const getLetterIndex = (letter: string) => {
     const index = letters.findIndex((item) => item.letter === letter);
-    return index !== -1 ? index : Infinity; // this should never return infinity since each
+    return index !== -1 ? index : Infinity; // this should never return infinity since each letter has corresponding index in letters array
   };
 
   const getPlayersClosest = (player: LettersArray) =>

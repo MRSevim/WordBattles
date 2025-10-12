@@ -3,25 +3,10 @@ import { Io } from "../types/types";
 import { returnToHand, switchTurns } from "./gameHelpers";
 import { getGameFromMemory } from "./memoryGameHelpers";
 
-export const timerRanOutUnsuccessfully = (state: gameState) => {
-  const currentPlayer = state.players.find((player) => player.turn);
-
-  if (!currentPlayer) return;
-  returnToHand(currentPlayer.hand, state.board);
-  state.passCount += 1;
-  state.history.push({
-    playerId: currentPlayer.id,
-    words: [],
-    playerPoints: 0,
-  });
-};
-
 export const clearTimerIfExist = (roomId: string) => {
   const game = getGameFromMemory(roomId);
-  const timer = game?.timerInterval;
-  if (timer) {
-    clearInterval(timer);
-  }
+
+  clearInterval(game?.timerInterval);
 };
 
 export const setUpTimerInterval = (state: gameState, io: Io) => {
@@ -30,17 +15,26 @@ export const setUpTimerInterval = (state: gameState, io: Io) => {
 
   clearTimerIfExist(roomId);
 
-  if (!currentPlayer) return;
+  if (!currentPlayer || state.status !== "playing") return;
 
-  // Set a new interval for the opponent's timer
+  // Set a new interval
   const timerInterval = setInterval(() => {
     if (currentPlayer.timer > 0) {
       currentPlayer.timer -= 1;
       io.to(roomId).emit("Timer Runs", players);
     } else {
+      io.to(roomId).emit("Time is Up", {
+        currentPlayerId: currentPlayer.id,
+      });
       clearTimerIfExist(roomId); // Clear the interval when timer runs out
-      timerRanOutUnsuccessfully(state);
-      currentPlayer.closedPassCount += 1;
+      returnToHand(currentPlayer.hand, state.board);
+      state.history.push({
+        playerId: currentPlayer.id,
+        words: [],
+        playerPoints: 0,
+      });
+      currentPlayer.passCount += 1;
+      state.passCount += 1;
       switchTurns(state, io);
     }
   }, 1000);

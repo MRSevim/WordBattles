@@ -4,7 +4,7 @@ import { setUpTimerInterval } from "./timerRelated";
 
 type gameWithTimerInterval = {
   gameState: gameState;
-  timerInterval?: ReturnType<typeof setInterval>;
+  timerInterval?: NodeJS.Timeout;
 };
 let ongoingGames: gameWithTimerInterval[] = [];
 
@@ -14,12 +14,11 @@ export const saveGameToMemory = (game: gameState, io: Io) => {
   );
 
   if (foundGameIndex !== -1) {
-    // ✅ Preserve the existing timer interval
-    const existingTimer = ongoingGames[foundGameIndex].timerInterval;
-
     ongoingGames[foundGameIndex] = {
       gameState: game,
-      timerInterval: existingTimer, // Keep timer running
+      timerInterval:
+        setUpTimerInterval(game, io) ||
+        ongoingGames[foundGameIndex].timerInterval, // Keep timer running
     };
   } else {
     // Create new game with fresh timer

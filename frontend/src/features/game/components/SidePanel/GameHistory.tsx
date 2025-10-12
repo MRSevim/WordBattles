@@ -14,7 +14,7 @@ export const GameHistory = () => {
   }>({ x: 0, y: 0 });
 
   return (
-    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 max-h-96 overflow-auto">
+    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto">
       <h2 className="text-base xxs:text-xl font-bold text-center mb-6 text-gray-800">
         Oyun Geçmişi
       </h2>

@@ -6,7 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
-import { runSocketLogic } from "./socketLogic";
+import { runSocketLogic } from "./helpers/socketLogic";
 import ladderRoutes from "./routes/ladderRoutes";
 import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
 import { prisma } from "./lib/prisma/prisma";

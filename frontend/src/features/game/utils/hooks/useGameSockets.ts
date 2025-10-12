@@ -38,10 +38,16 @@ export default function useGameSockets() {
       toast.error(error);
     });
 
+    socket.on(
+      "Time is Up",
+      ({ currentPlayerId }: { currentPlayerId: string }) => {
+        if (currentPlayerId === socket.sessionId)
+          toast.error("Your turn has passed...");
+      }
+    );
+
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
-      //Timer should start when socket client receives start game event, not before
-      socket.emit("Start Timer", game);
       setCookie("roomId", game.roomId, 7);
     });
 

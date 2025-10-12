@@ -36,6 +36,7 @@ export const selectPlayerTurnState = (state: RootState) => {
 };
 export const selectPlayerHand = (state: RootState) => {
   const player = findSocketPlayer(state.game);
+
   return player?.hand;
 };
 

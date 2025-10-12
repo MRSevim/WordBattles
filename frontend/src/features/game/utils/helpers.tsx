@@ -112,3 +112,19 @@ export const shuffle = (array: any[]) => {
     ];
   }
 };
+
+export const returnEverythingToHandHelper = (state: GameState) => {
+  const player = findSocketPlayer(state);
+  if (player) {
+    let board = state.board;
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
+        const cell = board[row][col];
+        if (cell && !cell.fixed) {
+          player.hand.push(cell);
+          board[row][col] = null;
+        }
+      }
+    }
+  }
+};

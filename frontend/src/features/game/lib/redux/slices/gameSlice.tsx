@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   checkPlayersTurn,
   findSocketPlayer,
+  returnEverythingToHandHelper,
   shuffle,
 } from "@/features/game/utils/helpers";
 import { socket } from "@/features/game/lib/socket.io/socketio";
@@ -142,13 +143,8 @@ export const gameSlice = createSlice({
           toast.error("Havuzda yeterli harf yok");
           return;
         }
-        const letterOnBoard = state.board.some((row) =>
-          row.some((cell) => cell && !cell.fixed)
-        );
-        if (letterOnBoard) {
-          toast.error("Tahtada harf varken değişim işlemi yapamazsınız");
-          return;
-        }
+        returnEverythingToHandHelper(state);
+
         socket.emit("Switch", { switchedIndices, state });
       }
     },
@@ -163,21 +159,9 @@ export const gameSlice = createSlice({
       });
     },
     returnEverythingToHand: (state) => {
-      const player = findSocketPlayer(state);
-      if (player) {
-        let board = state.board;
-        for (let row = 0; row < board.length; row++) {
-          for (let col = 0; col < board[row].length; col++) {
-            const cell = board[row][col];
-            if (cell && !cell.fixed) {
-              player.hand.push(cell);
-              board[row][col] = null;
-            }
-          }
-        }
-      }
+      returnEverythingToHandHelper(state);
     },
-    makePlay: (state, action) => {
+    makePlay: (state) => {
       const player = findSocketPlayer(state);
 
       const playersTurn = checkPlayersTurn(player);
@@ -185,7 +169,6 @@ export const gameSlice = createSlice({
 
       socket.emit("Play", {
         state,
-        timerRanOut: action.payload,
       });
     },
 

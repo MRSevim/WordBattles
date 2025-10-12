@@ -22,8 +22,7 @@ export const About = () => {
             dikey hizalananlar geçersizdir. Tek harflik kelimeler, TDK
             sözlüğünde bulunsa bile sayılmaz. Doğru oyunu yaptıktan, harf
             değiştirdikten, sırasını geçtikten veya süresi bittikten sonra sıra
-            diğer oyuncuya geçer. Süre bitiminde tahtadaki harfler otomatik
-            olarak oynanmış olur.
+            diğer oyuncuya geçer.
           </li>
           <li>
             Doğru kelimeler türetirse oyuncular puan alır (bkz. Puan hesaplama)
@@ -41,8 +40,8 @@ export const About = () => {
           <li>
             Oyun devam eden durumlarda sonlanır: 1.Havuzdaki tüm harfler
             çekilince ve bir oyuncu elindeki harfleri bitirince 2.Dört defa
-            üstüste pas geçilince 3.Bir oyuncu 2 tur boyuncu oyunu kapatınca
-            4.Bir oyuncu oyundan ayrılınca
+            üstüste pas geçilince 3.Bir oyuncu 2 tur boyuncu pas geçince 4.Bir
+            oyuncu oyundan ayrılınca
           </li>
         </ul>
       </div>
@@ -82,16 +81,16 @@ export const About = () => {
             puan kaybeder.
           </li>
           <li>
-            Oyun bitiminde, iki oyuncu arasındaki puan farkı, her oyuncunun
+            Oyun bitiminde iki oyuncu arasındaki puan farkı, her oyuncunun
             dereceli puanına eklenir. Örnek: Oyun 30 puan farkıyla bitmişse,
             kazanan oyuncu +30 dereceli puanı alırken, kaybeden -30 alır. Derece
             puanı ekleme ve çıkarmaları, 2 oyuncu da giriş yaptıysa yapılır.
           </li>
           <li>
             Oyun bitmeden bir oyuncu ayrılırsa (oyundan çıkar veya iki tur
-            boyunca oyunu kapatırsa), ayrılan oyuncu geride ise ayrılmadan
-            önceki puan farkı, oyuncuların dereceli puanlarına eklenir. Diğer
-            durumda dereceli puan değişimleri uygulanmaz.
+            boyunca pas geçer), ayrılan oyuncu geride ise ayrılmadan önceki puan
+            farkı, oyuncuların dereceli puanlarına eklenir. Diğer durumda
+            dereceli puan değişimleri uygulanmaz.
           </li>
         </ul>
       </div>

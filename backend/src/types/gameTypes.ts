@@ -30,7 +30,7 @@ export interface Player {
   id: string;
   score: number;
   timer: number;
-  closedPassCount: number;
+  passCount: number; //This only increases when timer runs out on player's turn or player passes
   email?: string;
 }
 
@@ -38,7 +38,7 @@ export interface Game {
   players: Player[];
   undrawnLetterPool: LettersArray;
   roomId: string;
-  passCount: number;
+  passCount: number; //This only increases when timer runs out on player's turn or player passes
   emptyLetterIds: string[];
 }
 export interface Word {
@@ -76,7 +76,7 @@ export interface WordWithCoordinates {
   end: [number, number];
 }
 
-export const gameTime = 100000;
+export const gameTime = 120;
 
 export const letters: InitialLetters[] = [
   { letter: "", point: 0, amount: 2 },

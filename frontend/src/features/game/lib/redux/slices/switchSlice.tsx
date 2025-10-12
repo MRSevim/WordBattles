@@ -17,6 +17,7 @@ export const switchSlice = createSlice({
     ) => {
       if (!state.switching) {
         state.switching = true;
+        //put all the hand as switch values
         if (action.payload) {
           action.payload.forEach((_letter, i) => {
             state.switchValues.push(i);
@@ -26,6 +27,10 @@ export const switchSlice = createSlice({
         state.switching = false;
         state.switchValues = [];
       }
+    },
+    setSwitchingValue: (state, action: PayloadAction<boolean>) => {
+      state.switching = action.payload;
+      state.switchValues = [];
     },
     changeSwitchValue: (state, action: PayloadAction<number>) => {
       const i = action.payload;
@@ -49,6 +54,7 @@ export const switchSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleSwitching, changeSwitchValue } = switchSlice.actions;
+export const { toggleSwitching, changeSwitchValue, setSwitchingValue } =
+  switchSlice.actions;
 
 export default switchSlice.reducer;

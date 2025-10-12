@@ -98,12 +98,9 @@ export const BottomPanel = () => {
               if (gameStatus !== "ended") {
                 if (switching) {
                   dispatch(_switch(switchValues));
-                  dispatch(toggleSwitching(playerHand));
-                  if (playerHand.length !== 7) {
-                    dispatch(returnEverythingToHand());
-                  }
+                  dispatch(toggleSwitching());
                 } else {
-                  dispatch(makePlay(false));
+                  dispatch(makePlay());
                 }
               }
             }}

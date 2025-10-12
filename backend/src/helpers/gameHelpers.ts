@@ -10,10 +10,13 @@ import {
   WordWithCoordinates,
   letters,
   gameTime,
+  Letter,
 } from "../types/gameTypes";
 import { clearTimerIfExist } from "./timerRelated";
-import { setUpTimerInterval } from "./timerRelated";
 import { prisma } from "../lib/prisma/prisma";
+import { saveGameToMemory } from "./memoryGameHelpers";
+import { Io } from "../types/types";
+import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
 
 // Function to check game end conditions
 const checkGameEnd = (state: gameState) => {
@@ -34,9 +37,7 @@ const checkGameEnd = (state: gameState) => {
     finishingPlayer.score += unfinishedPlayerHandSize;
     gameEnded = true;
   }
-  const playerPassedEnough = players.some(
-    (player) => player.closedPassCount >= 2
-  );
+  const playerPassedEnough = players.some((player) => player.passCount >= 2);
   const playersPassedEnough = state.passCount >= 4;
   if (playerPassedEnough || playersPassedEnough) {
     // Logic for ending the game due to passes
@@ -53,9 +54,7 @@ const checkGameEnd = (state: gameState) => {
 
 export const applyPointDifference = async (state: gameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
-  const passedPlayer = state.players.find(
-    (player) => player.closedPassCount >= 2
-  );
+  const passedPlayer = state.players.find((player) => player.passCount >= 2);
 
   if (everyoneIsUser) {
     // Calculate score difference
@@ -130,13 +129,18 @@ export const switchTurns = (state: gameState, io: any) => {
 
     io.to(roomId).emit("Play Made", state);
 
-    setUpTimerInterval(state, io);
+    saveGame(state, io);
   } else {
+    //clear game timer after saving to storage
+    saveGame(state, io);
     clearTimerIfExist(roomId);
     io.to(roomId).emit("Play Made", state);
   }
+};
 
-  /*   saveGameToMemory(state, io); */
+export const saveGame = (state: gameState, io: Io) => {
+  saveGameToMemory(state, io);
+  saveGameToDB(state);
 };
 
 export const switchLetters = (
@@ -211,156 +215,75 @@ export const validateWords = async (words: string[]): Promise<CheckedWords> => {
   return { validWords, invalidWords };
 };
 
-export const updateBoard = (
-  wordsWithCoordinates: WordWithCoordinates[],
-  board: Board
-) => {
-  // Update the board (fix tiles and remove classes)
-  wordsWithCoordinates.forEach(({ start, end }) => {
-    if (start[0] === end[0]) {
-      // Horizontal word
-      for (let col = start[1]; col <= end[1]; col++) {
-        const cell = board[start[0]][col];
-        if (cell) {
-          // Check if the cell is not null
-          cell.fixed = true;
-          cell.class = ""; // Remove the class
-        }
-      }
-    } else {
-      // Vertical word
-      for (let row = start[0]; row <= end[0]; row++) {
-        const cell = board[row][start[1]];
-        if (cell) {
-          // Check if the cell is not null
-          cell.fixed = true;
-          cell.class = ""; // Remove the class
-        }
+export const fixBoard = (board: Board) => {
+  for (let row = 0; row < board.length; row++) {
+    for (let col = 0; col < board[row].length; col++) {
+      const cell = board[row][col];
+      if (cell) {
+        cell.fixed = true;
       }
     }
-  });
+  }
 };
 
 export const findWordsOnBoard = (board: Board): WordWithCoordinates[] => {
   const words: WordWithCoordinates[] = [];
 
-  // Check for horizontal words
-  for (let row = 0; row < board.length; row++) {
+  const processLine = (
+    getCell: (i: number) => Letter | null,
+    lineLength: number,
+    fixedIndex: number,
+    isHorizontal: boolean
+  ) => {
     let word = "";
-    let startCol = -1; // To track the start column of the word
-    let hasUnfixedLetter = false; // Track if there is an unfixed letter
+    let start = -1;
+    let hasUnfixed = false;
 
-    for (let col = 0; col < board[row].length; col++) {
-      const cell = board[row][col];
+    for (let i = 0; i < lineLength; i++) {
+      const cell = getCell(i);
       if (cell && cell.letter) {
-        if (word === "") {
-          // Word just started, record start position
-          startCol = col;
-        }
+        if (word === "") start = i;
         word += cell.letter;
-
-        // Check if the letter is unfixed
-        if (!cell.fixed) {
-          hasUnfixedLetter = true;
-        }
-      } else if (word.length > 1 && hasUnfixedLetter) {
-        // Word ends here, save it along with coordinates
+        if (!cell.fixed) hasUnfixed = true;
+      } else if (word.length > 1 && hasUnfixed) {
         words.push({
           word,
-          start: [row, startCol],
-          end: [row, col - 1],
+          start: isHorizontal ? [fixedIndex, start] : [start, fixedIndex],
+          end: isHorizontal ? [fixedIndex, i - 1] : [i - 1, fixedIndex],
         });
         word = "";
-        startCol = -1;
-        hasUnfixedLetter = false; // Reset for the next word
+        start = -1;
+        hasUnfixed = false;
       } else {
         word = "";
-        startCol = -1;
-        hasUnfixedLetter = false; // Reset for the next word
+        start = -1;
+        hasUnfixed = false;
       }
     }
-    // Add any remaining word in the row if it has unfixed letters
-    if (word.length > 1 && hasUnfixedLetter) {
+
+    // Final word at end of line
+    if (word.length > 1 && hasUnfixed) {
       words.push({
         word,
-        start: [row, startCol],
-        end: [row, board[row].length - 1],
+        start: isHorizontal ? [fixedIndex, start] : [start, fixedIndex],
+        end: isHorizontal
+          ? [fixedIndex, lineLength - 1]
+          : [lineLength - 1, fixedIndex],
       });
     }
+  };
+
+  // Horizontal pass
+  for (let row = 0; row < board.length; row++) {
+    processLine((i) => board[row][i], board[row].length, row, true);
   }
 
-  // Check for vertical words
+  // Vertical pass
   for (let col = 0; col < board[0].length; col++) {
-    let word = "";
-    let startRow = -1; // To track the start row of the word
-    let hasUnfixedLetter = false; // Track if there is an unfixed letter
-
-    for (let row = 0; row < board.length; row++) {
-      const cell = board[row][col];
-      if (cell && cell.letter) {
-        if (word === "") {
-          // Word just started, record start position
-          startRow = row;
-        }
-        word += cell.letter;
-
-        // Check if the letter is unfixed
-        if (!cell.fixed) {
-          hasUnfixedLetter = true;
-        }
-      } else if (word.length > 1 && hasUnfixedLetter) {
-        // Word ends here, save it along with coordinates
-        words.push({
-          word,
-          start: [startRow, col],
-          end: [row - 1, col],
-        });
-        word = "";
-        startRow = -1;
-        hasUnfixedLetter = false; // Reset for the next word
-      } else {
-        word = "";
-        startRow = -1;
-        hasUnfixedLetter = false; // Reset for the next word
-      }
-    }
-    // Add any remaining word in the column if it has unfixed letters
-    if (word.length > 1 && hasUnfixedLetter) {
-      words.push({
-        word,
-        start: [startRow, col],
-        end: [board.length - 1, col],
-      });
-    }
+    processLine((i) => board[i][col], board.length, col, false);
   }
 
   return words;
-};
-
-// Check if a tile is adjacent to a fixed tile
-const isAdjacentToFixed = (board: Board, row: number, col: number): boolean => {
-  const directions = [
-    [-1, 0], // Up
-    [1, 0], // Down
-    [0, -1], // Left
-    [0, 1], // Right
-  ];
-
-  for (const [dx, dy] of directions) {
-    const newRow = row + dx;
-    const newCol = col + dy;
-    if (
-      newRow >= 0 &&
-      newRow < board.length &&
-      newCol >= 0 &&
-      newCol < board[0].length &&
-      board[newRow][newCol] &&
-      board[newRow][newCol]?.fixed
-    ) {
-      return true; // It's adjacent to an existing fixed tile
-    }
-  }
-  return false;
 };
 
 export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
@@ -404,6 +327,36 @@ export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
 
   if (!isConnectedLine()) return false;
 
+  // Function to check if a tile is adjacent to a fixed tile
+  const isAdjacentToFixed = (
+    board: Board,
+    row: number,
+    col: number
+  ): boolean => {
+    const directions = [
+      [-1, 0], // Up
+      [1, 0], // Down
+      [0, -1], // Left
+      [0, 1], // Right
+    ];
+
+    for (const [dx, dy] of directions) {
+      const newRow = row + dx;
+      const newCol = col + dy;
+      if (
+        newRow >= 0 &&
+        newRow < board.length &&
+        newCol >= 0 &&
+        newCol < board[0].length &&
+        board[newRow][newCol] &&
+        board[newRow][newCol].fixed
+      ) {
+        return true; // It's adjacent to an existing fixed tile
+      }
+    }
+    return false;
+  };
+
   // Check that at least one new tile is adjacent to a fixed tile
   const isConnectedToFixed = newTiles.some(({ row, col }) =>
     isAdjacentToFixed(board, row, col)
@@ -419,56 +372,55 @@ export const calculatePoints = (
 ): number => {
   let totalPoints = 0;
 
-  // Track which letters are used for the bonus calculation
-  const usedLetters: Set<string> = new Set();
+  // Track newly placed letters (for Bingo)
+  const newlyPlacedLetters: string[] = [];
 
-  // Iterate over each word found on the board
-  wordsWithCoordinates.forEach(({ word, start, end }) => {
+  // Iterate over each word
+  wordsWithCoordinates.forEach(({ start, end }) => {
     let wordPoints = 0;
     let wordMultiplier = 1;
 
-    // Calculate points for the word, check if it’s horizontal or vertical
     const isHorizontal = start[0] === end[0];
-    const fixedIndices = isHorizontal
+    const indices = isHorizontal
       ? Array.from({ length: end[1] - start[1] + 1 }, (_, i) => start[1] + i)
       : Array.from({ length: end[0] - start[0] + 1 }, (_, i) => start[0] + i);
 
-    fixedIndices.forEach((index) => {
+    indices.forEach((index) => {
       const cell = isHorizontal
         ? board[start[0]][index]
         : board[index][start[1]];
 
-      if (cell) {
-        // Apply letter multiplier
-        let letterPoints = cell.point;
-        if (cell.class === "double-letter") {
-          letterPoints *= 2;
-        } else if (cell.class === "triple-letter") {
-          letterPoints *= 3;
-        }
+      if (!cell) return;
 
-        // Add to word points
-        wordPoints += letterPoints;
+      const isNew = !cell.fixed;
 
-        // Track used letters for bonus calculation
-        if (cell.letter && !cell.fixed) {
-          usedLetters.add(cell.letter);
-        }
+      // Base points (always added)
+      let letterPoints = cell.point;
 
-        // Apply word multiplier
-        if (cell.class === "double-word" || cell.class === "center") {
+      if (isNew) {
+        // Letter multipliers
+        if (cell.class === "double-letter") letterPoints *= 2;
+        else if (cell.class === "triple-letter") letterPoints *= 3;
+
+        // Word multipliers
+        if (cell.class === "double-word" || cell.class === "center")
           wordMultiplier *= 2;
-        } else if (cell.class === "triple-word") {
-          wordMultiplier *= 3;
-        }
+        else if (cell.class === "triple-word") wordMultiplier *= 3;
+
+        // Track the letter for Bingo bonus
+        if (cell.letter) newlyPlacedLetters.push(cell.letter);
       }
+
+      // Add letter points to word total
+      wordPoints += letterPoints;
     });
 
-    // Add the word's points to the total, applying word multiplier
+    // Apply word multiplier
     totalPoints += wordPoints * wordMultiplier;
   });
-  // If the player uses all their tiles (Bingo), they get a 50-point bonus
-  if (usedLetters.size === HAND_SIZE) {
+
+  // Bingo: if player used all tiles in their hand
+  if (newlyPlacedLetters.length === HAND_SIZE) {
     io.to(id).emit("Bingo");
     totalPoints += 50;
   }
