@@ -1,6 +1,7 @@
 import { DragEndEvent } from "@dnd-kit/core";
 import { AppDispatch } from "@/lib/redux/store";
 import {
+  Board,
   GameState,
   InitialLetters,
   Player,
@@ -14,10 +15,9 @@ export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export const boardSizes = {
-  width: 15,
-  height: 15,
-};
+export const initialBoard: Board = Array.from({ length: 15 }, () =>
+  Array(15).fill(null)
+);
 
 const letters: InitialLetters[] = [
   { letter: "A", point: 1, amount: 12 },

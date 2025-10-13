@@ -23,7 +23,9 @@ export const GameBoard = () => {
         </div>
         <SidePanel />
       </div>
-      <BottomPanel />
+      <div className="w-full relative lg:flex px-2">
+        <BottomPanel />
+      </div>
     </div>
   );
 };

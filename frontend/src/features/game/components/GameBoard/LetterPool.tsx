@@ -13,7 +13,7 @@ export const LetterPool = () => {
   if (letterPool && letterPoolOpen) {
     return (
       <Modal z={40}>
-        <div className="p-5 bg-slate-500 flex gap-2 flex-wrap w-96">
+        <div className="p-5 bg-gray flex gap-2 flex-wrap w-96">
           {letterPool.map((letter, i) => {
             return (
               <LetterComp

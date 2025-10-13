@@ -18,17 +18,11 @@ export const GameFinder = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
-  const user = useAppSelector(selectUser);
   const isClient = useIsClient();
 
   useEffect(() => {
     if (roomId) socket.connect();
   }, [roomId]);
-
-  const findGame = () => {
-    socket.connect();
-    dispatch(setGameStatus("looking"));
-  };
 
   const stopLooking = () => {
     socket.disconnect();
@@ -64,27 +58,37 @@ export const GameFinder = () => {
         {!isClient ? (
           <Spinner className="w-12 h-12" variant="white" />
         ) : (
-          <>
-            {user === null && <Spinner className="w-12 h-12" variant="white" />}
-            {user && (
-              <FindButton
-                onClick={findGame}
-                text={user.name + " olarak oyun bul"}
-              />
-            )}
-            {user === undefined && (
-              <>
-                <Link href={routeStrings.signin} className={buttonClasses}>
-                  Sign in to your account{" "}
-                </Link>
-                or
-                <FindButton onClick={findGame} text="Find Game as guest" />
-              </>
-            )}
-          </>
+          <UserPanel />
         )}
       </div>
     </Modal>
+  );
+};
+
+const UserPanel = () => {
+  const user = useAppSelector(selectUser);
+  const dispatch = useAppDispatch();
+
+  const findGame = () => {
+    socket.connect();
+    dispatch(setGameStatus("looking"));
+  };
+  return (
+    <>
+      {user === null && <Spinner className="w-12 h-12" variant="white" />}
+      {user && (
+        <FindButton onClick={findGame} text={user.name + " olarak oyun bul"} />
+      )}
+      {user === undefined && (
+        <>
+          <Link href={routeStrings.signin} className={buttonClasses}>
+            Sign in to your account{" "}
+          </Link>
+          or
+          <FindButton onClick={findGame} text="Find Game as guest" />
+        </>
+      )}
+    </>
   );
 };
 

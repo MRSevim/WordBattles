@@ -5,6 +5,7 @@ import switchSlice from "@/features/game/lib/redux/slices/switchSlice";
 import sidePanelToggleSlice from "@/features/game/lib/redux/slices/sidePanelToggleSlice";
 import userSlice from "@/features/auth/lib/redux/slices/userSlice";
 import letterPoolToggleSlice from "@/features/game/lib/redux/slices/letterPoolToggleSlice";
+import initialDataSlice from "@/features/game/lib/redux/slices/initialDataSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -15,6 +16,7 @@ export const makeStore = () => {
       sidePanelOpen: sidePanelToggleSlice,
       user: userSlice,
       letterPoolOpen: letterPoolToggleSlice,
+      initialData: initialDataSlice,
     },
   });
 };

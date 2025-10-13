@@ -1,15 +1,16 @@
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { boardSizes } from "@/features/game/utils/helpers";
 import { useDroppable } from "@dnd-kit/core";
 import { LetterComp, LetterSkeleton } from "./LetterComp";
 import { RootState } from "@/lib/redux/store";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { memo, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   selectGameStatus,
   selectPlayerTurnState,
 } from "../../lib/redux/selectors";
 import "./Cells.css";
+import { initialBoard } from "../../utils/helpers";
+import { Coordinates } from "../../utils/types/gameTypes";
 
 export const Cells = () => {
   const [bingo, setBingo] = useState<boolean>(false);
@@ -60,13 +61,20 @@ export const Cells = () => {
           {bingo && "Bingo yaptınız. Tebrikler."}
         </div>
       )}
+      <CellsInner />
+    </div>
+  );
+};
 
-      {[...Array(boardSizes.width)].map((_e, i1) => {
+const CellsInner = () => {
+  return (
+    <>
+      {[...Array(initialBoard.length)].map((_e, i1) => {
         const row = i1 + 1;
 
         return (
           <div key={"row-" + row} className="flex">
-            {[...Array(boardSizes.height)].map((_e, i2) => {
+            {[...Array(initialBoard[0].length)].map((_e, i2) => {
               const col = i2 + 1;
 
               return (
@@ -76,7 +84,7 @@ export const Cells = () => {
           </div>
         );
       })}
-    </div>
+    </>
   );
 };
 
@@ -85,79 +93,84 @@ interface CellProps {
   col: number;
 }
 
-const Cell = memo(({ row, col }: CellProps) => {
-  let cls = "";
-  if (row === 1 || row === 8 || row === 15) {
-    if (col === 1 || col === 8 || col === 15)
-      if (row !== 8 || col !== 8) {
-        cls = "triple-word";
-      } else {
-        cls = "center";
+const Cell = ({ row, col }: CellProps) => {
+  const cls = useMemo(() => {
+    let cls = "";
+    if (row === 1 || row === 8 || row === 15) {
+      if (col === 1 || col === 8 || col === 15)
+        if (row !== 8 || col !== 8) {
+          cls = "triple-word";
+        } else {
+          cls = "center";
+        }
+    }
+    const arrDoubleWord = [2, 3, 4, 5, 11, 12, 13, 14];
+
+    if (arrDoubleWord.includes(row) && arrDoubleWord.includes(col)) {
+      if (row === col || row - 1 === Math.abs(col - 15)) {
+        cls = "double-word";
       }
-  }
-  const arrDoubleWord = [2, 3, 4, 5, 11, 12, 13, 14];
-
-  if (arrDoubleWord.includes(row) && arrDoubleWord.includes(col)) {
-    if (row === col || row - 1 === Math.abs(col - 15)) {
-      cls = "double-word";
     }
-  }
 
-  const arrDoubleLetter = [
-    {
-      first: [1, 15],
-      second: [4, 12],
-    },
-    {
-      first: [3, 13],
-      second: [7, 9],
-    },
-    {
-      first: [4, 12],
-      second: [8],
-    },
-    {
-      first: [7, 9],
-      second: [7, 9],
-    },
-  ];
+    const arrDoubleLetter = [
+      {
+        first: [1, 15],
+        second: [4, 12],
+      },
+      {
+        first: [3, 13],
+        second: [7, 9],
+      },
+      {
+        first: [4, 12],
+        second: [8],
+      },
+      {
+        first: [7, 9],
+        second: [7, 9],
+      },
+    ];
 
-  arrDoubleLetter.forEach((arr) => {
-    if (
-      (arr.first.includes(row) && arr.second.includes(col)) ||
-      (arr.second.includes(row) && arr.first.includes(col))
-    ) {
-      cls = "double-letter";
-    }
-  });
+    arrDoubleLetter.forEach((arr) => {
+      if (
+        (arr.first.includes(row) && arr.second.includes(col)) ||
+        (arr.second.includes(row) && arr.first.includes(col))
+      ) {
+        cls = "double-letter";
+      }
+    });
 
-  const arrTripleLetter = [
-    {
-      first: [2, 14],
-      second: [6, 10],
-    },
-    {
-      first: [6, 10],
-      second: [2, 6, 10, 14],
-    },
-  ];
+    const arrTripleLetter = [
+      {
+        first: [2, 14],
+        second: [6, 10],
+      },
+      {
+        first: [6, 10],
+        second: [2, 6, 10, 14],
+      },
+    ];
 
-  arrTripleLetter.forEach((arr) => {
-    if (
-      (arr.first.includes(row) && arr.second.includes(col)) ||
-      (arr.second.includes(row) && arr.first.includes(col))
-    ) {
-      cls = "triple-letter";
-    }
-  });
+    arrTripleLetter.forEach((arr) => {
+      if (
+        (arr.first.includes(row) && arr.second.includes(col)) ||
+        (arr.second.includes(row) && arr.first.includes(col))
+      ) {
+        cls = "triple-letter";
+      }
+    });
+    return cls;
+  }, [row, col]);
 
-  const coordinates = useMemo<CellProps>(() => ({ row, col }), [row, col]);
+  const coordinates = { row, col };
 
-  const letter = useAppSelector(
-    (state: RootState) => state.game.board[row - 1][col - 1]
-  );
   const activeLetter = useAppSelector(
     (state: RootState) => state.draggingValues.activeLetter
+  );
+
+  const letter = useAppSelector(
+    (state: RootState) =>
+      state.game.board[coordinates.row - 1][coordinates.col - 1]
   );
 
   const { setNodeRef } = useDroppable({
@@ -174,6 +187,18 @@ const Cell = memo(({ row, col }: CellProps) => {
         cls
       }
     >
+      <Letter coordinates={coordinates} />
+    </div>
+  );
+};
+
+const Letter = ({ coordinates }: { coordinates: Coordinates }) => {
+  const letter = useAppSelector(
+    (state: RootState) =>
+      state.game.board[coordinates.row - 1][coordinates.col - 1]
+  );
+  return (
+    <>
       {letter && (
         <div className="absolute">
           <LetterComp
@@ -190,6 +215,6 @@ const Cell = memo(({ row, col }: CellProps) => {
           </LetterComp>
         </div>
       )}
-    </div>
+    </>
   );
-});
+};

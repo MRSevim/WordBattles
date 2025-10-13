@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL("https://lh3.googleusercontent.com/**")],
   },
+  experimental: {
+    reactCompiler: true,
+  },
 };
 
 export default nextConfig;

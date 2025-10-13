@@ -15,11 +15,24 @@ import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "../../utils/serverActions";
 
 export const SidePanel = () => {
-  const gameOngoing = useAppSelector(selectGameRoomId);
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
-  const players = useAppSelector(selectPlayers);
-  const dispatch = useAppDispatch();
   const isClient = useIsClient();
+
+  return (
+    <div
+      className={
+        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-30 flex flex-col " +
+        (sidePanelOpen ? "block" : "hidden lg:block")
+      }
+    >
+      {!isClient ? <Loader /> : <OngoingGameContainer />}
+    </div>
+  );
+};
+
+const OngoingGameContainer = () => {
+  const gameOngoing = useAppSelector(selectGameRoomId);
+  const dispatch = useAppDispatch();
 
   const leave = () => {
     dispatch(leaveGame());
@@ -30,46 +43,35 @@ export const SidePanel = () => {
   };
 
   return (
-    <div
-      className={
-        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-slate-400 z-30 flex flex-col " +
-        (sidePanelOpen ? "block" : "hidden lg:block")
-      }
-    >
-      {!isClient ? (
-        <div id="loader">
-          <div id="box"></div>
-          <div id="hill"></div>
-        </div>
-      ) : (
+    <>
+      {!gameOngoing && <Loader />}
+      {gameOngoing && (
         <>
-          {!gameOngoing && (
-            <div id="loader">
-              <div id="box"></div>
-              <div id="hill"></div>
+          <div className="flex justify-end">
+            <div
+              onClick={leave}
+              className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
+            >
+              <span>Ayrıl</span>
+              <i className="bi bi-door-open"></i>
             </div>
-          )}
-          {gameOngoing && (
-            <>
-              <div className="flex justify-end">
-                <div
-                  onClick={leave}
-                  className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
-                >
-                  <span>Ayrıl</span>
-                  <i className="bi bi-door-open"></i>
-                </div>
-              </div>
-              <div className="flex align-center justify-around mb-2 xxs:mb-8">
-                {players.map((player) => (
-                  <PlayerContainer key={player.id} player={player} />
-                ))}
-              </div>
-              <GameHistory />
-            </>
-          )}
+          </div>
+          <Players />
+          <GameHistory />
         </>
       )}
+    </>
+  );
+};
+
+const Players = () => {
+  const players = useAppSelector(selectPlayers);
+
+  return (
+    <div className="flex align-center justify-around mb-2 xxs:mb-8">
+      {players.map((player) => (
+        <PlayerContainer key={player.id} player={player} />
+      ))}
     </div>
   );
 };
@@ -84,8 +86,7 @@ const PlayerContainer = ({ player }: { player: Player }) => {
         (player.id === socket.sessionId ? "border-amber-500" : "")
       }
     >
-      <p>{player.username}</p>
-      Puan: {player.score}
+      <UsernameAndScore username={player.username} score={player.score} />
       <div className="mt-2 w-20">
         <p
           className={
@@ -103,3 +104,23 @@ const PlayerContainer = ({ player }: { player: Player }) => {
     </div>
   );
 };
+
+const UsernameAndScore = ({
+  username,
+  score,
+}: {
+  username: string;
+  score: number;
+}) => (
+  <>
+    <p>{username}</p>
+    Puan: {score}
+  </>
+);
+
+const Loader = () => (
+  <div id="loader">
+    <div id="box"></div>
+    <div id="hill"></div>
+  </div>
+);

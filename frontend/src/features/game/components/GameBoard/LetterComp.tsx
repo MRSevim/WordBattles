@@ -155,61 +155,59 @@ const Droppable = ({
   );
 };
 
-export const LetterSkeleton = memo(
-  ({
-    letter,
-    coordinates,
-    i,
-    draggable,
-  }: {
-    letter: LetterType;
-    coordinates?: Coordinates;
-    i?: number;
-    draggable?: boolean;
-  }) => {
-    const emptyLetterIds = useAppSelector(selectEmptyLetterIds);
-    const dispatch = useAppDispatch();
-    const activeInput = emptyLetterIds?.includes(letter.id) && draggable;
+export const LetterSkeleton = ({
+  letter,
+  coordinates,
+  i,
+  draggable,
+}: {
+  letter: LetterType;
+  coordinates?: Coordinates;
+  i?: number;
+  draggable?: boolean;
+}) => {
+  const emptyLetterIds = useAppSelector(selectEmptyLetterIds);
+  const dispatch = useAppDispatch();
+  const activeInput = emptyLetterIds?.includes(letter.id) && draggable;
 
-    return (
-      <div
-        className={
-          "w-full h-full bg-brown rounded-lg relative z-10 " +
-          (letter.fixed ? "bg-stone-700" : "")
-        }
-      >
-        <div className="flex items-center justify-center h-full text-xxs xxs:text-xs xs:text-base sm:text-lg text-white">
-          {activeInput ? (
-            <input
-              type="text"
-              maxLength={1}
-              className="w-full h-full bg-transparent text-center text-white"
-              value={letter.letter}
-              onChange={(e) => {
-                const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
+  return (
+    <div
+      className={
+        "w-full h-full bg-brown rounded-lg relative z-10 " +
+        (letter.fixed ? "bg-stone-700" : "")
+      }
+    >
+      <div className="flex items-center justify-center h-full text-xxs xxs:text-xs xs:text-base sm:text-lg text-white">
+        {activeInput ? (
+          <input
+            type="text"
+            maxLength={1}
+            className="w-full h-full bg-transparent text-center text-white"
+            value={letter.letter}
+            onChange={(e) => {
+              const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
 
-                if (
-                  !validTurkishLetters.includes(newLetter) &&
-                  newLetter !== ""
-                ) {
-                  toast.error("Lütfen geçerli bir türkçe harf giriniz");
-                }
-                dispatch(
-                  changeEmptyLetter({
-                    newLetter,
-                    target: { coordinates, i },
-                  })
-                );
-              }}
-            />
-          ) : (
-            <div className="cursor-pointer">{letter.letter}</div>
-          )}
-        </div>
-        <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
-          {letter.point}
-        </div>
+              if (
+                !validTurkishLetters.includes(newLetter) &&
+                newLetter !== ""
+              ) {
+                toast.error("Lütfen geçerli bir türkçe harf giriniz");
+              }
+              dispatch(
+                changeEmptyLetter({
+                  newLetter,
+                  target: { coordinates, i },
+                })
+              );
+            }}
+          />
+        ) : (
+          <div className="cursor-pointer">{letter.letter}</div>
+        )}
       </div>
-    );
-  }
-);
+      <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
+        {letter.point}
+      </div>
+    </div>
+  );
+};

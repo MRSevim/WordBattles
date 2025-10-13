@@ -1,17 +1,16 @@
 import { useAppSelector } from "@/lib/redux/hooks";
 import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
-import { Player } from "../../utils/types/gameTypes";
 import { Modal } from "@/components/Modal";
 import { selectGameStatus, selectPlayers } from "../../lib/redux/selectors";
 import useIsClient from "@/utils/hooks/isClient";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
-  const players = useAppSelector(selectPlayers) || [];
+  const players = useAppSelector(selectPlayers);
   const isClient = useIsClient();
 
   // Determine the winner and handle ties
-  let winner: Player | null = null;
+  let winner: (typeof players)[0] | null = null;
   let maxScore = -Infinity;
 
   players.forEach((player) => {

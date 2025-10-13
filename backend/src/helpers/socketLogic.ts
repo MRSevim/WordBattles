@@ -44,6 +44,7 @@ export const runSocketLogic = (io: Io) => {
     const startGame = (socket: Socket, _socket: Socket) => {
       const gameState = generateGameState(socket, _socket);
       io.to(gameState.roomId).emit("Start Game", gameState);
+      io.to(gameState.roomId).emit("Initialize Data", gameState);
       saveGame(gameState, io);
       updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
       updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
@@ -63,6 +64,7 @@ export const runSocketLogic = (io: Io) => {
       }
 
       if (game) {
+        io.to(roomId).emit("Initialize Data", game.gameState);
         io.to(roomId).emit("Play Made", game.gameState);
       } else {
         socket.roomId = undefined;
@@ -94,7 +96,7 @@ export const runSocketLogic = (io: Io) => {
       }) => {
         const { players, roomId, undrawnLetterPool } = state;
         const currentPlayer = players.find((player) => player.turn);
-        if (state.status === "ended" || !currentPlayer) return;
+        if (state.status !== "playing" || !currentPlayer) return;
         // Append to history
         state.history.push({
           playerId: currentPlayer.id,
@@ -117,9 +119,9 @@ export const runSocketLogic = (io: Io) => {
     socket.on("Pass", ({ state }: { state: gameState }) => {
       const { board, players, roomId } = state;
       const currentPlayer = players.find((player) => player.turn);
-      if (!currentPlayer) return;
+      if (!currentPlayer || state.status !== "playing") return;
       returnToHand(currentPlayer.hand, board);
-      if (state.status === "ended") return;
+
       // Append to history
       state.history.push({
         playerId: currentPlayer.id,
@@ -143,7 +145,7 @@ export const runSocketLogic = (io: Io) => {
 
       if (
         leavingPlayer &&
-        state.status !== "ended" &&
+        state.status === "playing" &&
         leavingPlayer.score <
           (leavingPlayer === player1 ? player2 : player1).score
       ) {
@@ -175,7 +177,7 @@ export const runSocketLogic = (io: Io) => {
       // Find the player who made the play
       const currentPlayer = players.find((player) => player.turn);
 
-      if (state.status === "ended" || !currentPlayer) return;
+      if (state.status !== "playing" || !currentPlayer) return;
 
       if (state.board[7][7] === null) {
         io.to(id).emit("Game Error", {

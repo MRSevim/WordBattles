@@ -10,6 +10,7 @@ import {
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
 import { removeCookie, setCookie } from "../serverActions";
+import { setInitialData } from "../../lib/redux/slices/initialDataSlice";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
@@ -49,6 +50,10 @@ export default function useGameSockets() {
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
       setCookie("roomId", game.roomId, 7);
+    });
+
+    socket.on("Initialize Data", (game: GameState) => {
+      dispatch(setInitialData(game));
     });
 
     socket.on("session", ({ sessionId }) => {

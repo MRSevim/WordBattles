@@ -33,7 +33,7 @@ export interface Game {
   passCount: number;
   emptyLetterIds: string[];
 }
-interface Word {
+export interface Word {
   word: string;
   meanings: string[];
 }
@@ -42,7 +42,7 @@ export type Board = (Letter | null)[][];
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 
-interface History {
+export interface History {
   playerId: string;
   words: Word[];
   playerPoints: number;
@@ -75,3 +75,7 @@ export interface MoveAction {
   targetData: MoveData;
   activeData: MoveData;
 }
+
+export type InitialData = {
+  players: { username: string; id: string }[];
+};

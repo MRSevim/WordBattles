@@ -11,6 +11,18 @@ export const selectEmptyLetterIds = (state: RootState) =>
   state.game.emptyLetterIds;
 export const selectGameRoomId = (state: RootState) => state.game.roomId;
 
+//players
+export const selectPlayers = (state: RootState) => state.game.players;
+export const selectPlayerTurnState = (state: RootState) => {
+  const player = findSocketPlayer(state.game);
+  return player?.turn;
+};
+export const selectPlayerHand = (state: RootState) => {
+  const player = findSocketPlayer(state.game);
+
+  return player?.hand;
+};
+
 //dragging over
 export const selectDraggingActive = (state: RootState) =>
   state.draggingValues.active;
@@ -28,17 +40,9 @@ export const selectIsSwitching = (state: RootState) => state.switch.switching;
 export const selectSwitchValues = (state: RootState) =>
   state.switch.switchValues;
 
-//players
-export const selectPlayers = (state: RootState) => state.game.players;
-export const selectPlayerTurnState = (state: RootState) => {
-  const player = findSocketPlayer(state.game);
-  return player?.turn;
-};
-export const selectPlayerHand = (state: RootState) => {
-  const player = findSocketPlayer(state.game);
-
-  return player?.hand;
-};
+//initial data
+export const selectInitialPlayerData = (state: RootState) =>
+  state.initialData.players;
 
 //other
 export const selectSidePanelOpen = (state: RootState) => state.sidePanelOpen;

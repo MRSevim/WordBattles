@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   checkPlayersTurn,
   findSocketPlayer,
+  initialBoard,
   returnEverythingToHandHelper,
   shuffle,
 } from "@/features/game/utils/helpers";
@@ -16,10 +17,6 @@ import {
   MoveAction,
   Player,
 } from "@/features/game/utils/types/gameTypes";
-
-const initialBoard: Board = Array.from({ length: 15 }, () =>
-  Array(15).fill(null)
-);
 
 const initialState: GameState = {
   status: "idle",
