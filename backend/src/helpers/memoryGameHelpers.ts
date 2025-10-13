@@ -1,3 +1,4 @@
+import { loadAllGamesFromDB } from "../lib/prisma/dbCalls/gameCalls";
 import { gameState } from "../types/gameTypes";
 import { Io } from "../types/types";
 import { setUpTimerInterval } from "./timerRelated";
@@ -48,3 +49,19 @@ export const removeGameFromMemory = (roomId: string) => {
     ongoingGames.splice(foundGameIndex, 1);
   }
 };
+
+export async function recoverGamesToMemory(io: Io) {
+  const games = await loadAllGamesFromDB();
+  if (!games.length) {
+    console.log("No games found in DB to recover.");
+    return;
+  }
+
+  for (const game of games) {
+    saveGameToMemory(game, io);
+  }
+
+  console.log(
+    `✅ Recovered ${games.length} game(s) from the database into memory.`
+  );
+}

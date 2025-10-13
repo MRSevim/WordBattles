@@ -90,3 +90,23 @@ export async function updateCurrentRoomIdInDB(
     );
   }
 }
+
+export async function loadAllGamesFromDB(): Promise<gameState[]> {
+  try {
+    const games = await prisma.game.findMany();
+
+    return games.map((game) => ({
+      status: game.status as GameStatus,
+      players: game.players as any as Player[],
+      undrawnLetterPool: game.undrawnLetters as any as LettersArray,
+      roomId: game.roomId,
+      passCount: game.passCount,
+      emptyLetterIds: game.emptyLetterIds as any as string[],
+      board: game.board as any as Board,
+      history: game.history as any as HistoryArray,
+    }));
+  } catch (error) {
+    console.error("❌ [loadAllGamesFromDB] Failed to load games:", error);
+    return [];
+  }
+}

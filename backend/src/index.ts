@@ -12,6 +12,7 @@ import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
 import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
 import { parseCookies } from "./middlewares/parseCookieMiddleware";
+import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
 
 dotenv.config();
 
@@ -71,7 +72,10 @@ app.use(errorHandler);
 // listen for requests
 prisma
   .$connect()
-  .then(() => {
+  .then(async () => {
+    // Recover any ongoing games into memory
+    await recoverGamesToMemory(io);
+
     server.listen(port, () => {
       console.log("connected to db & listening on port", port);
     });
