@@ -25,6 +25,7 @@ const initialState: GameState = {
   undrawnLetterPool: [],
   roomId: "",
   passCount: 0,
+  lang: "tr",
   board: initialBoard,
   history: [],
 };

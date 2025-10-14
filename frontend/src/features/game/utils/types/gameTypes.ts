@@ -49,6 +49,7 @@ export interface GameState {
   roomId: string;
   passCount: number;
   board: Board;
+  lang: "tr" | "en";
   history: History[];
 }
 export interface Coordinates {
