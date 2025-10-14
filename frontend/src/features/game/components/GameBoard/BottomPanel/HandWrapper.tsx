@@ -1,67 +1,49 @@
 import {
   selectGameStatus,
+  selectIsSwitching,
   selectPlayerHand,
 } from "@/features/game/lib/redux/selectors";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { LetterComp, LetterSkeleton } from "../LetterComp";
-import { RootState } from "@/lib/redux/store";
+import { LetterOnHand } from "./LetterOnHand/LetterOnHand";
 import { useDroppable } from "@dnd-kit/core";
+import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 
 const HandWrapper = () => {
-  const gameStatus = useAppSelector(selectGameStatus);
+  const isPlaying = useAppSelector(selectGameStatus) === "playing";
   const playerHand = useAppSelector(selectPlayerHand);
 
   if (playerHand)
     return (
       <div className="flex gap-2 self-center">
         {playerHand.map((letter, i) => {
-          const draggable = gameStatus === "playing" && !letter.fixed;
+          const activeGame = isPlaying && !letter.fixed;
           return (
-            <LetterComp
+            <LetterOnHand
+              playerHand={playerHand}
               letter={letter}
               key={letter.id}
-              draggable={draggable}
-              droppable={gameStatus === "playing" && !letter.fixed}
+              draggable={activeGame}
+              droppable={activeGame}
               i={i}
-            >
-              <LetterSkeleton
-                draggable={draggable}
-                letter={letter}
-                i={i}
-              ></LetterSkeleton>
-            </LetterComp>
+            />
           );
         })}
-        {playerHand.length !== 7 && (
-          <LastLetterSpot
-            handLength={playerHand.length}
-            droppable={gameStatus === "playing"}
-          />
-        )}
+        {playerHand.length !== 7 && <LastLetterSpot droppable={isPlaying} />}
       </div>
     );
 };
 
-const LastLetterSpot = ({
-  handLength,
-  droppable,
-}: {
-  droppable: boolean;
-  handLength: number;
-}) => {
-  const isSwitching = useAppSelector(
-    (state: RootState) => state.switch.switching
-  );
+const LastLetterSpot = ({ droppable }: { droppable: boolean }) => {
+  const isSwitching = useAppSelector(selectIsSwitching);
   const { isOver, setNodeRef } = useDroppable({
-    id: handLength ? handLength + 1 : "last",
+    id: "last",
     disabled: !droppable || isSwitching,
   });
   return (
     <div
       ref={setNodeRef}
       className={
-        "h-5.25 w-5.25 xxs:w-6 xxs:h-6 xs:h-7 xs:w-7 sm:w-9 sm:h-9 " +
-        (isOver ? "bg-green-400 rounded-lg" : "")
+        responsiveLetterSizesTailwind + " " + (isOver ? "bg-green-400" : "")
       }
     ></div>
   );

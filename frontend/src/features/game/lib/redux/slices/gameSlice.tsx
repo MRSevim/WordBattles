@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   checkPlayersTurn,
+  findInBoard,
+  findInHand,
   findSocketPlayer,
   initialBoard,
   returnEverythingToHandHelper,
@@ -59,60 +61,45 @@ export const gameSlice = createSlice({
 
     moveLetter: (state, action: PayloadAction<MoveAction>) => {
       const player = findSocketPlayer(state);
+      if (!player) return;
 
-      if (player) {
-        const { activeData, targetData } = action.payload;
+      const { activeData, targetData } = action.payload;
 
-        if (activeData.coordinates || targetData.coordinates) {
-          const playersTurn = checkPlayersTurn(player);
-          if (!playersTurn) return;
-        }
+      // Skip if dropping onto the same tile
+      if (activeData.id === targetData.id) return;
 
-        if (activeData.coordinates && targetData.coordinates) {
-          const letter = activeData.letter;
+      // If target is a board cell, ensure it's the player's turn
+      if (targetData.coordinates) {
+        const playersTurn = checkPlayersTurn(player);
+        if (!playersTurn) return;
+      }
 
-          state.board[activeData.coordinates.row - 1][
-            activeData.coordinates.col - 1
-          ] = null;
+      // Get the letter data
+      const letter = activeData.letter;
 
-          state.board[targetData.coordinates.row - 1][
-            targetData.coordinates.col - 1
-          ] = letter
-            ? { ...letter, fixed: false, class: targetData.class }
-            : null;
-        } else if (!activeData.coordinates && targetData.coordinates) {
-          // Remove the letter from the hand
-          player.hand.splice(activeData.id, 1);
+      // Remove from hand if present
+      const inHandIndex = findInHand(player.hand, activeData.id);
+      if (inHandIndex !== -1) {
+        player.hand.splice(inHandIndex, 1);
+      }
 
-          const letter = activeData.letter;
+      // Remove from board if present
+      const positionInBoard = findInBoard(state.board, activeData.id);
+      if (positionInBoard) {
+        state.board[positionInBoard.rowI][positionInBoard.colI] = null;
+      }
 
-          state.board[targetData.coordinates.row - 1][
-            targetData.coordinates.col - 1
-          ] = letter
-            ? { ...letter, fixed: false, class: targetData.class }
-            : null;
-        } else if (activeData.coordinates && !targetData.coordinates) {
-          const letter = activeData.letter;
-
-          state.board[activeData.coordinates.row - 1][
-            activeData.coordinates.col - 1
-          ] = null;
-          if (letter) {
-            // Insert it into the target
-            player.hand.splice(targetData.id, 0, letter);
-          }
-        } else if (
-          !activeData.coordinates &&
-          !targetData.coordinates &&
-          targetData.id !== null
-        ) {
-          if (targetData.id === 7) return;
-          // Remove the letter from the hand
-          const [movedElem] = player.hand.splice(activeData.id, 1);
-
-          // Insert it into the target
-          player.hand.splice(targetData.id, 0, movedElem);
-        }
+      // Place it in the correct spot
+      if (targetData.coordinates) {
+        //  Add to board
+        state.board[targetData.coordinates.row][targetData.coordinates.col] =
+          letter;
+      } else {
+        const targetIndex = findInHand(player.hand, targetData.id);
+        // If target not found, append at the end safely
+        if (targetIndex === -1) player.hand.push(letter);
+        //  Add back to hand
+        else player.hand.splice(targetIndex, 0, letter);
       }
     },
     shuffleHand: (state) => {
@@ -173,27 +160,24 @@ export const gameSlice = createSlice({
       state,
       action: PayloadAction<{
         newLetter: string;
-        target: {
-          coordinates?: Coordinates;
-          i?: number;
-        };
+        targetId: string;
       }>
     ) => {
       const player = findSocketPlayer(state);
 
-      const { newLetter } = action.payload;
+      const { newLetter, targetId } = action.payload;
 
       if (player) {
-        if (action.payload.target.i !== undefined) {
-          const { i } = action.payload.target;
-          player.hand[i].letter = newLetter;
-        } else if (action.payload.target.coordinates) {
-          const { coordinates } = action.payload.target;
-          const targetCell =
-            state.board[coordinates.row - 1]?.[coordinates.col - 1];
-          if (targetCell && typeof targetCell !== "number") {
-            targetCell.letter = newLetter;
-          }
+        const inHandIndex = findInHand(player.hand, targetId);
+        if (inHandIndex !== -1) {
+          player.hand[inHandIndex].letter = newLetter;
+          return;
+        }
+        const positionInBoard = findInBoard(state.board, targetId);
+        if (positionInBoard) {
+          const targetLetter =
+            state.board[positionInBoard.rowI][positionInBoard.colI];
+          if (targetLetter) targetLetter.letter = newLetter;
         }
       }
     },

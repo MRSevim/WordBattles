@@ -3,8 +3,8 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { Letter } from "@/features/game/utils/types/gameTypes";
 
 export interface DraggingValues {
-  active: number | null;
-  over: number | null;
+  active: string | null;
+  over: string | null;
   activeLetter: Letter | null;
 }
 

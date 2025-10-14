@@ -1,10 +1,10 @@
 import { useAppSelector } from "@/lib/redux/hooks";
-import { LetterComp, LetterSkeleton } from "./LetterComp";
 import {
   selectLetterPoolOpen,
   selectUndrawnLetterPool,
 } from "../../lib/redux/selectors";
 import { Modal } from "@/components/Modal";
+import NakedLetterSkeleton from "./LetterRelated/NakedLetterSkeleton";
 
 export const LetterPool = () => {
   const letterPool = useAppSelector(selectUndrawnLetterPool);
@@ -15,19 +15,7 @@ export const LetterPool = () => {
       <Modal z={40}>
         <div className="p-5 bg-gray flex gap-2 flex-wrap w-96">
           {letterPool.map((letter, i) => {
-            return (
-              <LetterComp
-                letter={letter}
-                key={i}
-                draggable={false}
-                droppable={false}
-              >
-                <LetterSkeleton
-                  draggable={false}
-                  letter={letter}
-                ></LetterSkeleton>
-              </LetterComp>
-            );
+            return <NakedLetterSkeleton letter={letter} />;
           })}
         </div>
       </Modal>

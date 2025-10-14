@@ -4,6 +4,7 @@ import {
   Board,
   GameState,
   InitialLetters,
+  LettersArray,
   Player,
 } from "@/features/game/utils/types/gameTypes";
 import { socket } from "@/features/game/lib/socket.io/socketio";
@@ -18,6 +19,9 @@ export const capitalizeFirstLetter = (string: string): string => {
 export const initialBoard: Board = Array.from({ length: 15 }, () =>
   Array(15).fill(null)
 );
+
+export const responsiveLetterSizesTailwind =
+  "h-5.25 w-5.25 xxs:w-6 xxs:h-6 xs:h-7 xs:w-7 sm:w-9 sm:h-9 rounded-sm sm:rounded-lg";
 
 const letters: InitialLetters[] = [
   { letter: "A", point: 1, amount: 12 },
@@ -72,18 +76,16 @@ export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
   const { active, over } = e;
 
   if (active && over) {
-    const activeId = +active.id - 1;
-    const overId = +over?.id - 1;
+    const activeId = active.id.toString();
+    const overId = over?.id.toString();
 
     const activeData = {
       id: activeId,
-      coordinates: active.data.current?.coordinates,
       letter: active.data.current?.letter,
     };
     let targetData = {
       id: overId,
       coordinates: over.data.current?.coordinates,
-      class: over.data.current?.class,
     };
 
     dispatch(
@@ -124,6 +126,19 @@ export const returnEverythingToHandHelper = (state: GameState) => {
           player.hand.push(cell);
           board[row][col] = null;
         }
+      }
+    }
+  }
+};
+
+export const findInHand = (hand: LettersArray, targetId: string) =>
+  hand.findIndex((letter) => letter.id === targetId);
+
+export const findInBoard = (board: Board, targetId: string) => {
+  for (let rowI = 0; rowI < board.length; rowI++) {
+    for (let colI = 0; colI < board[rowI].length; colI++) {
+      if (board[rowI][colI]?.id === targetId) {
+        return { rowI, colI };
       }
     }
   }

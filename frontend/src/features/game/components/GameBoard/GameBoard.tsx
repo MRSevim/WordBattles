@@ -4,10 +4,10 @@ import { GameFinder } from "./GameFinder";
 import { LetterPool } from "./LetterPool";
 import { GameEnded } from "./GameEnded";
 import useGameSockets from "../../utils/hooks/useGameSockets";
-import { Cells } from "./Cells";
+import { Board } from "./Cells";
 import { SidePanel } from "../SidePanel/SidePanel";
 
-export const GameBoard = () => {
+export const GameContainer = () => {
   useGameSockets();
 
   return (
@@ -18,7 +18,7 @@ export const GameBoard = () => {
             <GameFinder />
             <LetterPool />
             <GameEnded />
-            <Cells />
+            <Board />
           </div>
         </div>
         <SidePanel />

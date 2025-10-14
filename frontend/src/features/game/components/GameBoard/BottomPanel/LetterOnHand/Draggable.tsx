@@ -1,52 +1,52 @@
 import { useDraggable } from "@dnd-kit/core";
-import { Coordinates, Letter } from "../../utils/types/gameTypes";
+import { Letter } from "../../../../utils/types/gameTypes";
 import { useEffect } from "react";
-import { useAppDispatch } from "@/lib/redux/hooks";
-import { setDraggingValues } from "../../lib/redux/slices/dragSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { setDraggingValues } from "../../../../lib/redux/slices/dragSlice";
+import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
+import { LetterSkeleton } from "../../LetterRelated/LetterSkeleton";
 
 type StringOrUnd = string | undefined;
 
 interface Props {
   id: string | number;
   letter: Letter;
-  coordinates: Coordinates | undefined;
   draggable: boolean;
-  isSwitching: boolean;
   translateX: StringOrUnd;
   translateY: StringOrUnd;
   onClick: () => void;
-  children: React.ReactNode;
 }
 
 export function Draggable({
   id,
   letter,
-  coordinates,
   draggable,
-  isSwitching,
   translateX,
   translateY,
   onClick,
-  children,
 }: Props) {
   const dispatch = useAppDispatch();
+  const isSwitching = useAppSelector(selectIsSwitching);
+
   const { isDragging, active, attributes, listeners, setNodeRef } =
     useDraggable({
       id,
-      data: { letter, coordinates },
+      data: { letter },
       disabled: !draggable || isSwitching,
     });
+
   const style = {
     transform: translateX || translateY,
     zIndex: isDragging ? 11 : 10,
     opacity: isDragging ? 0 : 1,
     touchAction: "none",
   };
+
   useEffect(() => {
     if (active) {
       dispatch(
         setDraggingValues({
-          active: +active.id - 1,
+          active: active.id.toString(),
           activeLetter: active.data?.current?.letter,
         })
       );
@@ -54,16 +54,15 @@ export function Draggable({
   }, [active]);
 
   return (
-    <div className="w-full h-full" ref={setNodeRef}>
-      <div
-        className="w-full h-full"
-        style={style}
-        onClick={onClick}
-        {...listeners}
-        {...attributes}
-      >
-        {children}
-      </div>
+    <div
+      ref={setNodeRef}
+      className="w-full h-full"
+      style={style}
+      onClick={onClick}
+      {...listeners}
+      {...attributes}
+    >
+      <LetterSkeleton letter={letter} />
     </div>
   );
 }

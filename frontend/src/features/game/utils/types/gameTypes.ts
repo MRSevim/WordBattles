@@ -64,16 +64,18 @@ export interface Coordinates {
   col: number;
 }
 
-interface MoveData {
-  id: number;
-  coordinates: Coordinates;
-  letter?: Letter;
-  class?: string;
+interface Active {
+  id: string;
+  letter: Letter;
+}
+interface Target {
+  id: string;
+  coordinates?: Coordinates;
 }
 
 export interface MoveAction {
-  targetData: MoveData;
-  activeData: MoveData;
+  targetData: Target;
+  activeData: Active;
 }
 
 export type InitialData = {

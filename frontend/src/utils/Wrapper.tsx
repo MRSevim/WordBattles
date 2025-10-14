@@ -12,9 +12,9 @@ import {
 import { Provider } from "react-redux";
 import { handleDragEnd } from "../features/game/utils/helpers";
 import { ToastContainer } from "react-toastify";
-import { LetterSkeleton } from "@/features/game/components/GameBoard/LetterComp";
 import { OngoingWarning } from "@/features/game/components/OngoingWarning";
 import { useRef } from "react";
+import NakedLetterSkeleton from "@/features/game/components/GameBoard/LetterRelated/NakedLetterSkeleton";
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const storeRef = useRef<AppStore>(undefined);
@@ -56,7 +56,7 @@ function WrapperInner({ children }: { children: React.ReactNode }) {
 
       <DragOverlay dropAnimation={null}>
         {draggingValues.activeLetter ? (
-          <LetterSkeleton letter={draggingValues.activeLetter} />
+          <NakedLetterSkeleton letter={draggingValues.activeLetter} />
         ) : null}
       </DragOverlay>
     </DndContext>
