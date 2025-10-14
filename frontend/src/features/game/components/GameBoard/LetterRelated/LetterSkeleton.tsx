@@ -1,6 +1,8 @@
-import { selectEmptyLetterIds } from "@/features/game/lib/redux/selectors";
+import {
+  selectEmptyLetterIds,
+  selectValidLetters,
+} from "@/features/game/lib/redux/selectors";
 import { changeEmptyLetter } from "@/features/game/lib/redux/slices/gameSlice";
-import { validTurkishLetters } from "@/features/game/utils/helpers";
 import { Letter } from "@/features/game/utils/types/gameTypes";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { toast } from "react-toastify";
@@ -11,6 +13,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
   const emptyLetterIds = useAppSelector(selectEmptyLetterIds);
   const dispatch = useAppDispatch();
   const activeInput = emptyLetterIds.includes(id) && notFixed;
+  const validLetters = useAppSelector(selectValidLetters);
 
   return (
     <div
@@ -29,10 +32,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
             onChange={(e) => {
               const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
 
-              if (
-                !validTurkishLetters.includes(newLetter) &&
-                newLetter !== ""
-              ) {
+              if (!validLetters.includes(newLetter) && newLetter !== "") {
                 toast.error("Lütfen geçerli bir türkçe harf giriniz");
               }
               dispatch(

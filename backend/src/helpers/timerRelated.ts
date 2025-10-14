@@ -1,4 +1,4 @@
-import { gameState } from "../types/gameTypes";
+import { GameState } from "../types/gameTypes";
 import { Io } from "../types/types";
 import { returnToHand, switchTurns } from "./gameHelpers";
 import { getGameFromMemory } from "./memoryGameHelpers";
@@ -9,7 +9,7 @@ export const clearTimerIfExist = (roomId: string) => {
   clearInterval(game?.timerInterval);
 };
 
-export const setUpTimerInterval = (state: gameState, io: Io) => {
+export const setUpTimerInterval = (state: GameState, io: Io) => {
   const { players, roomId } = state;
   const currentPlayer = players.find((player) => player.turn);
 

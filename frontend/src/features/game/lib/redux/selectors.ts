@@ -7,8 +7,6 @@ export const selectGame = (state: RootState) => state.game;
 export const selectGameHistory = (state: RootState) => state.game.history;
 export const selectUndrawnLetterPool = (state: RootState) =>
   state.game.undrawnLetterPool;
-export const selectEmptyLetterIds = (state: RootState) =>
-  state.game.emptyLetterIds;
 export const selectGameRoomId = (state: RootState) => state.game.roomId;
 
 //players
@@ -28,6 +26,8 @@ export const selectDraggingActive = (state: RootState) =>
   state.draggingValues.active;
 export const selectDraggingOver = (state: RootState) =>
   state.draggingValues.over;
+export const selectDraggedLetter = (state: RootState) =>
+  state.draggingValues.activeLetter;
 
 //switching
 export const selectIsSwitchingActive =
@@ -43,6 +43,10 @@ export const selectSwitchValues = (state: RootState) =>
 //initial data
 export const selectInitialPlayerData = (state: RootState) =>
   state.initialData.players;
+export const selectEmptyLetterIds = (state: RootState) =>
+  state.initialData.emptyLetterIds;
+export const selectValidLetters = (state: RootState) =>
+  state.initialData.validLetters;
 
 //other
 export const selectSidePanelOpen = (state: RootState) => state.sidePanelOpen;

@@ -17,7 +17,6 @@ import {
   saveGameToMemory,
   removeGameFromMemory,
 } from "./memoryGameHelpers";
-import { clearTimerIfExist } from "./timerRelated";
 import {
   loadGameFromDB,
   removeGameFromDB,
@@ -25,11 +24,11 @@ import {
 } from "../lib/prisma/dbCalls/gameCalls";
 import {
   CheckedWords,
-  gameState,
-  validTurkishLetters,
+  GameState,
   WordWithCoordinates,
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
+import { sendInitialData, validTurkishLetters } from "./misc";
 
 export let waitingPlayers: Socket[] = [];
 
@@ -44,7 +43,7 @@ export const runSocketLogic = (io: Io) => {
     const startGame = (socket: Socket, _socket: Socket) => {
       const gameState = generateGameState(socket, _socket);
       io.to(gameState.roomId).emit("Start Game", gameState);
-      io.to(gameState.roomId).emit("Initialize Data", gameState);
+      sendInitialData(io, gameState);
       saveGame(gameState, io);
       updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
       updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
@@ -64,7 +63,7 @@ export const runSocketLogic = (io: Io) => {
       }
 
       if (game) {
-        io.to(roomId).emit("Initialize Data", game.gameState);
+        sendInitialData(io, game.gameState);
         io.to(roomId).emit("Play Made", game.gameState);
       } else {
         socket.roomId = undefined;
@@ -92,7 +91,7 @@ export const runSocketLogic = (io: Io) => {
         state,
       }: {
         switchedIndices: number[];
-        state: gameState;
+        state: GameState;
       }) => {
         const { players, roomId, undrawnLetterPool } = state;
         const currentPlayer = players.find((player) => player.turn);
@@ -116,7 +115,7 @@ export const runSocketLogic = (io: Io) => {
       }
     );
 
-    socket.on("Pass", ({ state }: { state: gameState }) => {
+    socket.on("Pass", ({ state }: { state: GameState }) => {
       const { board, players, roomId } = state;
       const currentPlayer = players.find((player) => player.turn);
       if (!currentPlayer || state.status !== "playing") return;
@@ -136,7 +135,7 @@ export const runSocketLogic = (io: Io) => {
       io.to(roomId).emit("Play Made", state);
     });
 
-    socket.on("Leave Game", ({ state }: { state: gameState }) => {
+    socket.on("Leave Game", ({ state }: { state: GameState }) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
@@ -169,7 +168,7 @@ export const runSocketLogic = (io: Io) => {
       }
     });
 
-    socket.on("Play", async ({ state }: { state: gameState }) => {
+    socket.on("Play", async ({ state }: { state: GameState }) => {
       const { board, players, roomId, undrawnLetterPool } = state;
 
       const id = socket.id;

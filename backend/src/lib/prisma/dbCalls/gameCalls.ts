@@ -1,8 +1,9 @@
 import {
   Board,
-  gameState,
+  GameState,
   GameStatus,
   HistoryArray,
+  Lang,
   LettersArray,
   Player,
 } from "../../../types/gameTypes";
@@ -10,12 +11,13 @@ import { prisma, Prisma } from "../prisma";
 
 const asJson = (value: any): Prisma.InputJsonValue => value;
 
-export async function saveGameToDB(game: gameState) {
+export async function saveGameToDB(game: GameState) {
   try {
     await prisma.game.upsert({
       where: { roomId: game.roomId },
       update: {
         status: game.status,
+        lang: game.lang,
         players: asJson(game.players),
         undrawnLetters: asJson(game.undrawnLetterPool),
         passCount: game.passCount,
@@ -25,6 +27,7 @@ export async function saveGameToDB(game: gameState) {
       },
       create: {
         roomId: game.roomId,
+        lang: game.lang,
         status: game.status,
         players: asJson(game.players),
         undrawnLetters: asJson(game.undrawnLetterPool),
@@ -41,7 +44,7 @@ export async function saveGameToDB(game: gameState) {
 
 export async function loadGameFromDB(
   roomId: string
-): Promise<gameState | null> {
+): Promise<GameState | null> {
   try {
     const game = await prisma.game.findUnique({ where: { roomId } });
     if (!game) return null;
@@ -49,6 +52,7 @@ export async function loadGameFromDB(
     return {
       status: game.status as GameStatus,
       players: game.players as any as Player[],
+      lang: game.players as any as Lang,
       undrawnLetterPool: game.undrawnLetters as any as LettersArray,
       roomId: game.roomId,
       passCount: game.passCount,
@@ -91,12 +95,13 @@ export async function updateCurrentRoomIdInDB(
   }
 }
 
-export async function loadAllGamesFromDB(): Promise<gameState[]> {
+export async function loadAllGamesFromDB(): Promise<GameState[]> {
   try {
     const games = await prisma.game.findMany();
 
     return games.map((game) => ({
       status: game.status as GameStatus,
+      lang: game.players as any as Lang,
       players: game.players as any as Player[],
       undrawnLetterPool: game.undrawnLetters as any as LettersArray,
       roomId: game.roomId,

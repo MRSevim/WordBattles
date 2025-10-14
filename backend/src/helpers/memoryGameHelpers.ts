@@ -1,15 +1,15 @@
 import { loadAllGamesFromDB } from "../lib/prisma/dbCalls/gameCalls";
-import { gameState } from "../types/gameTypes";
+import { GameState } from "../types/gameTypes";
 import { Io } from "../types/types";
 import { setUpTimerInterval } from "./timerRelated";
 
 type gameWithTimerInterval = {
-  gameState: gameState;
+  gameState: GameState;
   timerInterval?: NodeJS.Timeout;
 };
 let ongoingGames: gameWithTimerInterval[] = [];
 
-export const saveGameToMemory = (game: gameState, io: Io) => {
+export const saveGameToMemory = (game: GameState, io: Io) => {
   const foundGameIndex = ongoingGames.findIndex(
     (g) => g.gameState.roomId === game.roomId
   );

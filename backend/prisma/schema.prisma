@@ -75,6 +75,7 @@ model Verification {
 model Game {
   id              String   @id @default(cuid())
   roomId          String   @unique
+  lang            String
   status          String
   players         Json
   undrawnLetters  Json

@@ -12,9 +12,8 @@ import {
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { toast } from "react-toastify";
 import {
-  Board,
-  Coordinates,
   GameState,
+  GameStateWithEmptyLetterIds,
   GameStatus,
   MoveAction,
   Player,
@@ -26,7 +25,6 @@ const initialState: GameState = {
   undrawnLetterPool: [],
   roomId: "",
   passCount: 0,
-  emptyLetterIds: [],
   board: initialBoard,
   history: [],
 };
@@ -42,8 +40,12 @@ export const gameSlice = createSlice({
       socket.emit("Leave Game", { state });
       return initialState;
     },
-    setGameState: (_state, action: PayloadAction<GameState>) => {
-      return action.payload;
+    setGameState: (
+      _state,
+      action: PayloadAction<GameStateWithEmptyLetterIds>
+    ) => {
+      const { emptyLetterIds, ...rest } = action.payload;
+      return { ...rest };
     },
     setGameRoomId: (state, action: PayloadAction<string>) => {
       state.roomId = action.payload;

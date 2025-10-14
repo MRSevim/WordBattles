@@ -26,13 +26,6 @@ export interface Player {
   passCount: number;
 }
 
-export interface Game {
-  players: Player[];
-  undrawnLetterPool: LettersArray;
-  roomId: string;
-  passCount: number;
-  emptyLetterIds: string[];
-}
 export interface Word {
   word: string;
   meanings: string[];
@@ -55,7 +48,6 @@ export interface GameState {
   undrawnLetterPool: LettersArray;
   roomId: string;
   passCount: number;
-  emptyLetterIds: string[];
   board: Board;
   history: History[];
 }
@@ -80,4 +72,17 @@ export interface MoveAction {
 
 export type InitialData = {
   players: { username: string; id: string }[];
+  emptyLetterIds: string[];
+  validLetters: string[];
+};
+
+export type InitialDataRaw = {
+  players: Player[];
+  emptyLetterIds: string[];
+  validLetters: string[];
+};
+
+//this type is only sent from backend, it is not needed in frontend
+export type GameStateWithEmptyLetterIds = GameState & {
+  emptyLetterIds: string[];
 };

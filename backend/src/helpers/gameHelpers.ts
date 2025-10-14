@@ -2,24 +2,23 @@
 
 import {
   Board,
-  gameState,
   CheckedWords,
   HAND_SIZE,
   LettersArray,
   Player,
   WordWithCoordinates,
-  letters,
-  gameTime,
   Letter,
+  GameState,
 } from "../types/gameTypes";
 import { clearTimerIfExist } from "./timerRelated";
 import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
 import { Io } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
+import { gameTime, letters } from "./misc";
 
 // Function to check game end conditions
-const checkGameEnd = (state: gameState) => {
+const checkGameEnd = (state: GameState) => {
   let gameEnded = false;
   const { players, undrawnLetterPool } = state;
 
@@ -52,7 +51,7 @@ const checkGameEnd = (state: gameState) => {
   return gameEnded;
 };
 
-export const applyPointDifference = async (state: gameState) => {
+export const applyPointDifference = async (state: GameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
   const passedPlayer = state.players.find((player) => player.passCount >= 2);
 
@@ -115,7 +114,7 @@ export const applyPointDifference = async (state: gameState) => {
   }
 };
 
-export const switchTurns = (state: gameState, io: any) => {
+export const switchTurns = (state: GameState, io: any) => {
   const { players, roomId } = state;
 
   const currentPlayer = players.find((player) => player.turn);
@@ -138,7 +137,7 @@ export const switchTurns = (state: gameState, io: any) => {
   }
 };
 
-export const saveGame = (state: gameState, io: Io) => {
+export const saveGame = (state: GameState, io: Io) => {
   saveGameToMemory(state, io);
   saveGameToDB(state);
 };

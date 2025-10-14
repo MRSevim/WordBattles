@@ -1,15 +1,13 @@
 //generators
 import {
-  gameState,
+  GameState,
   HAND_SIZE,
   InitialLetters,
   LettersArray,
-  letters,
-  gameTime,
 } from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
 import { Socket } from "../types/types";
-import { generateGuestId } from "./misc";
+import { gameTime, generateGuestId, letters } from "./misc";
 
 export const generateGameState = (socket: Socket, _socket: Socket) => {
   const letterPool = generateLetterPool(letters);
@@ -44,7 +42,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
   _socket.join(roomId);
   socket.join(roomId);
   console.log("Game found", roomId);
-  const state: gameState = {
+  const state: GameState = {
     status: "playing",
     players,
     undrawnLetterPool: playersStatus.undrawnletterPool,
@@ -53,6 +51,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
     emptyLetterIds,
     board: Array.from({ length: 15 }, () => Array(15).fill(null)),
     history: [],
+    lang: "tr",
   };
   return state;
 };
