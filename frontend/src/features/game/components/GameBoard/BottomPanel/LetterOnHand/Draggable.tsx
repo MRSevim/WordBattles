@@ -2,7 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { Letter } from "../../../../utils/types/gameTypes";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { setDraggingValues } from "../../../../lib/redux/slices/dragSlice";
+import { setDraggingValues } from "@/features/game/lib/redux/slices/gameSlice";
 import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
 import { LetterSkeleton } from "../../LetterRelated/LetterSkeleton";
 
@@ -56,7 +56,7 @@ export function Draggable({
   return (
     <div
       ref={setNodeRef}
-      className="w-full h-full"
+      className="w-full h-full cursor-pointer"
       style={style}
       onClick={onClick}
       {...listeners}

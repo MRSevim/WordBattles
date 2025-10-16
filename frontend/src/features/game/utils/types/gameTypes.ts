@@ -14,6 +14,12 @@ export interface InitialLetters {
   amount: number;
 }
 
+export interface DraggingValues {
+  active: string | null;
+  over: string | null;
+  activeLetter: Letter | null;
+}
+
 export type LettersArray = Letter[];
 
 export interface Player {
@@ -53,23 +59,14 @@ export interface GameState {
   lang: "tr" | "en";
   history: History[];
 }
+
+export interface GameStateWithDragging extends GameState {
+  draggingValues: DraggingValues;
+}
+
 export interface Coordinates {
   row: number;
   col: number;
-}
-
-interface Active {
-  id: string;
-  letter: Letter;
-}
-interface Target {
-  id: string;
-  coordinates?: Coordinates;
-}
-
-export interface MoveAction {
-  targetData: Target;
-  activeData: Active;
 }
 
 export type InitialData = {

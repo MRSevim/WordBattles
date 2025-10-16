@@ -23,13 +23,31 @@ export const selectPlayerHand = (state: RootState) => {
   return player?.hand;
 };
 
-//dragging over
+//dragging related
 export const selectDraggingActive = (state: RootState) =>
-  state.draggingValues.active;
+  state.game.draggingValues.active;
 export const selectDraggingOver = (state: RootState) =>
-  state.draggingValues.over;
+  state.game.draggingValues.over;
+export const selectDraggingActiveIndex = (state: RootState) => {
+  const hand = findSocketPlayer(state.game)?.hand;
+  if (hand) {
+    return hand.findIndex(
+      (letter) => letter.id === state.game.draggingValues.active
+    );
+  }
+  return -1;
+};
+export const selectDraggingOverIndex = (state: RootState) => {
+  const hand = findSocketPlayer(state.game)?.hand;
+  if (hand) {
+    return hand.findIndex(
+      (letter) => letter.id === state.game.draggingValues.over
+    );
+  }
+  return -1;
+};
 export const selectDraggedLetter = (state: RootState) =>
-  state.draggingValues.activeLetter;
+  state.game.draggingValues.activeLetter;
 
 //switching
 export const selectIsSwitchingActive =

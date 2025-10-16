@@ -13,38 +13,38 @@ interface CellProps {
 export const Cell = ({ row, col }: CellProps) => {
   const cls = useMemo(() => {
     let cls = "";
-    if (row === 1 || row === 8 || row === 15) {
-      if (col === 1 || col === 8 || col === 15)
-        if (row !== 8 || col !== 8) {
+    if (row === 0 || row === 7 || row === 14) {
+      if (col === 0 || col === 7 || col === 14)
+        if (row !== 7 || col !== 7) {
           cls = "triple-word";
         } else {
           cls = "center";
         }
     }
-    const arrDoubleWord = [2, 3, 4, 5, 11, 12, 13, 14];
+    const arrDoubleWord = [1, 2, 3, 4, 10, 11, 12, 13];
 
     if (arrDoubleWord.includes(row) && arrDoubleWord.includes(col)) {
-      if (row === col || row - 1 === Math.abs(col - 15)) {
+      if (row === col || row === Math.abs(col - 14)) {
         cls = "double-word";
       }
     }
 
     const arrDoubleLetter = [
       {
-        first: [1, 15],
-        second: [4, 12],
+        first: [0, 14],
+        second: [3, 11],
       },
       {
-        first: [3, 13],
-        second: [7, 9],
+        first: [2, 12],
+        second: [6, 8],
       },
       {
-        first: [4, 12],
-        second: [8],
+        first: [3, 11],
+        second: [7],
       },
       {
-        first: [7, 9],
-        second: [7, 9],
+        first: [6, 8],
+        second: [6, 8],
       },
     ];
 
@@ -59,12 +59,12 @@ export const Cell = ({ row, col }: CellProps) => {
 
     const arrTripleLetter = [
       {
-        first: [2, 14],
-        second: [6, 10],
+        first: [1, 13],
+        second: [5, 9],
       },
       {
-        first: [6, 10],
-        second: [2, 6, 10, 14],
+        first: [5, 9],
+        second: [1, 5, 9, 13],
       },
     ];
 

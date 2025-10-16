@@ -6,7 +6,7 @@ const NakedLetterSkeleton = ({ letter }: { letter: Letter }) => {
   return (
     <div className={"bg-brown relative z-10 " + responsiveLetterSizesTailwind}>
       <div className="flex items-center justify-center h-full text-xxs xxs:text-xs xs:text-base sm:text-lg text-white">
-        <div className="cursor-pointer">{letter.letter}</div>
+        <div>{letter.letter}</div>
       </div>
       <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
         {letter.point}

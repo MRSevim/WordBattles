@@ -5,7 +5,7 @@ import { LetterSkeleton } from "../LetterRelated/LetterSkeleton";
 import { selectGameStatus } from "@/features/game/lib/redux/selectors";
 import { useDraggable } from "@dnd-kit/core";
 import { useEffect } from "react";
-import { setDraggingValues } from "@/features/game/lib/redux/slices/dragSlice";
+import { setDraggingValues } from "@/features/game/lib/redux/slices/gameSlice";
 import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 
 export const LetterOnCell = ({ coordinates }: { coordinates: Coordinates }) => {
@@ -55,7 +55,7 @@ function Draggable({
 
   return (
     <div
-      className={"absolute " + responsiveLetterSizesTailwind}
+      className={"absolute cursor-pointer " + responsiveLetterSizesTailwind}
       ref={setNodeRef}
       style={style}
       {...listeners}

@@ -1,24 +1,32 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { findSocketPlayer, initialBoard } from "@/features/game/utils/helpers";
+import { socket } from "@/features/game/lib/socket.io/socketio";
+import { toast } from "react-toastify";
+import {
+  Coordinates,
+  DraggingValues,
+  GameState,
+  GameStateWithDragging,
+  GameStatus,
+  Player,
+} from "@/features/game/utils/types/gameTypes";
 import {
   checkPlayersTurn,
   findInBoard,
   findInHand,
-  findSocketPlayer,
-  initialBoard,
   returnEverythingToHandHelper,
   shuffle,
-} from "@/features/game/utils/helpers";
-import { socket } from "@/features/game/lib/socket.io/socketio";
-import { toast } from "react-toastify";
-import {
-  GameState,
-  GameStatus,
-  MoveAction,
-  Player,
-} from "@/features/game/utils/types/gameTypes";
+  stripDraggingValues,
+} from "@/features/game/utils/reduxSliceHelpers";
 
-const initialState: GameState = {
+const initialDraggingValues = {
+  active: null,
+  over: null,
+  activeLetter: null,
+};
+
+const initialState: GameStateWithDragging = {
   status: "idle",
   players: [],
   undrawnLetterPool: [],
@@ -28,21 +36,25 @@ const initialState: GameState = {
   emptyLetterIds: [],
   board: initialBoard,
   history: [],
+  draggingValues: initialDraggingValues,
 };
 
 export const gameSlice = createSlice({
   name: "game",
-  initialState: initialState as GameState,
+  initialState: initialState as GameStateWithDragging,
   reducers: {
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.status = action.payload;
     },
     leaveGame: (state) => {
-      socket.emit("Leave Game", { state });
+      socket.emit("Leave Game", { state: stripDraggingValues(state) });
       return initialState;
     },
     setGameState: (_state, action: PayloadAction<GameState>) => {
-      return action.payload;
+      return {
+        ...action.payload,
+        draggingValues: initialDraggingValues,
+      };
     },
     setGameRoomId: (state, action: PayloadAction<string>) => {
       state.roomId = action.payload;
@@ -58,23 +70,33 @@ export const gameSlice = createSlice({
       });
     },
 
-    moveLetter: (state, action: PayloadAction<MoveAction>) => {
+    moveLetter: (state, action: PayloadAction<Coordinates | undefined>) => {
       const player = findSocketPlayer(state);
-      if (!player) return;
 
-      const { activeData, targetData } = action.payload;
+      if (
+        !player ||
+        !state.draggingValues.active ||
+        !state.draggingValues.activeLetter
+      )
+        return;
 
-      // Skip if dropping onto the same tile
-      if (activeData.id === targetData.id) return;
+      const activeData = {
+        id: state.draggingValues.active,
+        letter: state.draggingValues.activeLetter,
+      };
+      const targetData = {
+        id: state.draggingValues.over,
+        coordinates: action.payload,
+      };
 
       // If target is a board cell, ensure it's the player's turn
       if (targetData.coordinates) {
         const playersTurn = checkPlayersTurn(player);
+
         if (!playersTurn) return;
       }
 
-      // Get the letter data
-      const letter = activeData.letter;
+      const targetIndex = findInHand(player.hand, targetData.id || "");
 
       // Remove from hand if present
       const inHandIndex = findInHand(player.hand, activeData.id);
@@ -88,17 +110,21 @@ export const gameSlice = createSlice({
         state.board[positionInBoard.rowI][positionInBoard.colI] = null;
       }
 
+      // Get the letter data
+      const letter = activeData.letter;
+
       // Place it in the correct spot
       if (targetData.coordinates) {
         //  Add to board
         state.board[targetData.coordinates.row][targetData.coordinates.col] =
           letter;
-      } else {
-        const targetIndex = findInHand(player.hand, targetData.id);
+      } else if (targetData?.id) {
         // If target not found, append at the end safely
         if (targetIndex === -1) player.hand.push(letter);
         //  Add back to hand
-        else player.hand.splice(targetIndex, 0, letter);
+        else {
+          player.hand.splice(targetIndex, 0, letter);
+        }
       }
     },
     shuffleHand: (state) => {
@@ -128,7 +154,10 @@ export const gameSlice = createSlice({
         }
         returnEverythingToHandHelper(state);
 
-        socket.emit("Switch", { switchedIndices, state });
+        socket.emit("Switch", {
+          switchedIndices,
+          state: stripDraggingValues(state),
+        });
       }
     },
     pass: (state) => {
@@ -138,7 +167,7 @@ export const gameSlice = createSlice({
       if (!playersTurn) return;
 
       socket.emit("Pass", {
-        state,
+        state: stripDraggingValues(state),
       });
     },
     returnEverythingToHand: (state) => {
@@ -151,7 +180,7 @@ export const gameSlice = createSlice({
       if (!playersTurn) return;
 
       socket.emit("Play", {
-        state,
+        state: stripDraggingValues(state),
       });
     },
 
@@ -180,6 +209,12 @@ export const gameSlice = createSlice({
         }
       }
     },
+    setDraggingValues: (
+      state,
+      action: PayloadAction<Partial<DraggingValues>>
+    ) => {
+      state.draggingValues = { ...state.draggingValues, ...action.payload };
+    },
   },
 });
 
@@ -197,6 +232,7 @@ export const {
   returnEverythingToHand,
   leaveGame,
   setGameRoomId,
+  setDraggingValues,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
