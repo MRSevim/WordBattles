@@ -1,13 +1,8 @@
 //generators
-import {
-  GameState,
-  HAND_SIZE,
-  InitialLetters,
-  LettersArray,
-} from "../types/gameTypes";
+import { GameState, InitialLetters, LettersArray } from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
 import { Socket } from "../types/types";
-import { gameTime, generateGuestId, letters } from "./misc";
+import { gameTime, generateGuestId, letters, HAND_SIZE } from "./misc";
 
 export const generateGameState = (socket: Socket, _socket: Socket) => {
   const letterPool = generateLetterPool(letters);

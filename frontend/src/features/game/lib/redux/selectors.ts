@@ -8,6 +8,8 @@ export const selectGameHistory = (state: RootState) => state.game.history;
 export const selectUndrawnLetterPool = (state: RootState) =>
   state.game.undrawnLetterPool;
 export const selectGameRoomId = (state: RootState) => state.game.roomId;
+export const selectEmptyLetterIds = (state: RootState) =>
+  state.game.emptyLetterIds;
 
 //players
 export const selectPlayers = (state: RootState) => state.game.players;
@@ -43,8 +45,6 @@ export const selectSwitchValues = (state: RootState) =>
 //initial data
 export const selectInitialPlayerData = (state: RootState) =>
   state.initialData.players;
-export const selectEmptyLetterIds = (state: RootState) =>
-  state.initialData.emptyLetterIds;
 export const selectValidLetters = (state: RootState) =>
   state.initialData.validLetters;
 

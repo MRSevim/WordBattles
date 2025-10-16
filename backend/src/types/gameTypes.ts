@@ -16,8 +16,6 @@ export interface Letter {
   id: string;
 }
 
-export const HAND_SIZE = 7;
-
 export type LettersArray = Letter[];
 export type HistoryArray = History[];
 

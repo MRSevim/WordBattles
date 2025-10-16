@@ -2,12 +2,7 @@
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useEffect } from "react";
-import {
-  GameState,
-  GameStateWithEmptyLetterIds,
-  InitialDataRaw,
-  Player,
-} from "../types/gameTypes";
+import { GameState, InitialDataRaw, Player } from "../types/gameTypes";
 import {
   leaveGame,
   setGameState,
@@ -25,7 +20,7 @@ export default function useGameSockets() {
       toast.error(error);
     });
 
-    socket.on("Play Made", (game: GameStateWithEmptyLetterIds) => {
+    socket.on("Play Made", (game: GameState) => {
       dispatch(setGameState(game));
     });
 
@@ -52,7 +47,7 @@ export default function useGameSockets() {
       }
     );
 
-    socket.on("Start Game", (game: GameStateWithEmptyLetterIds) => {
+    socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
       setCookie("roomId", game.roomId, 7);
     });

@@ -7,7 +7,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState = {
   players: [],
-  emptyLetterIds: [],
   validLetters: [],
 } as InitialData;
 
@@ -20,7 +19,6 @@ export const initialDataSlice = createSlice({
         id: player.id,
         username: player.username,
       }));
-      state.emptyLetterIds = action.payload.emptyLetterIds;
       state.validLetters = action.payload.validLetters;
     },
   },

@@ -10,11 +10,12 @@ export function generateGuestId(prefix = "konuk") {
   return `${prefix}-${suffix}`;
 }
 
-export const sendInitialData = (io: Io, gameState: GameState) =>
+export const sendInitialData = (io: Io, gameState: GameState) => {
   io.to(gameState.roomId).emit("Initialize Data", {
     ...gameState,
     validLetters: gameState.lang === "tr" ? validTurkishLetters : [],
   });
+};
 
 export const gameTime = 100000;
 
@@ -54,3 +55,5 @@ export const letters: InitialLetters[] = [
 export const validTurkishLetters: string[] = letters
   .filter((letter) => letter.letter !== "")
   .map((letter) => letter.letter);
+
+export const HAND_SIZE = 7;

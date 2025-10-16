@@ -52,7 +52,7 @@ export async function loadGameFromDB(
     return {
       status: game.status as GameStatus,
       players: game.players as any as Player[],
-      lang: game.players as any as Lang,
+      lang: game.lang as any as Lang,
       undrawnLetterPool: game.undrawnLetters as any as LettersArray,
       roomId: game.roomId,
       passCount: game.passCount,

@@ -45,6 +45,7 @@ export interface History {
 export interface GameState {
   status: GameStatus;
   players: Player[];
+  emptyLetterIds: string[];
   undrawnLetterPool: LettersArray;
   roomId: string;
   passCount: number;
@@ -73,17 +74,10 @@ export interface MoveAction {
 
 export type InitialData = {
   players: { username: string; id: string }[];
-  emptyLetterIds: string[];
   validLetters: string[];
 };
 
 export type InitialDataRaw = {
   players: Player[];
-  emptyLetterIds: string[];
   validLetters: string[];
-};
-
-//this type is only sent from backend, it is not needed in frontend
-export type GameStateWithEmptyLetterIds = GameState & {
-  emptyLetterIds: string[];
 };

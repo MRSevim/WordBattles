@@ -50,11 +50,7 @@ export const LetterOnHand = ({
     (letter) => letter.id === draggingActive
   );
 
-  if (
-    draggingActiveIndex !== -1 &&
-    draggingOverIndex !== -1 &&
-    draggingActive !== id
-  ) {
+  if (draggingActive && draggingOver && draggingActive !== id) {
     if (
       draggingOverIndex > draggingActiveIndex &&
       i <= draggingOverIndex &&
@@ -70,11 +66,7 @@ export const LetterOnHand = ({
     }
   }
 
-  if (
-    draggingActiveIndex !== -1 &&
-    draggingOverIndex !== -1 &&
-    draggingOverIndex <= i
-  ) {
+  if (draggingActive && draggingOverIndex !== -1 && draggingOverIndex <= i) {
     translateValue = 1;
   }
 

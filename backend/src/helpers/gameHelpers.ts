@@ -3,7 +3,6 @@
 import {
   Board,
   CheckedWords,
-  HAND_SIZE,
   LettersArray,
   Player,
   WordWithCoordinates,
@@ -15,7 +14,7 @@ import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
 import { Io } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
-import { gameTime, letters } from "./misc";
+import { gameTime, HAND_SIZE, letters } from "./misc";
 
 // Function to check game end conditions
 const checkGameEnd = (state: GameState) => {
