@@ -1,7 +1,8 @@
 import {
   Board,
   GameState,
-  GameStateWithDragging,
+  GameStateWithInteractivity,
+  GameStatus,
   LettersArray,
   Player,
 } from "@/features/game/utils/types/gameTypes";
@@ -16,10 +17,17 @@ export const checkPlayersTurn = (player: Player | undefined) => {
     } else return true;
   }
 };
+
+export const checkPlaying = (status: GameStatus) => {
+  const isPlaying = status === "playing";
+  if (!isPlaying) toast.error("You are not in an active game currently!");
+  return isPlaying;
+};
+
 export const shuffle = (array: any[]) => {
   let currentIndex = array.length;
 
-  // While there remain elements to shuffle...
+  // While there are remain elements to shuffle...
   while (currentIndex != 0) {
     // Pick a remaining element...
     let randomIndex = Math.floor(Math.random() * currentIndex);
@@ -62,7 +70,7 @@ export const findInBoard = (board: Board, targetId: string) => {
   }
 };
 
-export const stripDraggingValues = (state: GameStateWithDragging) => {
-  const { draggingValues, ...rest } = state;
+export const getStrippedState = (state: GameStateWithInteractivity) => {
+  const { draggingValues, switching, switchIndices, ...rest } = state;
   return rest;
 };

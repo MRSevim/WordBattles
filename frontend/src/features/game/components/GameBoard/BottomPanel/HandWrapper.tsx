@@ -1,8 +1,6 @@
 import {
   selectDraggingActive,
   selectDraggingActiveIndex,
-  selectDraggingOver,
-  selectDraggingOverIndex,
   selectGameStatus,
   selectIsSwitching,
   selectPlayerHand,

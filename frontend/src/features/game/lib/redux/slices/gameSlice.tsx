@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { findSocketPlayer, initialBoard } from "@/features/game/utils/helpers";
 import { socket } from "@/features/game/lib/socket.io/socketio";
@@ -7,17 +7,18 @@ import {
   Coordinates,
   DraggingValues,
   GameState,
-  GameStateWithDragging,
+  GameStateWithInteractivity,
   GameStatus,
   Player,
 } from "@/features/game/utils/types/gameTypes";
 import {
   checkPlayersTurn,
+  checkPlaying,
   findInBoard,
   findInHand,
+  getStrippedState,
   returnEverythingToHandHelper,
   shuffle,
-  stripDraggingValues,
 } from "@/features/game/utils/reduxSliceHelpers";
 
 const initialDraggingValues = {
@@ -26,7 +27,7 @@ const initialDraggingValues = {
   activeLetter: null,
 };
 
-const initialState: GameStateWithDragging = {
+const initialState: GameStateWithInteractivity = {
   status: "idle",
   players: [],
   undrawnLetterPool: [],
@@ -37,23 +38,27 @@ const initialState: GameStateWithDragging = {
   board: initialBoard,
   history: [],
   draggingValues: initialDraggingValues,
+  switching: false,
+  switchIndices: [],
 };
 
 export const gameSlice = createSlice({
   name: "game",
-  initialState: initialState as GameStateWithDragging,
+  initialState: initialState as GameStateWithInteractivity,
   reducers: {
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.status = action.payload;
     },
     leaveGame: (state) => {
-      socket.emit("Leave Game", { state: stripDraggingValues(state) });
+      socket.emit("Leave Game", { state: getStrippedState(state) });
       return initialState;
     },
-    setGameState: (_state, action: PayloadAction<GameState>) => {
+    setGameState: (state, action: PayloadAction<GameState>) => {
       return {
         ...action.payload,
         draggingValues: initialDraggingValues,
+        switching: state.switching,
+        switchIndices: state.switchIndices,
       };
     },
     setGameRoomId: (state, action: PayloadAction<string>) => {
@@ -73,10 +78,13 @@ export const gameSlice = createSlice({
     moveLetter: (state, action: PayloadAction<Coordinates | undefined>) => {
       const player = findSocketPlayer(state);
 
+      const isPlaying = checkPlaying(state.status);
+
       if (
         !player ||
         !state.draggingValues.active ||
-        !state.draggingValues.activeLetter
+        !state.draggingValues.activeLetter ||
+        !isPlaying
       )
         return;
 
@@ -129,34 +137,43 @@ export const gameSlice = createSlice({
     },
     shuffleHand: (state) => {
       const player = findSocketPlayer(state);
-      if (player) {
+      const isPlaying = checkPlaying(state.status);
+      if (player && isPlaying) {
         shuffle(player.hand);
       }
     },
-    _switch: (state, action: PayloadAction<number[]>) => {
+    _switch: (state) => {
       const player = findSocketPlayer(state);
-      const switchedIndices = action.payload;
+      const switchedIndices = state.switchIndices;
+      const isPlaying = checkPlaying(state.status);
+      const playersTurn = checkPlayersTurn(player);
 
-      if (player) {
-        const playersTurn = checkPlayersTurn(player);
-        if (!playersTurn) return;
+      const switchIndicesLength = state.switchIndices.length;
 
-        if (switchedIndices.length > player.hand.length) {
+      if (switchIndicesLength === 0) {
+        toast.error("Please select letters to switch with pool");
+        return;
+      }
+
+      if (player && isPlaying && playersTurn) {
+        if (switchIndicesLength > player.hand.length) {
           toast.error(
             "Değişmek istediğiniz harf sayısı elinizdeki harf sayısından fazla"
           );
           return;
         }
 
-        if (switchedIndices.length > state.undrawnLetterPool.length) {
+        if (switchIndicesLength > state.undrawnLetterPool.length) {
           toast.error("Havuzda yeterli harf yok");
           return;
         }
         returnEverythingToHandHelper(state);
+        state.switching = false;
+        state.switchIndices = [];
 
         socket.emit("Switch", {
           switchedIndices,
-          state: stripDraggingValues(state),
+          state: getStrippedState(state),
         });
       }
     },
@@ -164,23 +181,31 @@ export const gameSlice = createSlice({
       const player = findSocketPlayer(state);
 
       const playersTurn = checkPlayersTurn(player);
-      if (!playersTurn) return;
+      const isPlaying = checkPlaying(state.status);
+      if (!playersTurn || !isPlaying) return;
 
       socket.emit("Pass", {
-        state: stripDraggingValues(state),
+        state: getStrippedState(state),
       });
     },
     returnEverythingToHand: (state) => {
-      returnEverythingToHandHelper(state);
+      const player = findSocketPlayer(state);
+      const playersTurn = checkPlayersTurn(player);
+      const isPlaying = checkPlaying(state.status);
+
+      if (isPlaying && playersTurn) {
+        returnEverythingToHandHelper(state);
+      }
     },
     makePlay: (state) => {
       const player = findSocketPlayer(state);
 
+      const isPlaying = checkPlaying(state.status);
       const playersTurn = checkPlayersTurn(player);
-      if (!playersTurn) return;
+      if (!playersTurn || !isPlaying) return;
 
       socket.emit("Play", {
-        state: stripDraggingValues(state),
+        state: getStrippedState(state),
       });
     },
 
@@ -192,10 +217,11 @@ export const gameSlice = createSlice({
       }>
     ) => {
       const player = findSocketPlayer(state);
+      const isPlaying = checkPlaying(state.status);
 
       const { newLetter, targetId } = action.payload;
 
-      if (player) {
+      if (player && isPlaying) {
         const inHandIndex = findInHand(player.hand, targetId);
         if (inHandIndex !== -1) {
           player.hand[inHandIndex].letter = newLetter;
@@ -213,7 +239,48 @@ export const gameSlice = createSlice({
       state,
       action: PayloadAction<Partial<DraggingValues>>
     ) => {
-      state.draggingValues = { ...state.draggingValues, ...action.payload };
+      const isPlaying = checkPlaying(state.status);
+      if (!isPlaying) return;
+      const payload = action.payload;
+      if (payload.active !== undefined)
+        state.draggingValues.active = payload.active;
+      if (payload.over !== undefined) state.draggingValues.over = payload.over;
+      if (payload.activeLetter !== undefined)
+        state.draggingValues.activeLetter = payload.activeLetter;
+    },
+    toggleSwitching: (state) => {
+      const isPlaying = checkPlaying(state.status);
+      const hand = findSocketPlayer(state)?.hand;
+      if (!isPlaying || !hand) return;
+      if (!state.switching) {
+        state.switching = true;
+        //put all the hand as switch values
+
+        hand.forEach((_letter, i) => {
+          state.switchIndices.push(i);
+        });
+      } else {
+        state.switching = false;
+        state.switchIndices = [];
+      }
+    },
+    changeSwitchValue: (state, action: PayloadAction<number>) => {
+      const i = action.payload;
+      if (i !== undefined) {
+        if (state.switchIndices.includes(i)) {
+          const array = state.switchIndices;
+          const index = array.indexOf(i);
+          if (index > -1) {
+            // only splice array when item is found
+            array.splice(index, 1); // 2nd parameter means remove one item only
+          }
+        } else {
+          state.switchIndices.push(i);
+        }
+        if (state.switchIndices.length === 0) {
+          state.switching = false;
+        }
+      }
     },
   },
 });
@@ -233,6 +300,8 @@ export const {
   leaveGame,
   setGameRoomId,
   setDraggingValues,
+  toggleSwitching,
+  changeSwitchValue,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

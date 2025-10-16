@@ -23,7 +23,7 @@ export const selectPlayerHand = (state: RootState) => {
   return player?.hand;
 };
 
-//dragging related
+//dragging
 export const selectDraggingActive = (state: RootState) =>
   state.game.draggingValues.active;
 export const selectDraggingOver = (state: RootState) =>
@@ -53,12 +53,12 @@ export const selectDraggedLetter = (state: RootState) =>
 export const selectIsSwitchingActive =
   (state: RootState) => (i: number | undefined) => {
     return (
-      state.switch.switchValues.includes(i as number) && state.switch.switching
+      state.game.switchIndices.includes(i as number) && state.game.switching
     );
   };
-export const selectIsSwitching = (state: RootState) => state.switch.switching;
+export const selectIsSwitching = (state: RootState) => state.game.switching;
 export const selectSwitchValues = (state: RootState) =>
-  state.switch.switchValues;
+  state.game.switchIndices;
 
 //initial data
 export const selectInitialPlayerData = (state: RootState) =>

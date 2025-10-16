@@ -172,7 +172,7 @@ export const runSocketLogic = (io: Io) => {
 
     socket.on("Play", async ({ state }: { state: GameState }) => {
       const { board, players, roomId, undrawnLetterPool } = state;
-
+      console.log(state.lang);
       const id = socket.id;
 
       // Find the player who made the play

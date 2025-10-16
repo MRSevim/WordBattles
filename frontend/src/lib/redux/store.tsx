@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameSlice from "@/features/game/lib/redux/slices/gameSlice";
-import switchSlice from "@/features/game/lib/redux/slices/switchSlice";
 import sidePanelToggleSlice from "@/features/game/lib/redux/slices/sidePanelToggleSlice";
 import userSlice from "@/features/auth/lib/redux/slices/userSlice";
 import letterPoolToggleSlice from "@/features/game/lib/redux/slices/letterPoolToggleSlice";
@@ -10,7 +9,6 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       game: gameSlice,
-      switch: switchSlice,
       sidePanelOpen: sidePanelToggleSlice,
       user: userSlice,
       letterPoolOpen: letterPoolToggleSlice,

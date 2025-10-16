@@ -1,6 +1,6 @@
 import { Letter } from "../../../../utils/types/gameTypes";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { changeSwitchValue } from "../../../../lib/redux/slices/switchSlice";
+import { changeSwitchValue } from "@/features/game/lib/redux/slices/gameSlice";
 import { Draggable } from "./Draggable";
 import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 import {

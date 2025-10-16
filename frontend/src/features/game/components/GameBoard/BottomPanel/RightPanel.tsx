@@ -10,7 +10,6 @@ import {
   selectIsSwitching,
   selectSwitchValues,
 } from "@/features/game/lib/redux/selectors";
-import { toggleSwitching } from "@/features/game/lib/redux/slices/switchSlice";
 
 const RightPanel = () => {
   const dispatch = useAppDispatch();
@@ -39,7 +38,6 @@ const RightPanel = () => {
 const PlayButton = () => {
   const dispatch = useAppDispatch();
   const switching = useAppSelector(selectIsSwitching);
-  const switchValues = useAppSelector(selectSwitchValues);
 
   return (
     <Button
@@ -47,8 +45,7 @@ const PlayButton = () => {
       title="Oyunu Gönder"
       onClick={() => {
         if (switching) {
-          dispatch(_switch(switchValues));
-          dispatch(toggleSwitching());
+          dispatch(_switch());
         } else {
           dispatch(makePlay());
         }

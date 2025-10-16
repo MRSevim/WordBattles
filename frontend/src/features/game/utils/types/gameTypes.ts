@@ -61,8 +61,10 @@ export interface GameState {
   history: History[];
 }
 
-export interface GameStateWithDragging extends GameState {
+export interface GameStateWithInteractivity extends GameState {
   draggingValues: DraggingValues;
+  switchIndices: number[];
+  switching: boolean;
 }
 
 export interface Coordinates {
