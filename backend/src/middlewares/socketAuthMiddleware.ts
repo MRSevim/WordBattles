@@ -21,7 +21,7 @@ export const useSocketAuthMiddleware = (io: Io) => {
       if (user) {
         socket.user = user;
       }
-
+      console.log(cookies.sessionId);
       roomId = user?.currentRoomId || cookies.roomId;
       sessionId = user?.id || cookies.sessionId;
 
