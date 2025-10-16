@@ -9,7 +9,6 @@ import {
   Letter,
   GameState,
 } from "../types/gameTypes";
-import { clearTimerIfExist } from "./timerRelated";
 import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
 import { Io } from "../types/types";
@@ -124,16 +123,9 @@ export const switchTurns = (state: GameState, io: any) => {
     currentPlayer.turn = false;
     currentPlayer.timer = gameTime;
     opponentPlayer.turn = true;
-
-    io.to(roomId).emit("Play Made", state);
-
-    saveGame(state, io);
-  } else {
-    //clear game timer after saving to storage
-    saveGame(state, io);
-    clearTimerIfExist(roomId);
-    io.to(roomId).emit("Play Made", state);
   }
+  saveGame(state, io);
+  io.to(roomId).emit("Play Made", state);
 };
 
 export const saveGame = (state: GameState, io: Io) => {
