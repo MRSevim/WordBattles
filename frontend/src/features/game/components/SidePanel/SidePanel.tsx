@@ -68,7 +68,7 @@ const Players = () => {
   const players = useAppSelector(selectPlayers);
 
   return (
-    <div className="flex align-center justify-around mb-2 xxs:mb-8">
+    <div className="flex align-center justify-around mb-0 xs:mb-2 sm:mb-6">
       {players.map((player) => (
         <PlayerContainer key={player.id} player={player} />
       ))}

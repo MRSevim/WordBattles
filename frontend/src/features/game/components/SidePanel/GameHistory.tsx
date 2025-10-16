@@ -11,8 +11,8 @@ import { useEffect, useRef, useState } from "react";
 
 export const GameHistory = () => {
   return (
-    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto">
-      <h2 className="text-base xxs:text-xl font-bold text-center mb-6 text-gray-800">
+    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto max-h-80">
+      <h2 className="text-base xxs:text-xl font-bold text-center mb-1 sm:mb-4 text-gray-800">
         Oyun Geçmişi
       </h2>
       <HistoryInner />
