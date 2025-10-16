@@ -86,7 +86,11 @@ const PlayerContainer = ({ player }: { player: Player }) => {
         (player.id === socket.sessionId ? "border-amber-500" : "")
       }
     >
-      <UsernameAndScore username={player.username} score={player.score} />
+      <UsernameAndScore
+        username={player.username}
+        score={player.score}
+        leftTheGame={player.leftTheGame}
+      />
       <div className="mt-2 w-20">
         <p
           className={
@@ -108,12 +112,15 @@ const PlayerContainer = ({ player }: { player: Player }) => {
 const UsernameAndScore = ({
   username,
   score,
+  leftTheGame,
 }: {
   username: string;
+  leftTheGame: boolean;
   score: number;
 }) => (
   <>
     <p>{username}</p>
+    {leftTheGame && <p className="font-bold">(Left)</p>}
     Puan: {score}
   </>
 );

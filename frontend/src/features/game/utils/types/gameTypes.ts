@@ -28,6 +28,7 @@ export interface Player {
   turn: boolean;
   id: string;
   score: number;
+  leftTheGame: boolean;
   timer: number;
   passCount: number;
 }

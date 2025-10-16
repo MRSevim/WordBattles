@@ -17,6 +17,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       id: socket.sessionId,
       score: 0,
       passCount: 0,
+      leftTheGame: false,
       timer: gameTime,
     },
     {
@@ -27,6 +28,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
       id: _socket.sessionId,
       score: 0,
       passCount: 0,
+      leftTheGame: false,
       timer: gameTime,
     },
   ];

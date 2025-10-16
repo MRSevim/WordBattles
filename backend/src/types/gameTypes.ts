@@ -27,6 +27,7 @@ export interface Player {
   turn: boolean;
   id: string;
   score: number;
+  leftTheGame: boolean;
   timer: number;
   passCount: number; //This only increases when timer runs out on player's turn or player passes
   email?: string;

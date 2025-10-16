@@ -150,14 +150,16 @@ export const runSocketLogic = (io: Io) => {
       ) {
         applyPointDifference(state);
       }
+      if (leavingPlayer) {
+        leavingPlayer.leftTheGame = true;
+      }
       state.status = "ended";
       socket.leave(roomId);
       updateCurrentRoomIdInDB(socket.user?.id, undefined);
 
-      // Check how many sockets are in the room
-      const roomSockets = io.sockets.adapter.rooms.get(roomId);
+      const everybodyLeft = state.players.every((player) => player.leftTheGame);
 
-      if (!roomSockets) {
+      if (everybodyLeft) {
         // If no sockets are left, remove the game from storage
         removeGameFromMemory(roomId);
         removeGameFromDB(roomId);
