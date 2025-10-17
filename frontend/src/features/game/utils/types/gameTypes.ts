@@ -1,3 +1,5 @@
+import { Lang } from "@/features/language/helpers/types";
+
 export interface Letter {
   letter: string;
   point: number;
@@ -57,7 +59,7 @@ export interface GameState {
   roomId: string;
   passCount: number;
   board: Board;
-  lang: "tr" | "en";
+  lang: Lang;
   history: History[];
 }
 

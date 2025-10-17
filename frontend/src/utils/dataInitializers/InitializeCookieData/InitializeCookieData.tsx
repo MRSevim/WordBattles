@@ -1,6 +1,4 @@
 "use client";
-import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
-import { User } from "@/features/auth/utils/types";
 import {
   setGameRoomId,
   setGameStatus,
@@ -9,16 +7,13 @@ import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { useEffect } from "react";
 
-const InitializeData = ({
-  user,
-  roomId,
-  sessionId,
+const InitializeCookieData = ({
+  cookies,
 }: {
-  user: User;
-  roomId?: string;
-  sessionId?: string;
+  cookies: { sessionId?: string; roomId?: string };
 }) => {
   const dispatch = useAppDispatch();
+  const { sessionId, roomId } = cookies;
 
   useEffect(() => {
     //RoomId takes precedence over sessionId
@@ -35,11 +30,7 @@ const InitializeData = ({
     }
   }, [roomId, dispatch]);
 
-  useEffect(() => {
-    dispatch(setUser(user));
-  }, [dispatch, user]);
-
   return null;
 };
 
-export default InitializeData;
+export default InitializeCookieData;

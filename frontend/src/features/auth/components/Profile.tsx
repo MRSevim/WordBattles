@@ -10,6 +10,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { setUser } from "../lib/redux/slices/userSlice";
 import { routeStrings } from "@/utils/routeStrings";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -17,10 +19,11 @@ const Profile = () => {
   const userImage = useAppSelector(selectUser)?.image;
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [locale] = useLocaleContext();
 
   const [error, action, isPending] = useActionState(async () => {
-    if (confirmation !== "delete account")
-      return "Please type 'delete account' to confirm account deletion";
+    const text = t(locale, "auth.profile.confirmText");
+    if (confirmation !== text) return t(locale, "auth.profile.confirmPrompt");
 
     const { error } = await deleteUser();
     if (!error) {
@@ -36,7 +39,7 @@ const Profile = () => {
       {userImage && (
         <Image
           src={userImage}
-          alt="User Avatar"
+          alt={t(locale, "avatar")}
           width={96}
           height={96}
           className="rounded-full object-cover"
@@ -48,7 +51,7 @@ const Profile = () => {
         className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
       >
         <i className="bi bi-trash"></i>
-        Delete Account
+        {t(locale, "auth.profile.confirmButton")}
       </button>
 
       {/* Modal */}
@@ -56,14 +59,15 @@ const Profile = () => {
         <Modal>
           <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 mb-20">
             <h2 className="text-lg font-semibold text-red-600 mb-2">
-              Confirm Account Deletion
+              {t(locale, "auth.profile.confirmDeletion")}
             </h2>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              This action is permanent and cannot be undone. Please type{" "}
-              <span className="font-semibold">delete account</span> below to
-              confirm. <br />
-              Note that all of your personal data will be deleted. You will be
-              redirected to the homepage if deletion is successful.
+              {t(locale, "auth.profile.deleteP1")}{" "}
+              <span className="font-semibold">
+                {t(locale, "auth.profile.confirmText")}
+              </span>{" "}
+              {t(locale, "auth.profile.deleteP2")} <br />
+              {t(locale, "auth.profile.deleteP3")}
             </p>
 
             <form action={action}>
@@ -71,7 +75,7 @@ const Profile = () => {
                 type="text"
                 value={confirmation}
                 onChange={(e) => setConfirmation(e.target.value)}
-                placeholder="delete account"
+                placeholder={t(locale, "auth.profile.confirmText")}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
               />
 
@@ -83,18 +87,24 @@ const Profile = () => {
                   onClick={() => setOpen(false)}
                   className="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
                 >
-                  Cancel
+                  {t(locale, "cancel")}
                 </button>
                 <button
                   type="submit"
-                  disabled={confirmation !== "delete account" || isPending}
+                  disabled={
+                    confirmation !== t(locale, "auth.profile.confirmText") ||
+                    isPending
+                  }
                   className={`px-4 py-2 rounded-md text-white font-medium transition ${
-                    confirmation !== "delete account" || isPending
+                    confirmation !== t(locale, "auth.profile.confirmText") ||
+                    isPending
                       ? "bg-red-400 cursor-not-allowed"
                       : "bg-red-600 hover:bg-red-700 cursor-pointer"
                   }`}
                 >
-                  {isPending ? "Deleting..." : "Confirm Delete"}
+                  {isPending
+                    ? t(locale, "auth.profile.deleting")
+                    : t(locale, "auth.profile.confirmDelete")}
                 </button>
               </div>
             </form>

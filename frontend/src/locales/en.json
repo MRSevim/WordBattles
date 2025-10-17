@@ -1,0 +1,66 @@
+{
+  "loading": "Loading. Please wait...",
+  "cancel": "Cancel",
+  "avatar": "User Avatar",
+  "continuteWithGoogle": "Continute with Google",
+  "signIn": "Sign in",
+  "errorBoundary": {
+    "somethingWentWrong": "Something went wrong!",
+    "tryAgain": "Try again...",
+    "unexpected": "An unexpected error occurred. Please try again..."
+  },
+  "langSwitcher": {
+    "language": "Language",
+    "cantSwitch": "You cannot switch languages right now!",
+    "langTurkish": "Turkish",
+    "langEnglish": "English (US)"
+  },
+  "header": {
+    "about": "About The Game",
+    "leaderboard": "Leaderboard",
+    "userMenu": {
+      "cantLogout": "You cannot logout right now!",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  },
+  "about": {
+    "howToPlay": "How to Play?",
+    "p1": "Each player draws 7 letters randomly from the 100-letter pool, and the player who gets the letter closest to A starts the game. Empty letters take priority over A. If the proximity is the same, a player is chosen randomly.",
+    "p2": "The first player, in the first turn, creates a meaningful word (present in the TDK dictionary, words are fetched from https://sozluk.gov.tr/gts?ara='word', replacing 'word' with the searched word) using the letters in hand, starting from the center cell, horizontally or vertically. (The player places the letters on the cells and presses the submit button). Placed letters must be aligned either horizontally or vertically. Words that are aligned both horizontally and vertically are invalid. Single-letter words are not counted even if they exist in the TDK dictionary. After making a valid move, changing letters, passing a turn, or when time runs out, the turn passes to the next player.",
+    "p3": "If players create valid words, they earn points (see Point Calculation) and draw letters from the letter pool to replenish their hand to seven letters.",
+    "p4": "The other player then attempts to create words in the same way. Letters cannot be placed on occupied cells. Words must be connected horizontally or vertically to at least one existing letter. Players can create multiple words per turn, continuing from the second player onward. Diagonal, disconnected, or misaligned words are not allowed.",
+    "p5": "The game ends under the following conditions: 1. When all letters in the pool are drawn and a player has used all letters in hand, 2. Four consecutive passes, 3. A player passes two turns in a row, 4. A player leaves the game.",
+    "pointCalculation": "Point Calculation",
+    "p6": "Players earn points equal to the sum of the letters in the word(s) they create. (See Letter Pool)",
+    "p7": "Placing letters/words on bonus cells grants extra points. Placing a letter on a double letter cell (H2) doubles its points, while a triple letter cell (H3) triples it. Placing a word on a double word cell (K2) doubles the word score, while a triple word cell (K3) triples it. Letter bonuses are calculated first, then word bonuses are applied. If a bonus letter cell is part of multiple words, the bonus applies to all words. If multiple word bonuses affect a word, multipliers stack. Blank letters do not score points, but if placed on a word bonus, the word bonus still applies. The center cell provides a double word bonus.",
+    "p8": "If a player uses all 7 letters successfully in one turn, it is a Bingo, and the player earns an extra 50 points after calculating the word score.",
+    "p9": "If all letters are drawn and a player empties their hand, that player earns points equal to the number of letters remaining in the other player’s hand. The other player loses points equal to their remaining letters.",
+    "p10": "At the end of the game, the point difference between two players is added to each player’s ranked score. For example, if the game ends with a 30-point difference, the winner gains +30 ranked points, and the loser loses -30. Ranked point adjustments are applied only if both players are signed in to their account.",
+    "p11": "If a player leaves the game (either exits or passes two turns in a row) before it ends, and they were behind, the point difference before leaving is added to the players' ranked scores. Otherwise, ranked scores remain unchanged.",
+    "letterPool": "Letter Pool",
+    "letter": "Letter",
+    "points": "Points",
+    "amount": "Amount",
+    "empty": "Empty"
+  },
+  "pagination": {
+    "goToFirst": "Go to first page.",
+    "goToPrev": "Go to previous page.",
+    "goToNext": "Go to next page.",
+    "goToLast": "Go to last page."
+  },
+  "auth": {
+    "profile": {
+      "confirmText": "delete account",
+      "confirmButton": "Delete Account",
+      "confirmPrompt": "Please type 'delete account' to confirm.",
+      "confirmDeletion": "Account Deletion Confirmation",
+      "deleteP1": "This action is permanent and cannot be undone. Please type ",
+      "deleteP2": "to confirm the deletion.",
+      "deleteP3": "All your personal data will be deleted. If the deletion is successful, you will be redirected to the homepage!",
+      "confirmDelete": "Confirm Deletion",
+      "deleting": "Deleting..."
+    }
+  }
+}

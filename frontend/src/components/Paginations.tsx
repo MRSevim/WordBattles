@@ -1,4 +1,6 @@
 "use client";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 import { usePathname, useRouter } from "next/navigation";
 
 interface PaginationProps {
@@ -20,6 +22,7 @@ export default function Pagination({
 }: PaginationProps) {
   const pathname = usePathname();
   const { replace } = useRouter();
+  const [locale] = useLocaleContext();
 
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -42,6 +45,7 @@ export default function Pagination({
         {/* First Page */}
         <button
           onClick={() => handlePageChange(1)}
+          aria-label={t(locale, "pagination.goToFirst")}
           disabled={currentPage === 1}
           className={`${buttonClasses} ${
             currentPage === 1 ? disabledButtonClasses : activeButtonClasses
@@ -54,6 +58,7 @@ export default function Pagination({
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label={t(locale, "pagination.goToPrev")}
           className={`${buttonClasses} ${
             currentPage === 1 ? disabledButtonClasses : activeButtonClasses
           }`}
@@ -77,6 +82,7 @@ export default function Pagination({
         {/* Next Button */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
+          aria-label={t(locale, "pagination.goToNext")}
           disabled={currentPage === totalPages}
           className={`${buttonClasses} ${
             currentPage === totalPages
@@ -91,6 +97,7 @@ export default function Pagination({
         <button
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
+          aria-label={t(locale, "pagination.goToLast")}
           className={`${buttonClasses} ${
             currentPage === totalPages
               ? disabledButtonClasses

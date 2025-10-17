@@ -4,7 +4,11 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Wrapper from "@/utils/Wrapper";
 import { Header } from "@/components/Header/Header";
-import LoadInitialData from "@/utils/dataInitializer/LoadInitialData";
+import LoadCookieData from "@/utils/dataInitializers/InitializeCookieData/LoadCookieData";
+import LoadUserData from "@/utils/dataInitializers/InitializeUserData/LoadUserData";
+import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
+import { cookies } from "next/headers";
+import { getLocaleFromCookie } from "@/features/language/lib/i18n";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -13,22 +17,28 @@ const geistSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "WordBattles",
-  description: "Test your vocabulary skills, Online scrabble game",
+  description:
+    "Test your vocabulary skills, Online scrabble game with English and Turkish options",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialLocale = await getLocaleFromCookie(cookies);
+
   return (
     <html lang="en">
       <body className={`${geistSans.className} antialiased`}>
         <Wrapper>
-          <LoadInitialData />
-          <Header />
-          {children}
-          <Analytics />
+          <LocaleContextProvider initialLocale={initialLocale}>
+            <LoadCookieData />
+            <LoadUserData />
+            <Header />
+            {children}
+            <Analytics />
+          </LocaleContextProvider>
         </Wrapper>
       </body>
     </html>

@@ -6,10 +6,7 @@ import {
   makePlay,
   pass,
 } from "@/features/game/lib/redux/slices/gameSlice";
-import {
-  selectIsSwitching,
-  selectSwitchValues,
-} from "@/features/game/lib/redux/selectors";
+import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
 
 const RightPanel = () => {
   const dispatch = useAppDispatch();

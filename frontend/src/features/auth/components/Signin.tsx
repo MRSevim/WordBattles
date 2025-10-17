@@ -1,13 +1,16 @@
 "use client";
 import Container from "@/components/Container";
 import { signInWithGoogle } from "../utils/apiCallsClient";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 const Signin = () => {
+  const [locale] = useLocaleContext();
   return (
     <Container className="flex items-center justify-center py-10">
       <div className="w-full max-w-md shadow-xl rounded-2xl p-8">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          Sign In
+          {t(locale, "signIn")}
         </h1>
 
         {/* Google Login */}
@@ -18,7 +21,7 @@ const Signin = () => {
         >
           <i className="bi bi-google text-xl"></i>
           <span className="font-medium text-gray-700">
-            Continue with Google
+            {t(locale, "continuteWithGoogle")}
           </span>
         </button>
       </div>
