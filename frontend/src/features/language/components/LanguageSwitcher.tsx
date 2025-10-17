@@ -42,9 +42,9 @@ export default function LanguageSwitcher() {
     if (gameStatus !== "idle") {
       return toast.error(t(locale, "langSwitcher.cantSwitch"));
     }
-    // set cookie for SSR persistence
+    // set cookie for persistence
     document.cookie = `locale=${lang}; path=/; max-age=31536000`; // 1 year
-    // update redux
+    // update context
     setLocale(lang);
     // refresh page
     router.refresh();
@@ -96,6 +96,7 @@ const Li = ({
     <li>
       <button
         onClick={() => {
+          console.log("first");
           onClick(item.lang);
         }}
         className="flex items-center w-full px-4 py-2 hover:bg-gray-100 rounded-lg transition"

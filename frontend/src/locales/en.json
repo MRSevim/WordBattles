@@ -2,7 +2,7 @@
   "loading": "Loading. Please wait...",
   "cancel": "Cancel",
   "avatar": "User Avatar",
-  "continuteWithGoogle": "Continute with Google",
+  "continueWithGoogle": "Continue with Google",
   "signIn": "Sign in",
   "errorBoundary": {
     "somethingWentWrong": "Something went wrong!",
@@ -57,7 +57,7 @@
       "confirmPrompt": "Please type 'delete account' to confirm.",
       "confirmDeletion": "Account Deletion Confirmation",
       "deleteP1": "This action is permanent and cannot be undone. Please type ",
-      "deleteP2": "to confirm the deletion.",
+      "deleteP2": "below to confirm the deletion.",
       "deleteP3": "All your personal data will be deleted. If the deletion is successful, you will be redirected to the homepage!",
       "confirmDelete": "Confirm Deletion",
       "deleting": "Deleting..."
