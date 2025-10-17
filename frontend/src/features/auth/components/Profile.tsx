@@ -12,6 +12,8 @@ import { setUser } from "../lib/redux/slices/userSlice";
 import { routeStrings } from "@/utils/routeStrings";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
+import useIsClient from "@/utils/hooks/isClient";
+import Spinner from "@/components/Spinner";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -20,6 +22,7 @@ const Profile = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [locale] = useLocaleContext();
+  const isClient = useIsClient();
 
   const [error, action, isPending] = useActionState(async () => {
     const text = t(locale, "auth.profile.confirmText");
@@ -36,80 +39,85 @@ const Profile = () => {
   }, "");
   return (
     <Container className="py-10 flex justify-center items-center gap-6">
-      {userImage && (
-        <Image
-          src={userImage}
-          alt={t(locale, "avatar")}
-          width={96}
-          height={96}
-          className="rounded-full object-cover"
-        />
-      )}
-      {/* Delete button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
-      >
-        <i className="bi bi-trash"></i>
-        {t(locale, "auth.profile.confirmButton")}
-      </button>
+      {!isClient && <Spinner />}
+      {isClient && (
+        <>
+          {userImage && (
+            <Image
+              src={userImage}
+              alt={t(locale, "avatar")}
+              width={96}
+              height={96}
+              className="rounded-full object-cover"
+            />
+          )}
+          {/* Delete button */}
+          <button
+            onClick={() => setOpen(true)}
+            className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
+          >
+            <i className="bi bi-trash"></i>
+            {t(locale, "auth.profile.confirmButton")}
+          </button>
 
-      {/* Modal */}
-      {open && (
-        <Modal>
-          <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 mb-20">
-            <h2 className="text-lg font-semibold text-red-600 mb-2">
-              {t(locale, "auth.profile.confirmDeletion")}
-            </h2>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              {t(locale, "auth.profile.deleteP1")}{" "}
-              <span className="font-semibold">
-                {t(locale, "auth.profile.confirmText")}
-              </span>{" "}
-              {t(locale, "auth.profile.deleteP2")} <br />
-              {t(locale, "auth.profile.deleteP3")}
-            </p>
+          {/* Modal */}
+          {open && (
+            <Modal>
+              <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 mb-20">
+                <h2 className="text-lg font-semibold text-red-600 mb-2">
+                  {t(locale, "auth.profile.confirmDeletion")}
+                </h2>
+                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                  {t(locale, "auth.profile.deleteP1")}{" "}
+                  <span className="font-semibold">
+                    {t(locale, "auth.profile.confirmText")}
+                  </span>{" "}
+                  {t(locale, "auth.profile.deleteP2")} <br />
+                  {t(locale, "auth.profile.deleteP3")}
+                </p>
 
-            <form action={action}>
-              <input
-                type="text"
-                value={confirmation}
-                onChange={(e) => setConfirmation(e.target.value)}
-                placeholder={t(locale, "auth.profile.confirmText")}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
+                <form action={action}>
+                  <input
+                    type="text"
+                    value={confirmation}
+                    onChange={(e) => setConfirmation(e.target.value)}
+                    placeholder={t(locale, "auth.profile.confirmText")}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
 
-              {error && <ErrorMessage error={error} />}
+                  {error && <ErrorMessage error={error} />}
 
-              <div className="flex justify-end gap-2 mt-5">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
-                >
-                  {t(locale, "cancel")}
-                </button>
-                <button
-                  type="submit"
-                  disabled={
-                    confirmation !== t(locale, "auth.profile.confirmText") ||
-                    isPending
-                  }
-                  className={`px-4 py-2 rounded-md text-white font-medium transition ${
-                    confirmation !== t(locale, "auth.profile.confirmText") ||
-                    isPending
-                      ? "bg-red-400 cursor-not-allowed"
-                      : "bg-red-600 hover:bg-red-700 cursor-pointer"
-                  }`}
-                >
-                  {isPending
-                    ? t(locale, "auth.profile.deleting")
-                    : t(locale, "auth.profile.confirmDelete")}
-                </button>
+                  <div className="flex justify-end gap-2 mt-5">
+                    <button
+                      type="button"
+                      onClick={() => setOpen(false)}
+                      className="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
+                    >
+                      {t(locale, "cancel")}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={
+                        confirmation !==
+                          t(locale, "auth.profile.confirmText") || isPending
+                      }
+                      className={`px-4 py-2 rounded-md text-white font-medium transition ${
+                        confirmation !==
+                          t(locale, "auth.profile.confirmText") || isPending
+                          ? "bg-red-400 cursor-not-allowed"
+                          : "bg-red-600 hover:bg-red-700 cursor-pointer"
+                      }`}
+                    >
+                      {isPending
+                        ? t(locale, "auth.profile.deleting")
+                        : t(locale, "auth.profile.confirmDelete")}
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-        </Modal>
+            </Modal>
+          )}
+        </>
       )}
     </Container>
   );

@@ -53,10 +53,9 @@ export default function LanguageSwitcher() {
   useHandleClickOutside({ dropdownRef, setOpen });
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left" ref={dropdownRef}>
       {/* Toggle Button */}
       <button
-        ref={dropdownRef}
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-all text-sm font-medium text-gray-700"
       >

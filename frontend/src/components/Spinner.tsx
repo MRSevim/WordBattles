@@ -1,5 +1,5 @@
 const Spinner = ({
-  className,
+  className = "w-12 h-12",
   variant,
 }: {
   className?: string;

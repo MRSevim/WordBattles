@@ -55,11 +55,7 @@ export const GameFinder = () => {
   return (
     <Modal>
       <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center	items-center">
-        {!isClient ? (
-          <Spinner className="w-12 h-12" variant="white" />
-        ) : (
-          <UserPanel />
-        )}
+        {!isClient ? <Spinner variant="white" /> : <UserPanel />}
       </div>
     </Modal>
   );
