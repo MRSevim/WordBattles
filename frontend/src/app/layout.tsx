@@ -31,15 +31,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.className} antialiased`}>
-        <Wrapper>
-          <LocaleContextProvider initialLocale={initialLocale}>
+        <LocaleContextProvider initialLocale={initialLocale}>
+          <Wrapper>
             <LoadCookieData />
             <LoadUserData />
             <Header />
             {children}
             <Analytics />
-          </LocaleContextProvider>
-        </Wrapper>
+          </Wrapper>
+        </LocaleContextProvider>
       </body>
     </html>
   );

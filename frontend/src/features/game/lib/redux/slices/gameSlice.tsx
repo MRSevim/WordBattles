@@ -20,6 +20,7 @@ import {
   returnEverythingToHandHelper,
   shuffle,
 } from "@/features/game/utils/reduxSliceHelpers";
+import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
 
 const initialDraggingValues = {
   active: null,
@@ -148,23 +149,21 @@ export const gameSlice = createSlice({
       const isPlaying = checkPlaying(state.status);
       const playersTurn = checkPlayersTurn(player);
 
+      const locale = getLocaleFromClientCookie();
+
       const switchIndicesLength = state.switchIndices.length;
 
       if (switchIndicesLength === 0) {
-        toast.error("Please select letters to switch with pool");
         return;
       }
 
       if (player && isPlaying && playersTurn) {
         if (switchIndicesLength > player.hand.length) {
-          toast.error(
-            "Değişmek istediğiniz harf sayısı elinizdeki harf sayısından fazla"
-          );
           return;
         }
 
         if (switchIndicesLength > state.undrawnLetterPool.length) {
-          toast.error("Havuzda yeterli harf yok");
+          toast.error(t(locale, "game.notEnoughLetter"));
           return;
         }
         returnEverythingToHandHelper(state);

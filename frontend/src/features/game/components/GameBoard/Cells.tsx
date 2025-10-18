@@ -8,12 +8,15 @@ import {
 import "./Cells.css";
 import { initialBoard } from "../../utils/helpers";
 import { Cell } from "./Cell/Cell";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 export const Board = () => {
   const [bingo, setBingo] = useState<boolean>(false);
   const playerTurn = useAppSelector(selectPlayerTurnState);
   const [playerTurnPopup, setPlayerTurnPopup] = useState<boolean>(false);
   const isPlaying = useAppSelector(selectGameStatus) === "playing";
+  const [locale] = useLocaleContext();
 
   useEffect(() => {
     socket.on("Bingo", () => {
@@ -54,8 +57,8 @@ export const Board = () => {
           >
             x
           </div>
-          {playerTurnPopup && "Sıranız geldi"}
-          {bingo && "Bingo yaptınız. Tebrikler."}
+          {playerTurnPopup && t(locale, "game.yourTurn")}
+          {bingo && t(locale, "game.bingo")}
         </div>
       )}
       <Cells />

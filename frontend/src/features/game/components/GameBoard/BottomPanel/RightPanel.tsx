@@ -7,22 +7,25 @@ import {
   pass,
 } from "@/features/game/lib/redux/slices/gameSlice";
 import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 const RightPanel = () => {
   const dispatch = useAppDispatch();
+  const [locale] = useLocaleContext();
 
   return (
     <div className="flex gap-2">
       <Button
         classes="bi bi bi-three-dots-vertical block lg:hidden"
-        title="Yan Paneli Aç"
+        title={t(locale, "game.toggleSidePanel")}
         onClick={() => {
           dispatch(toggleSidePanel());
         }}
       />{" "}
       <Button
         classes="bi bi-arrow-right"
-        title="Sıra Geç"
+        title={t(locale, "game.pass")}
         onClick={() => {
           dispatch(pass());
         }}
@@ -35,11 +38,12 @@ const RightPanel = () => {
 const PlayButton = () => {
   const dispatch = useAppDispatch();
   const switching = useAppSelector(selectIsSwitching);
+  const [locale] = useLocaleContext();
 
   return (
     <Button
       classes="bi bi-arrow-right-square"
-      title="Oyunu Gönder"
+      title={t(locale, "game.play")}
       onClick={() => {
         if (switching) {
           dispatch(_switch());

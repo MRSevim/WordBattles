@@ -14,7 +14,7 @@ export const LetterPool = () => {
     return (
       <Modal z={40}>
         <div className="p-5 bg-gray flex gap-2 flex-wrap w-96">
-          {letterPool.map((letter, i) => {
+          {letterPool.map((letter) => {
             return <NakedLetterSkeleton letter={letter} />;
           })}
         </div>

@@ -8,12 +8,15 @@ import {
 import { InitialData } from "../../utils/types/gameTypes";
 import { History, Word } from "../../utils/types/gameTypes";
 import { useEffect, useRef, useState } from "react";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t, tReact } from "@/features/language/lib/i18n";
 
 export const GameHistory = () => {
+  const [locale] = useLocaleContext();
   return (
     <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto max-h-80">
       <h2 className="text-base xxs:text-xl font-bold text-center mb-1 sm:mb-4 text-gray-800">
-        Oyun Geçmişi
+        {t(locale, "game.gameHistory")}
       </h2>
       <HistoryInner />
     </div>
@@ -48,6 +51,7 @@ const HistoryItem = ({
   const player = players?.find((player) => player.id === item.playerId);
   const wordsLength = item.words.length;
   const points = item.playerPoints;
+  const [locale] = useLocaleContext();
 
   if (player) {
     return (
@@ -64,28 +68,29 @@ const HistoryItem = ({
           {wordsLength === 0 && item.type === "switch" && " harf değiştirdi. "}
           {wordsLength > 0 && (
             <>
-              ; <Words words={item.words} wordsLength={wordsLength} />
-              {wordsLength === 1 && " kelimesini"}
-              {wordsLength > 1 && " kelimelerini"} türetti.{" "}
+              {" "}
+              {wordsLength === 1 &&
+                tReact(locale, "game.generatedWords-one", {
+                  words: <Words words={item.words} />,
+                })}
+              {wordsLength > 1 &&
+                tReact(locale, "game.generatedWords-multiple", {
+                  words: <Words words={item.words} />,
+                })}
             </>
           )}
-          {"(" + points + " puan)"}
+          {" (" + points + t(locale, "game.pointsPr")}
         </div>
       </div>
     );
   }
 };
-const Words = ({
-  words,
-  wordsLength,
-}: {
-  words: Word[];
-  wordsLength: number;
-}) => {
+
+const Words = ({ words }: { words: Word[] }) => {
   return (
     <>
       {words.map((word, i) => (
-        <WordComp key={i} wordsLength={wordsLength} word={word} i={i} />
+        <WordComp key={i} wordsLength={words.length} word={word} i={i} />
       ))}
     </>
   );

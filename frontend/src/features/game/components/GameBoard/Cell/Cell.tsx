@@ -4,6 +4,8 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import { RootState } from "@/lib/redux/store";
 import { useDroppable } from "@dnd-kit/core";
 import { selectDraggingActive } from "@/features/game/lib/redux/selectors";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 interface CellProps {
   row: number;
@@ -79,6 +81,10 @@ export const Cell = ({ row, col }: CellProps) => {
     return cls;
   }, [row, col]);
 
+  const [locale] = useLocaleContext();
+
+  const afterContent = t(locale, `game.${cls}`);
+
   const coordinates = { row, col };
 
   const active = useAppSelector(selectDraggingActive);
@@ -94,14 +100,24 @@ export const Cell = ({ row, col }: CellProps) => {
   });
 
   return (
-    <div
-      ref={setNodeRef}
-      className={
-        "-mt-1 -ml-1 text-xs xxs:text-base h-6.5 w-6.5 xxs:w-8 xxs:h-8 xs:h-9 xs:w-9 sm:w-11 sm:h-11 bg-amber-300 border-2 xxs:border-4 border-black relative " +
-        cls
-      }
-    >
-      <LetterOnCell coordinates={coordinates} />
-    </div>
+    <>
+      {cls !== "center" && (
+        <style>{`
+        .${cls}::after {
+          content: "${afterContent}";
+          
+          }
+          `}</style>
+      )}
+      <div
+        ref={setNodeRef}
+        className={
+          "-mt-1 -ml-1 text-xs xxs:text-base h-6.5 w-6.5 xxs:w-8 xxs:h-8 xs:h-9 xs:w-9 sm:w-11 sm:h-11 bg-amber-300 border-2 xxs:border-4 border-black relative " +
+          cls
+        }
+      >
+        <LetterOnCell coordinates={coordinates} />
+      </div>
+    </>
   );
 };

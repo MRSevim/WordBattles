@@ -21,7 +21,7 @@ const Signin = () => {
         >
           <i className="bi bi-google text-xl"></i>
           <span className="font-medium text-gray-700">
-            {t(locale, "continuteWithGoogle")}
+            {t(locale, "continueWithGoogle")}
           </span>
         </button>
       </div>

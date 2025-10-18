@@ -33,8 +33,6 @@ export const Ladder = async ({
 
   return (
     <Container className="py-10">
-      {!ladder && "No Ladder "}
-
       {ladder && (
         <div>
           {ladder.ladder.map((user, index) => (

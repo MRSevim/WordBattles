@@ -2,6 +2,10 @@
   "loading": "Loading. Please wait...",
   "cancel": "Cancel",
   "avatar": "User Avatar",
+  "connectionFailed": "Connection failed: ",
+  "timeIsUp": "Time is up!",
+  "notYourTurn": "It is not your turn!",
+  "notInActiveGame": "You are not in an active game!",
   "continueWithGoogle": "Continue with Google",
   "signIn": "Sign in",
   "errorBoundary": {
@@ -61,6 +65,47 @@
       "deleteP3": "All your personal data will be deleted. If the deletion is successful, you will be redirected to the homepage!",
       "confirmDelete": "Confirm Deletion",
       "deleting": "Deleting..."
+    }
+  },
+  "game": {
+    "letterPool": "Letter Pool",
+    "shuffle": "Shuffle letters in hand",
+    "bringBack": "Bring the letters back to hand",
+    "switch": "Switch letters with letter pool",
+    "toggleSidePanel": "Open/close side panel",
+    "pass": "Pass turn",
+    "play": "Play",
+    "triple-word": "W3",
+    "double-word": "W2",
+    "triple-letter": "L3",
+    "double-letter": "L2",
+    "pleaseEnterValid": "Please enter a valid English letter.",
+    "yourTurn": "Your turn",
+    "bingo": "You did bingo. Congratulations!",
+    "gameEnded": "Game ended.",
+    "tie": "Tie! Everyone has equal points:",
+    "winner": "Winner:",
+    "points": "Points:",
+    "connectingToExisting": "Connecting to existing game...",
+    "lookingForAGame": "Looking for a game...",
+    "stop": "Stop",
+    "findGameWithAccount": "Find game as {{name}}",
+    "signInToAccount": "Sign in to your account",
+    "or": "or",
+    "findAsGuest": "Find game as guest",
+    "gameHistory": "Game History",
+    "generatedWords-one": " generated {{words}} word.",
+    "generatedWords-multiple": " generated {{words}} words.",
+    "pointsPr": " points)",
+    "leave": "Leave",
+    "seconds": "seconds",
+    "second": "second",
+    "left": "(Left)",
+    "notEnoughLetter": "Not enough letters in the pool!",
+    "ongoing": {
+      "ongoingGameWarning": "You have an ongoing game right now!",
+      "ongoingLookingWarning": "You are looking for a game right now!",
+      "go": "Go"
     }
   }
 }

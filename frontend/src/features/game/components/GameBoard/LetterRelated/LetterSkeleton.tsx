@@ -4,11 +4,14 @@ import {
 } from "@/features/game/lib/redux/selectors";
 import { changeEmptyLetter } from "@/features/game/lib/redux/slices/gameSlice";
 import { Letter } from "@/features/game/utils/types/gameTypes";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { toast } from "react-toastify";
 
 export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
   const notFixed = !letter.fixed;
+  const [locale] = useLocaleContext();
   const id = letter.id;
   const emptyLetterIds = useAppSelector(selectEmptyLetterIds);
   const dispatch = useAppDispatch();
@@ -33,7 +36,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
               const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
 
               if (!validLetters.includes(newLetter) && newLetter !== "") {
-                toast.error("Lütfen geçerli bir türkçe harf giriniz");
+                toast.error(t(locale, "game.pleaseEnterValid"));
               }
               dispatch(
                 changeEmptyLetter({

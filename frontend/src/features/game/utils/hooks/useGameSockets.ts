@@ -9,14 +9,17 @@ import {
   setTimer,
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
-import { removeCookie, setCookie } from "../serverActions";
+import { removeCookie, setCookie } from "@/utils/helpers";
 import { setInitialData } from "../../lib/redux/slices/initialDataSlice";
+import { t } from "@/features/language/lib/i18n";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
+  const [locale] = useLocaleContext();
   useEffect(() => {
     socket.on("connect_error", (err) => {
-      const error: string = `Bağlantı başarısız: ${err.message}`;
+      const error: string = `${t(locale, "connectionFailed")} ${err.message}`;
       toast.error(error);
     });
 
@@ -43,7 +46,7 @@ export default function useGameSockets() {
       "Time is Up",
       ({ currentPlayerId }: { currentPlayerId: string }) => {
         if (currentPlayerId === socket.sessionId)
-          toast.error("Your turn has passed...");
+          toast.error(t(locale, "timeIsUp"));
       }
     );
 

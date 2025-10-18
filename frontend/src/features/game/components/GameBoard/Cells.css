@@ -14,7 +14,6 @@
   border-right: 2px solid black;
 }
 .triple-word:after {
-  content: "K3";
   background-color: rgb(220 38 38);
 }
 .center:after,
@@ -24,15 +23,10 @@
 .center:after {
   content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 -2 24 24'%3E%3Cpath d='M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z'/%3E%3C/svg%3E");
 }
-.double-word:after {
-  content: "K2";
-}
 .double-letter:after {
-  content: "H2";
   background-color: rgb(125 211 252);
 }
 .triple-letter:after {
-  content: "H3";
   background-color: rgb(14 165 233);
 }
 @media (min-width: 28rem) {

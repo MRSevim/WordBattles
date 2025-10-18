@@ -12,7 +12,9 @@ import {
 } from "../../lib/redux/selectors";
 import "./SidePanel.css";
 import useIsClient from "@/utils/hooks/isClient";
-import { removeCookie } from "../../utils/serverActions";
+import { removeCookie } from "@/utils/helpers";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { t } from "@/features/language/lib/i18n";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -33,6 +35,7 @@ export const SidePanel = () => {
 const OngoingGameContainer = () => {
   const gameOngoing = useAppSelector(selectGameRoomId);
   const dispatch = useAppDispatch();
+  const [locale] = useLocaleContext();
 
   const leave = () => {
     dispatch(leaveGame());
@@ -50,9 +53,9 @@ const OngoingGameContainer = () => {
           <div className="flex justify-end">
             <div
               onClick={leave}
-              className="bg-brown rounded-lg p-2 px-4 w-16 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
+              className="bg-brown rounded-lg p-2 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
             >
-              <span>Ayrıl</span>
+              <span>{t(locale, "game.leave")}</span>
               <i className="bi bi-door-open"></i>
             </div>
           </div>
@@ -78,6 +81,7 @@ const Players = () => {
 
 const PlayerContainer = ({ player }: { player: Player }) => {
   const timer = player.timer;
+  const [locale] = useLocaleContext();
 
   return (
     <div
@@ -102,7 +106,8 @@ const PlayerContainer = ({ player }: { player: Player }) => {
               : "text-red-500")
           }
         >
-          {timer} saniye
+          {timer}{" "}
+          {timer > 1 ? t(locale, "game.seconds") : t(locale, "game.second")}
         </p>
       </div>
     </div>
@@ -117,13 +122,16 @@ const UsernameAndScore = ({
   username: string;
   leftTheGame: boolean;
   score: number;
-}) => (
-  <>
-    <p>{username}</p>
-    {leftTheGame && <p className="font-bold">(Left)</p>}
-    Puan: {score}
-  </>
-);
+}) => {
+  const [locale] = useLocaleContext();
+  return (
+    <>
+      <p>{username}</p>
+      {leftTheGame && <p className="font-bold">{t(locale, "game.left")}</p>}
+      {t(locale, "game.points")} {score}
+    </>
+  );
+};
 
 const Loader = () => (
   <div id="loader">

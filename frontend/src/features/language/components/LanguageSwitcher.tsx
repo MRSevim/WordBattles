@@ -5,7 +5,10 @@ import { t } from "../lib/i18n";
 import "./LanguageSwitcher.css";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
-import { selectGameStatus } from "@/features/game/lib/redux/selectors";
+import {
+  selectGameRoomId,
+  selectGameStatus,
+} from "@/features/game/lib/redux/selectors";
 import { toast } from "react-toastify";
 import useHandleClickOutside from "@/utils/hooks/useHandleClickOutside";
 import { useLocaleContext } from "../helpers/LocaleContext";
@@ -34,12 +37,13 @@ export default function LanguageSwitcher() {
   const [locale, setLocale] = useLocaleContext();
   const router = useRouter();
   const gameStatus = useAppSelector(selectGameStatus);
+  const roomId = useAppSelector(selectGameRoomId);
   const dropdownRef = useRef(null);
 
   const handleSelect = (lang: Lang) => {
     // close dropdown
     setOpen(false);
-    if (gameStatus !== "idle") {
+    if (gameStatus !== "idle" || roomId) {
       return toast.error(t(locale, "langSwitcher.cantSwitch"));
     }
     // set cookie for persistence
@@ -95,7 +99,6 @@ const Li = ({
     <li>
       <button
         onClick={() => {
-          console.log("first");
           onClick(item.lang);
         }}
         className="flex items-center w-full px-4 py-2 hover:bg-gray-100 rounded-lg transition"

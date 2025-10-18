@@ -8,19 +8,22 @@ import {
 } from "@/features/game/utils/types/gameTypes";
 import { toast } from "react-toastify";
 import { findSocketPlayer } from "./helpers";
+import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
 
 export const checkPlayersTurn = (player: Player | undefined) => {
+  const locale = getLocaleFromClientCookie();
   if (player) {
     if (!player.turn) {
-      toast.error("Sizin sıranız değil");
+      toast.error(t(locale, "notYourTurn"));
       return false;
     } else return true;
   }
 };
 
 export const checkPlaying = (status: GameStatus) => {
+  const locale = getLocaleFromClientCookie();
   const isPlaying = status === "playing";
-  if (!isPlaying) toast.error("You are not in an active game currently!");
+  if (!isPlaying) toast.error(t(locale, "notInActiveGame"));
   return isPlaying;
 };
 

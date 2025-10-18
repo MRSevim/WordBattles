@@ -4,6 +4,10 @@
   "signIn": "Giriş yap",
   "continueWithGoogle": "Google ile devam et",
   "avatar": "Kullanıcı avatarı",
+  "connectionFailed": "Bağlantı başarısız: ",
+  "timeIsUp": "Süreniz doldu!",
+  "notYourTurn": "Sizin sıranız değil!",
+  "notInActiveGame": "Devam eden bir oyunda değilsiniz!",
   "errorBoundary": {
     "somethingWentWrong": "Bir şeyler yanlış gitti!",
     "tryAgain": "Tekrar dene...",
@@ -61,6 +65,47 @@
       "deleteP3": "Tüm kişisel verilerinizi silinecektir. Eğer silme işlemi başarılı olursa anasayfaya yönlendirileceksiniz!",
       "confirmDelete": "Silmeyi Onayla",
       "deleting": "Siliniyor..."
+    }
+  },
+  "game": {
+    "letterPool": "Harf Havuzu",
+    "shuffle": "Eldeki harfleri karıştır",
+    "bringBack": "Harfleri ele geri getir",
+    "switch": "Harf havuzu ile harf değiştir",
+    "toggleSidePanel": "Yan paneli aç/kapa",
+    "pass": "Sıranı geç",
+    "play": "Oyna",
+    "triple-word": "K3",
+    "double-word": "K2",
+    "triple-letter": "H3",
+    "double-letter": "H2",
+    "pleaseEnterValid": "Lütfen geçerli bir Türkçe harf giriniz.",
+    "yourTurn": "Sizin sıranız geldi",
+    "bingo": "Bingo yaptınız. Tebrikler!",
+    "gameEnded": "Oyun sonlandı.",
+    "tie": "Beraberlik! Herkesin puanı eşit:",
+    "winner": "Kazanan:",
+    "points": "Puan:",
+    "connectingToExisting": "Devam eden oyuna bağlanılıyor...",
+    "lookingForAGame": "Oyun aranıyor...",
+    "stop": "Dur",
+    "findGameWithAccount": "{{name}} olarak oyun bul",
+    "signInToAccount": "Hesabına giriş yap",
+    "or": "veya",
+    "findAsGuest": "Konuk olarak oyun bul",
+    "gameHistory": "Oyun Geçmişi",
+    "generatedWords-one": " {{words}} kelimesini türetti.",
+    "generatedWords-multiple": " {{words}} kelimelerini türetti",
+    "pointsPr": " puan)",
+    "leave": "Ayrıl",
+    "seconds": "saniye",
+    "second": "saniye",
+    "left": "Ayrıldı",
+    "notEnoughLetter": "Havuzda yeterli harf yok!",
+    "ongoing": {
+      "ongoingGameWarning": "Şu anda devam eden oyununuz bulunmaktadır",
+      "ongoingLookingWarning": "Şu anda devam eden oyun arayışınız bulunmaktadır",
+      "go": "Dön"
     }
   }
 }
