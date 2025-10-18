@@ -1,0 +1,10 @@
+{
+  "notAuthorized": "Yetkiniz yok, Lütfen giriş yapın.",
+  "notFound": "Kaynak bulunamıyor.",
+  "useCenterCell": "Merkez hücre kullanılmalıdır!",
+  "emptyLettersInvalid": "Boş harfler geçerli Türkçe harfler olmalıdır!",
+  "oneLine": "Yeni yerleştirilen harfler yatay veya dikey olarak birleşik bir çizgi oluşturmalıdır.",
+  "moreThanOneLetter": "Kelimeler bir harften uzun olmalıdır.",
+  "invalidWords": "Geçersiz kelimeler:",
+  "errorDuringWordVal": "Kelime doğrulama sırasında bir hata oluştu."
+}

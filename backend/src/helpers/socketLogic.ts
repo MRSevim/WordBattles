@@ -29,6 +29,7 @@ import {
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
 import { sendInitialData, validTurkishLetters } from "./misc";
+import { t } from "../lib/i18n";
 
 export let waitingPlayers: Socket[] = [];
 
@@ -173,6 +174,7 @@ export const runSocketLogic = (io: Io) => {
     socket.on("Play", async ({ state }: { state: GameState }) => {
       const { board, players, roomId, undrawnLetterPool } = state;
       const id = socket.id;
+      const locale = socket.siteLocale;
 
       // Find the player who made the play
       const currentPlayer = players.find((player) => player.turn);
@@ -181,7 +183,7 @@ export const runSocketLogic = (io: Io) => {
 
       if (state.board[7][7] === null) {
         io.to(id).emit("Game Error", {
-          error: "Merkez hücre kullanılmalıdır",
+          error: t(locale, "useCenterCell"),
         });
         return;
       }
@@ -192,7 +194,7 @@ export const runSocketLogic = (io: Io) => {
       );
       if (invalidLetter) {
         io.to(id).emit("Game Error", {
-          error: "Boş harfler geçerli Türkçe harfler olmalıdır",
+          error: t(locale, "emptyLettersInvalid"),
         });
         return;
       }
@@ -207,8 +209,7 @@ export const runSocketLogic = (io: Io) => {
 
         if (!newWordsCorrectlyPlaced) {
           io.to(id).emit("Game Error", {
-            error:
-              "Yeni yerleştirilen harfler yatay veya dikey olarak birleşik bir çizgi oluşturmalıdır",
+            error: t(locale, "oneLine"),
           });
           return;
         }
@@ -221,7 +222,7 @@ export const runSocketLogic = (io: Io) => {
 
       if (words.length === 0) {
         io.to(id).emit("Game Error", {
-          error: "Kelimeler bir harften uzun olmalıdır",
+          error: t(locale, "moreThanOneLetter"),
         });
         return;
       }
@@ -233,15 +234,16 @@ export const runSocketLogic = (io: Io) => {
 
         if (checkedWords.invalidWords.length > 0) {
           io.to(id).emit("Game Error", {
-            error: `Geçersiz kelimeler: ${checkedWords.invalidWords.join(
-              ", "
-            )}`,
+            error: `${t(
+              locale,
+              "invalidWords"
+            )} ${checkedWords.invalidWords.join(", ")}`,
           });
           return;
         }
       } catch (error) {
         io.to(id).emit("Game Error", {
-          error: "Kelime doğrulama sırasında bir hata oluştu",
+          error: t(locale, "errorDuringWordVal"),
         });
         return;
       }

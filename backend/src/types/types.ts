@@ -20,5 +20,8 @@ declare module "socket.io" {
     user?: User;
     roomId?: string;
     sessionId: string;
+    siteLocale: Lang;
   }
 }
+
+export type Lang = "tr" | "en";

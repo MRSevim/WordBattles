@@ -1,5 +1,5 @@
 import express from "express";
-import { useSocketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
+import { useSocketMiddleware } from "./middlewares/socketMiddleware";
 import { auth } from "./lib/auth";
 import http from "http";
 import cors from "cors";
@@ -50,7 +50,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 app.use(parseCookies);
 
-useSocketAuthMiddleware(io);
+useSocketMiddleware(io);
 
 app.use("/api/ladder", ladderRoutes);
 

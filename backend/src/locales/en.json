@@ -1,0 +1,10 @@
+{
+  "notAuthorized": "Not authorized, Sign in please.",
+  "notFound": "Resource not found.",
+  "useCenterCell": "Center cell must be used!",
+  "emptyLettersInvalid": "Empty letters must be valid English letters!",
+  "oneLine": "Newly placed letters must form a continuous line either horizontally or vertically.",
+  "moreThanOneLetter": "Words must be more than one letter.",
+  "invalidWords": "Invalid words:",
+  "errorDuringWordVal": "Something went wrong during word validation."
+}

@@ -1,4 +1,4 @@
-//generators
+// generators
 import { GameState, InitialLetters, LettersArray } from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
 import { Socket } from "../types/types";
