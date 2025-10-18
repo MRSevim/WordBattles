@@ -101,7 +101,7 @@ export async function loadAllGamesFromDB(): Promise<GameState[]> {
 
     return games.map((game) => ({
       status: game.status as GameStatus,
-      lang: game.players as any as Lang,
+      lang: game.lang as any as Lang,
       players: game.players as any as Player[],
       undrawnLetterPool: game.undrawnLetters as any as LettersArray,
       roomId: game.roomId,
