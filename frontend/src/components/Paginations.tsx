@@ -40,7 +40,7 @@ export default function Pagination({
     <div className="flex justify-center mt-8">
       <nav
         className="inline-flex items-center gap-2 bg-white shadow-sm rounded-lg px-3 py-2"
-        aria-label="Pagination"
+        aria-label={t(locale, "pagination.text")}
       >
         {/* First Page */}
         <button

@@ -1,5 +1,7 @@
 //Types for game state management
 
+import { Lang } from "./types";
+
 export interface InitialLetters {
   letter: string;
   point: number;
@@ -49,8 +51,6 @@ interface History {
 }
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
-
-export type Lang = "tr" | "en";
 
 export interface GameState {
   status: GameStatus;

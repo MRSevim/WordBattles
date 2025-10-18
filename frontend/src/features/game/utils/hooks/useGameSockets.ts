@@ -52,7 +52,7 @@ export default function useGameSockets() {
 
     socket.on("Start Game", (game: GameState) => {
       dispatch(setGameState(game));
-      setCookie("roomId", game.roomId, 7);
+      setCookie("roomId", game.roomId);
     });
 
     socket.on("Initialize Data", (game: InitialDataRaw) => {
@@ -62,7 +62,7 @@ export default function useGameSockets() {
     socket.on("session", ({ sessionId }) => {
       socket.sessionId = sessionId;
       // store it in a cookie
-      setCookie("sessionId", sessionId, 7);
+      setCookie("sessionId", sessionId);
     });
 
     // Cleanup listeners on unmount

@@ -11,7 +11,7 @@ import {
 } from "../types/gameTypes";
 import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
-import { Io } from "../types/types";
+import { Io, Lang } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
 import { gameTime, HAND_SIZE, letters } from "./misc";
 
@@ -135,11 +135,11 @@ export const saveGame = (state: GameState, io: Io) => {
 
 export const switchLetters = (
   switchedIndices: number[],
-  playerHand: LettersArray,
-  undrawnLetterPool: LettersArray
+  state: GameState,
+  playerHand: LettersArray
 ): void => {
   const lettersToReturnToPool: LettersArray = []; // Temporary array for old letters
-
+  const { undrawnLetterPool, lang } = state;
   // Switch each letter at the specified indices with a random one from the undrawn pool
   switchedIndices.forEach((index) => {
     // Select a random letter from the undrawn pool
@@ -159,8 +159,12 @@ export const switchLetters = (
 
   // Sort the undrawnLetterPool based on their index in the 'letters' array
   undrawnLetterPool.sort((a, b) => {
-    const indexA = letters.findIndex((letter) => letter.letter === a.letter);
-    const indexB = letters.findIndex((letter) => letter.letter === b.letter);
+    const indexA = letters[lang].findIndex(
+      (letter) => letter.letter === a.letter
+    );
+    const indexB = letters[lang].findIndex(
+      (letter) => letter.letter === b.letter
+    );
     return indexA - indexB;
   });
 };
@@ -178,19 +182,55 @@ export const returnToHand = (playerHand: LettersArray, board: Board) => {
 };
 
 // Helper function for validating words using Promise.all
-export const validateWords = async (words: string[]): Promise<CheckedWords> => {
-  const fetches = words.map((word) =>
-    fetch(`https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          return { word, valid: false }; // Invalid word
-        }
-        const meanings =
-          data[0]?.anlamlarListe.map((meaning: any) => meaning.anlam) || [];
-        return { word, valid: true, meanings }; // Valid word with meanings
-      })
-  );
+export const validateWords = async (
+  words: string[],
+  lang: Lang
+): Promise<CheckedWords> => {
+  const fetcher =
+    lang === "tr"
+      ? (word: string) =>
+          fetch(`https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) {
+                return { word, valid: false }; // Invalid word
+              }
+              const meanings =
+                data[0]?.anlamlarListe.map((meaning: any) => meaning.anlam) ||
+                [];
+              return { word, valid: true, meanings }; // Valid word with meanings
+            })
+      : (word: string) =>
+          fetch(
+            `https://freedictionaryapi.com/api/v1/entries/en/${word.toLocaleLowerCase(
+              "en"
+            )}`
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (!data || !data.entries || data.entries.length === 0) {
+                return { word, valid: false }; // Invalid word
+              }
+
+              // Flatten all senses and subsenses into one meanings array
+              const meanings: string[] = [];
+
+              const extractSenses = (senses: any[]) => {
+                senses.forEach((sense) => {
+                  if (sense.definition) meanings.push(sense.definition);
+                });
+              };
+
+              data.entries.forEach((entry: any) => {
+                if (entry.senses && entry.senses.length > 0) {
+                  extractSenses(entry.senses);
+                }
+              });
+
+              return { word, valid: true, meanings };
+            });
+
+  const fetches = words.map(fetcher);
 
   const results = await Promise.all(fetches);
 

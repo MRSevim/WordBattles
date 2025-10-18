@@ -27,11 +27,11 @@ import {
   GameState,
   WordWithCoordinates,
 } from "../types/gameTypes";
-import { Io, Socket } from "../types/types";
-import { sendInitialData, validTurkishLetters } from "./misc";
+import { Io, Lang, Socket } from "../types/types";
+import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 
-export let waitingPlayers: Socket[] = [];
+export let waitingPlayers: Record<Lang, Socket[]> = { tr: [], en: [] };
 
 export const runSocketLogic = (io: Io) => {
   io.on("connection", async (socket: Socket) => {
@@ -40,15 +40,6 @@ export const runSocketLogic = (io: Io) => {
     socket.emit("session", {
       sessionId: socket.sessionId,
     });
-
-    const startGame = (socket: Socket, _socket: Socket) => {
-      const gameState = generateGameState(socket, _socket);
-      io.to(gameState.roomId).emit("Start Game", gameState);
-      sendInitialData(io, gameState);
-      saveGame(gameState, io);
-      updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
-      updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
-    };
 
     if (socket.roomId) {
       const roomId = socket.roomId;
@@ -71,18 +62,34 @@ export const runSocketLogic = (io: Io) => {
         io.to(roomId).emit("No Game In Memory");
         socket.leave(roomId);
       }
-    } else {
-      if (waitingPlayers.length > 0) {
-        startGame(socket, waitingPlayers[0]);
-        waitingPlayers.shift();
-      } else {
-        waitingPlayers.push(socket);
-      }
     }
+
+    socket.on("Selected Language", async (lang: Lang) => {
+      const startGame = (socket: Socket, _socket: Socket) => {
+        const gameState = generateGameState(socket, _socket, lang);
+        io.to(gameState.roomId).emit("Start Game", gameState);
+        sendInitialData(io, gameState);
+        saveGame(gameState, io);
+        updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
+        updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
+      };
+
+      if (waitingPlayers[lang].length > 0) {
+        startGame(socket, waitingPlayers[lang][0]);
+        waitingPlayers[lang].shift();
+      } else {
+        waitingPlayers[lang].push(socket);
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log("A user disconnected");
 
-      waitingPlayers = waitingPlayers.filter((s) => s !== socket);
+      Object.keys(waitingPlayers).forEach((lang) => {
+        waitingPlayers[lang as Lang] = waitingPlayers[lang as Lang].filter(
+          (s) => s !== socket
+        );
+      });
     });
 
     socket.on(
@@ -105,7 +112,7 @@ export const runSocketLogic = (io: Io) => {
           playerPoints: 0,
         });
 
-        switchLetters(switchedIndices, currentPlayer.hand, undrawnLetterPool);
+        switchLetters(switchedIndices, state, currentPlayer.hand);
 
         currentPlayer.passCount = 0;
         state.passCount = 0;
@@ -172,7 +179,7 @@ export const runSocketLogic = (io: Io) => {
     });
 
     socket.on("Play", async ({ state }: { state: GameState }) => {
-      const { board, players, roomId, undrawnLetterPool } = state;
+      const { board, players, roomId, undrawnLetterPool, lang } = state;
       const id = socket.id;
       const locale = socket.siteLocale;
 
@@ -189,7 +196,7 @@ export const runSocketLogic = (io: Io) => {
       }
       const invalidLetter = state.board.some((row) =>
         row.some(
-          (letter) => letter && !validTurkishLetters.includes(letter.letter)
+          (letter) => letter && !getValidLetters(lang).includes(letter.letter)
         )
       );
       if (invalidLetter) {
@@ -230,7 +237,7 @@ export const runSocketLogic = (io: Io) => {
 
       // Validate words using the API
       try {
-        checkedWords = await validateWords(words);
+        checkedWords = await validateWords(words, lang);
 
         if (checkedWords.invalidWords.length > 0) {
           io.to(id).emit("Game Error", {

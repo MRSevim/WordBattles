@@ -39,7 +39,7 @@ const Profile = () => {
   }, "");
   return (
     <Container className="py-10 flex justify-center items-center gap-6">
-      {!isClient && <Spinner />}
+      {!isClient && <Spinner locale={locale} />}
       {isClient && (
         <>
           {userImage && (

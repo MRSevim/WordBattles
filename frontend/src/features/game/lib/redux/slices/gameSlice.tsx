@@ -21,6 +21,7 @@ import {
   shuffle,
 } from "@/features/game/utils/reduxSliceHelpers";
 import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
+import { Lang } from "@/features/language/helpers/types";
 
 const initialDraggingValues = {
   active: null,
@@ -49,6 +50,9 @@ export const gameSlice = createSlice({
   reducers: {
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.status = action.payload;
+    },
+    setGameLanguage: (state, action: PayloadAction<Lang>) => {
+      state.lang = action.payload;
     },
     leaveGame: (state) => {
       socket.emit("Leave Game", { state: getStrippedState(state) });
@@ -301,6 +305,7 @@ export const {
   setDraggingValues,
   toggleSwitching,
   changeSwitchValue,
+  setGameLanguage,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

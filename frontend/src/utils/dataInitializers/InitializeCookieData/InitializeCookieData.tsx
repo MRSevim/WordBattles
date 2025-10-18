@@ -1,31 +1,36 @@
 "use client";
 import {
+  setGameLanguage,
   setGameRoomId,
   setGameStatus,
 } from "@/features/game/lib/redux/slices/gameSlice";
 import { socket } from "@/features/game/lib/socket.io/socketio";
+import { Lang } from "@/features/language/helpers/types";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { useEffect } from "react";
 
 const InitializeCookieData = ({
   cookies,
 }: {
-  cookies: { sessionId?: string; roomId?: string };
+  cookies: { sessionId?: string; roomId?: string; lang?: Lang };
 }) => {
   const dispatch = useAppDispatch();
-  const { sessionId, roomId } = cookies;
+  const { sessionId, roomId, lang } = cookies;
 
   useEffect(() => {
     //RoomId takes precedence over sessionId
-    if (sessionId && !roomId) {
+    if (sessionId && lang && !roomId) {
       socket.sessionId = sessionId;
       socket.connect();
+      socket.emit("Selected Language", lang);
+      dispatch(setGameLanguage(lang));
       dispatch(setGameStatus("looking"));
     }
   }, [sessionId, roomId, socket, dispatch]);
 
   useEffect(() => {
     if (roomId) {
+      socket.connect();
       dispatch(setGameRoomId(roomId));
     }
   }, [roomId, dispatch]);

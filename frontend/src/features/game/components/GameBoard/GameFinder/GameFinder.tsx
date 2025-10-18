@@ -1,20 +1,22 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { setGameStatus } from "../../lib/redux/slices/gameSlice";
+import { setGameStatus } from "../../../lib/redux/slices/gameSlice";
 import { Modal } from "@/components/Modal";
-import { selectGameRoomId, selectGameStatus } from "../../lib/redux/selectors";
+import {
+  selectGameRoomId,
+  selectGameStatus,
+} from "../../../lib/redux/selectors";
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
 import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
 import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "@/utils/helpers";
-import { useEffect } from "react";
+import { useState } from "react";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t, tReact } from "@/features/language/lib/i18n";
-
-const buttonClasses =
-  "bg-slate-700 focus:ring-4 font-medium rounded-lg px-5 py-2.5";
+import { buttonClasses, FindButton } from "./FindButton";
+import GameSettingsModal from "./GameSettingsModal";
 
 export const GameFinder = () => {
   const dispatch = useAppDispatch();
@@ -22,16 +24,15 @@ export const GameFinder = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const isClient = useIsClient();
   const [locale] = useLocaleContext();
-
-  useEffect(() => {
-    if (roomId) socket.connect();
-  }, [roomId]);
+  const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false);
 
   const stopLooking = () => {
     socket.disconnect();
     dispatch(setGameStatus("idle"));
     removeCookie("sessionId");
+    removeCookie("lang");
   };
+  console.log(gameStatus);
 
   if (gameStatus === "playing") return null;
 
@@ -58,27 +59,44 @@ export const GameFinder = () => {
   return (
     <Modal>
       <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center	items-center">
-        {!isClient ? <Spinner variant="white" /> : <UserPanel />}
+        {!isClient ? (
+          <Spinner variant="white" locale={locale} />
+        ) : (
+          <>
+            {gameSettingsModalOpen && (
+              <GameSettingsModal
+                cancel={() => {
+                  setGameSettingsModalOpen(false);
+                }}
+              />
+            )}
+            {!gameSettingsModalOpen && (
+              <>
+                {" "}
+                <UserPanel
+                  openGameSettings={() => setGameSettingsModalOpen(true)}
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
     </Modal>
   );
 };
 
-const UserPanel = () => {
+const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
   const user = useAppSelector(selectUser);
-  const dispatch = useAppDispatch();
   const [locale] = useLocaleContext();
 
-  const findGame = () => {
-    socket.connect();
-    dispatch(setGameStatus("looking"));
-  };
   return (
     <>
-      {user === null && <Spinner className="w-12 h-12" variant="white" />}
+      {user === null && (
+        <Spinner className="w-12 h-12" variant="white" locale={locale} />
+      )}
       {user && (
         <FindButton
-          onClick={findGame}
+          onClick={openGameSettings}
           text={tReact(locale, "game.findGameWithAccount", { name: user.name })}
         />
       )}
@@ -88,23 +106,12 @@ const UserPanel = () => {
             {t(locale, "game.signInToAccount")}{" "}
           </Link>
           {t(locale, "game.or")}
-          <FindButton onClick={findGame} text={t(locale, "game.findAsGuest")} />
+          <FindButton
+            onClick={openGameSettings}
+            text={t(locale, "game.findAsGuest")}
+          />
         </>
       )}
     </>
-  );
-};
-
-const FindButton = ({
-  onClick,
-  text,
-}: {
-  onClick: () => void;
-  text: string | React.ReactNode;
-}) => {
-  return (
-    <button onClick={onClick} className={buttonClasses}>
-      {text}
-    </button>
   );
 };

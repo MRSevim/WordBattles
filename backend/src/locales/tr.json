@@ -6,5 +6,6 @@
   "oneLine": "Yeni yerleştirilen harfler yatay veya dikey olarak birleşik bir çizgi oluşturmalıdır.",
   "moreThanOneLetter": "Kelimeler bir harften uzun olmalıdır.",
   "invalidWords": "Geçersiz kelimeler:",
-  "errorDuringWordVal": "Kelime doğrulama sırasında bir hata oluştu."
+  "errorDuringWordVal": "Kelime doğrulama sırasında bir hata oluştu.",
+  "guest": "konuk"
 }

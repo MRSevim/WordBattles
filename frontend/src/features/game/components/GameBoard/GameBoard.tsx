@@ -1,6 +1,6 @@
 "use client";
 import { BottomPanel } from "./BottomPanel/BottomPanel";
-import { GameFinder } from "./GameFinder";
+import { GameFinder } from "./GameFinder/GameFinder";
 import { LetterPool } from "./LetterPool";
 import { GameEnded } from "./GameEnded";
 import useGameSockets from "../../utils/hooks/useGameSockets";

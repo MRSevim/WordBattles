@@ -43,6 +43,7 @@ const OngoingGameContainer = () => {
     socket.disconnect();
     removeCookie("sessionId");
     removeCookie("roomId");
+    removeCookie("lang");
   };
 
   return (
@@ -86,8 +87,8 @@ const PlayerContainer = ({ player }: { player: Player }) => {
   return (
     <div
       className={
-        "flex flex-col items-center justify-center bg-white text-center border-solid border-2 rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
-        (player.id === socket.sessionId ? "border-amber-500" : "")
+        "flex flex-col items-center justify-center bg-white text-center rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
+        (player.id === socket.sessionId ? "border-solid border-2" : "")
       }
     >
       <UsernameAndScore

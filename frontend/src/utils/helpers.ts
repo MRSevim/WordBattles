@@ -4,7 +4,7 @@ export const returnErrorFromUnknown = (error: unknown) => {
   return { error: "" };
 };
 
-export const setCookie = (name: string, value: string, days: number) => {
+export const setCookie = (name: string, value: string, days: number = 7) => {
   const maxAge = days * 24 * 60 * 60;
   document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(
     value

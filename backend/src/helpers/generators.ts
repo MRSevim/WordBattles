@@ -1,17 +1,24 @@
 // generators
 import { GameState, InitialLetters, LettersArray } from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
-import { Socket } from "../types/types";
+import { Lang, Socket } from "../types/types";
 import { gameTime, generateGuestId, letters, HAND_SIZE } from "./misc";
+import { t } from "../lib/i18n";
 
-export const generateGameState = (socket: Socket, _socket: Socket) => {
-  const letterPool = generateLetterPool(letters);
+export const generateGameState = (
+  socket: Socket,
+  _socket: Socket,
+  lang: Lang
+) => {
+  const letterPool = generateLetterPool(letters[lang]);
   const emptyLetterIds = generateEmptyLetterIdsArray(letterPool);
-  const playersStatus = generatePlayersStatus(letterPool);
+  const playersStatus = generatePlayersStatus(letterPool, lang);
+
+  const generateGuestIdsCaller = () => generateGuestId(t(lang, "guest"));
   const players = [
     {
       hand: playersStatus.players[0],
-      username: socket.user?.name || generateGuestId(),
+      username: socket.user?.name || generateGuestIdsCaller(),
       email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
       id: socket.sessionId,
@@ -22,7 +29,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
     },
     {
       hand: playersStatus.players[1],
-      username: _socket.user?.name || generateGuestId(),
+      username: _socket.user?.name || generateGuestIdsCaller(),
       email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
       id: _socket.sessionId,
@@ -38,7 +45,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
 
   _socket.join(roomId);
   socket.join(roomId);
-  console.log("Game found", roomId);
+  console.log("Game found in " + lang, roomId);
   const state: GameState = {
     status: "playing",
     players,
@@ -48,7 +55,7 @@ export const generateGameState = (socket: Socket, _socket: Socket) => {
     emptyLetterIds,
     board: Array.from({ length: 15 }, () => Array(15).fill(null)),
     history: [],
-    lang: "tr",
+    lang,
   };
   return state;
 };
@@ -72,7 +79,7 @@ export const generateLetterPool = (array: InitialLetters[]): LettersArray => {
   return newArr;
 };
 
-export const generatePlayersStatus = (letterPool: LettersArray) => {
+export const generatePlayersStatus = (letterPool: LettersArray, lang: Lang) => {
   const players: LettersArray[] = [[], []]; // Two players
 
   // Distribute letters, one by one to each player until both have HAND_SIZE tiles
@@ -95,7 +102,7 @@ export const generatePlayersStatus = (letterPool: LettersArray) => {
 
   // Function to get the index of the first matching letter in the 'letters' array
   const getLetterIndex = (letter: string) => {
-    const index = letters.findIndex((item) => item.letter === letter);
+    const index = letters[lang].findIndex((item) => item.letter === letter);
     return index !== -1 ? index : Infinity; // this should never return infinity since each letter has corresponding index in letters array
   };
 

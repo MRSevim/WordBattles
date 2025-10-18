@@ -8,7 +8,7 @@ export default async function Loading() {
   return (
     <Container className="mt-20 flex flex-col items-center justify-center text-center p-6">
       <div className="flex flex-col items-center gap-4">
-        <Spinner />
+        <Spinner locale={locale} />
         <p className="text-base font-medium text-gray-700 animate-pulse">
           {t(locale, "loading")}
         </p>
