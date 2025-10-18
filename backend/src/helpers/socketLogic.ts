@@ -44,7 +44,6 @@ export const runSocketLogic = (io: Io) => {
     if (socket.roomId) {
       const roomId = socket.roomId;
       let game = getGameFromMemory(socket.roomId);
-
       if (!game) {
         //Extra check in case memory game is not present
         const gameStateFromDB = await loadGameFromDB(roomId);

@@ -35,7 +35,7 @@ const initialState: GameStateWithInteractivity = {
   undrawnLetterPool: [],
   roomId: "",
   passCount: 0,
-  lang: "en",
+  lang: "",
   emptyLetterIds: [],
   board: initialBoard,
   history: [],

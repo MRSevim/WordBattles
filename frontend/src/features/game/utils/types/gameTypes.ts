@@ -59,7 +59,7 @@ export interface GameState {
   roomId: string;
   passCount: number;
   board: Board;
-  lang: Lang;
+  lang: Lang | "";
   history: History[];
 }
 

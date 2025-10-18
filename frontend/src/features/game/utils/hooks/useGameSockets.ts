@@ -5,7 +5,9 @@ import { useEffect } from "react";
 import { GameState, InitialDataRaw, Player } from "../types/gameTypes";
 import {
   leaveGame,
+  setGameRoomId,
   setGameState,
+  setGameStatus,
   setTimer,
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
@@ -17,6 +19,7 @@ import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
   const [locale] = useLocaleContext();
+
   useEffect(() => {
     socket.on("connect_error", (err) => {
       const error: string = `${t(locale, "connectionFailed")} ${err.message}`;
@@ -75,5 +78,5 @@ export default function useGameSockets() {
       socket.off("Start Game");
       socket.off("session");
     };
-  }, [dispatch]);
+  }, [dispatch, socket]);
 }

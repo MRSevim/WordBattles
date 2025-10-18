@@ -10,6 +10,7 @@ export const selectUndrawnLetterPool = (state: RootState) =>
 export const selectGameRoomId = (state: RootState) => state.game.roomId;
 export const selectEmptyLetterIds = (state: RootState) =>
   state.game.emptyLetterIds;
+export const selectGameLanguage = (state: RootState) => state.game.lang;
 
 //players
 export const selectPlayers = (state: RootState) => state.game.players;

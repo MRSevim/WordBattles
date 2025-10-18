@@ -21,7 +21,6 @@ const InitializeCookieData = ({
     //RoomId takes precedence over sessionId
     if (sessionId && lang && !roomId) {
       socket.sessionId = sessionId;
-      socket.connect();
       socket.emit("Selected Language", lang);
       dispatch(setGameLanguage(lang));
       dispatch(setGameStatus("looking"));
@@ -30,7 +29,6 @@ const InitializeCookieData = ({
 
   useEffect(() => {
     if (roomId) {
-      socket.connect();
       dispatch(setGameRoomId(roomId));
     }
   }, [roomId, dispatch]);

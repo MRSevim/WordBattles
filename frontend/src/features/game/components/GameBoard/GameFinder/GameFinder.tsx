@@ -3,6 +3,7 @@ import { socket } from "@/features/game/lib/socket.io/socketio";
 import { setGameStatus } from "../../../lib/redux/slices/gameSlice";
 import { Modal } from "@/components/Modal";
 import {
+  selectGameLanguage,
   selectGameRoomId,
   selectGameStatus,
 } from "../../../lib/redux/selectors";
@@ -12,7 +13,7 @@ import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
 import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "@/utils/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t, tReact } from "@/features/language/lib/i18n";
 import { buttonClasses, FindButton } from "./FindButton";
@@ -24,7 +25,17 @@ export const GameFinder = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const isClient = useIsClient();
   const [locale] = useLocaleContext();
+  const lang = useAppSelector(selectGameLanguage);
+  const looking = gameStatus === "looking" && lang;
   const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isClient) {
+      if (roomId || looking) {
+        socket.connect();
+      }
+    }
+  }, [roomId, isClient, gameStatus, gameStatus, lang]);
 
   const stopLooking = () => {
     socket.disconnect();
@@ -32,7 +43,6 @@ export const GameFinder = () => {
     removeCookie("sessionId");
     removeCookie("lang");
   };
-  console.log(gameStatus);
 
   if (gameStatus === "playing") return null;
 
@@ -45,7 +55,7 @@ export const GameFinder = () => {
       </Modal>
     );
   }
-  if (gameStatus === "looking" && isClient) {
+  if (looking && isClient) {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
