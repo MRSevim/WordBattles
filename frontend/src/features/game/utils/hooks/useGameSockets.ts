@@ -75,8 +75,11 @@ export default function useGameSockets() {
       socket.off("No Game In Memory");
       socket.off("Timer Runs");
       socket.off("Game Error");
+      socket.off("Time is Up");
       socket.off("Start Game");
+      socket.off("Initialize Data");
       socket.off("session");
+      socket.disconnect();
     };
   }, [dispatch, socket]);
 }
