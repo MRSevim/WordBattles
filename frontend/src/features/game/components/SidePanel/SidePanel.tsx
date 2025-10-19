@@ -21,7 +21,7 @@ export const SidePanel = () => {
   return (
     <div
       className={
-        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-30 flex flex-col " +
+        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-40 flex flex-col " +
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
