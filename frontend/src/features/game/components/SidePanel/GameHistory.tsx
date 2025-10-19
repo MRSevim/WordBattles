@@ -119,8 +119,31 @@ const WordComp = ({
   wordsLength: number;
   word: Word;
 }) => {
-  const [top, setTop] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <div className="inline">
+      <div className="group relative inline">
+        {wordsLength > 1 && i === wordsLength - 1 && "ve "}
+        <span className="cursor-pointer" ref={ref}>
+          {word.word}
+        </span>
+
+        <Meanings meanings={word.meanings} spanRef={ref} />
+      </div>
+      {wordsLength > 1 && i < wordsLength - 1 && ", "}
+    </div>
+  );
+};
+
+const Meanings = ({
+  meanings,
+  spanRef,
+}: {
+  meanings: string[];
+  spanRef: RefObject<HTMLSpanElement | null>;
+}) => {
+  const [top, setTop] = useState(0);
 
   const historyLength = use(HistoryLengthContext);
   if (!historyLength)
@@ -128,10 +151,10 @@ const WordComp = ({
 
   useEffect(() => {
     const container = document.querySelector(".history-scrollable");
-    if (!ref.current || !container) return;
+    if (!spanRef.current || !container) return;
 
     const updatePosition = () => {
-      const wordRect = ref.current!.getBoundingClientRect();
+      const wordRect = spanRef.current!.getBoundingClientRect();
       setTop(wordRect.bottom);
     };
 
@@ -144,32 +167,22 @@ const WordComp = ({
     return () => {
       container?.removeEventListener("scroll", handleScroll);
     };
-  }, [ref.current, historyLength]);
+  }, [spanRef.current, historyLength]);
 
   return (
-    <div className="inline">
-      <div className="group relative inline">
-        {wordsLength > 1 && i === wordsLength - 1 && "ve "}
-        <span className="cursor-pointer" ref={ref}>
-          {word.word}
-        </span>
-
-        <div
-          style={{ top: top + "px" }}
-          className="hidden group-hover:block fixed w-72 max-h-40 bg-slate-800 text-white shadow-lg p-4 rounded-md z-30 overflow-auto"
-        >
-          <ul>
-            {word.meanings.map((meaning, i) => {
-              return (
-                <li key={i} className="list-disc ms-3">
-                  {meaning}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
-      {wordsLength > 1 && i < wordsLength - 1 && ", "}
+    <div
+      style={{ top: top + "px" }}
+      className="hidden group-hover:block fixed w-72 max-h-40 bg-slate-800 text-white shadow-lg p-4 rounded-md z-30 overflow-auto"
+    >
+      <ul>
+        {meanings.map((meaning, i) => {
+          return (
+            <li key={i} className="list-disc ms-3">
+              {meaning}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
