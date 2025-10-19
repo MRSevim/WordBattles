@@ -12,11 +12,11 @@ const globalForSocket = globalThis as unknown as {
 
 export const socket =
   globalForSocket.socket ||
-  io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
+  (io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
     autoConnect: false,
     transports: ["websocket"],
     withCredentials: true,
-  });
+  }) as ISocket);
 
 // Only assign to global in development to avoid leaks in production
 if (process.env.NODE_ENV !== "production") {
