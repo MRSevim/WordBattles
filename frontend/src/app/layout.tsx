@@ -4,8 +4,6 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Wrapper from "@/utils/Wrapper";
 import { Header } from "@/components/Header/Header";
-import LoadCookieData from "@/utils/dataInitializers/InitializeCookieData/LoadCookieData";
-import LoadUserData from "@/utils/dataInitializers/InitializeUserData/LoadUserData";
 import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
 import { cookies } from "next/headers";
 import { getLocaleFromCookie } from "@/features/language/lib/i18n";
@@ -33,8 +31,6 @@ export default async function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <LocaleContextProvider initialLocale={initialLocale}>
           <Wrapper>
-            <LoadCookieData />
-            <LoadUserData />
             <Header />
             {children}
             <Analytics />

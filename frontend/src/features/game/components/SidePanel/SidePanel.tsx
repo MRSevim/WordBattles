@@ -11,14 +11,12 @@ import {
   selectSidePanelOpen,
 } from "../../lib/redux/selectors";
 import "./SidePanel.css";
-import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "@/utils/helpers";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
-  const isClient = useIsClient();
 
   return (
     <div
@@ -27,7 +25,7 @@ export const SidePanel = () => {
         (sidePanelOpen ? "block" : "hidden lg:block")
       }
     >
-      {!isClient ? <Loader /> : <OngoingGameContainer />}
+      <OngoingGameContainer />
     </div>
   );
 };

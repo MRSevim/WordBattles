@@ -11,7 +11,6 @@ import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
 import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
-import useIsClient from "@/utils/hooks/isClient";
 import { removeCookie } from "@/utils/helpers";
 import { useEffect, useState } from "react";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
@@ -23,19 +22,21 @@ export const GameFinder = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
-  const isClient = useIsClient();
   const [locale] = useLocaleContext();
   const lang = useAppSelector(selectGameLanguage);
   const looking = gameStatus === "looking" && lang;
   const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (isClient) {
-      if (roomId || looking) {
-        socket.connect();
-      }
+    if (roomId || looking) {
+      socket.connect();
     }
-  }, [roomId, isClient, gameStatus, gameStatus, lang]);
+  }, [roomId, gameStatus, gameStatus, lang]);
+
+  useEffect(() => {
+    if (!isClient) setIsClient(true);
+  }, []);
 
   const stopLooking = () => {
     socket.disconnect();
@@ -46,7 +47,7 @@ export const GameFinder = () => {
 
   if (gameStatus === "playing") return null;
 
-  if (roomId && isClient) {
+  if (roomId) {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
@@ -55,7 +56,7 @@ export const GameFinder = () => {
       </Modal>
     );
   }
-  if (looking && isClient) {
+  if (looking) {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
@@ -68,7 +69,7 @@ export const GameFinder = () => {
 
   return (
     <Modal>
-      <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center	items-center">
+      <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center items-center">
         {!isClient ? (
           <Spinner variant="white" locale={locale} />
         ) : (
@@ -101,9 +102,7 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
 
   return (
     <>
-      {user === null && (
-        <Spinner className="w-12 h-12" variant="white" locale={locale} />
-      )}
+      {user === null && <Spinner variant="white" locale={locale} />}
       {user && (
         <FindButton
           onClick={openGameSettings}

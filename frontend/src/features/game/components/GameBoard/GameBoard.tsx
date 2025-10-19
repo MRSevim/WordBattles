@@ -18,10 +18,28 @@ import {
 import { selectDraggedLetter } from "../../lib/redux/selectors";
 import { handleDragEnd } from "../../utils/helpers";
 import NakedLetterSkeleton from "./LetterRelated/NakedLetterSkeleton";
+import { useEffect } from "react";
+import { Lang } from "@/features/language/helpers/types";
+import { socket } from "../../lib/socket.io/socketio";
+import {
+  setGameLanguage,
+  setGameRoomId,
+  setGameStatus,
+} from "../../lib/redux/slices/gameSlice";
 
-export const GameContainer = () => {
+export const GameContainer = ({
+  gameCookies,
+}: {
+  gameCookies: {
+    sessionId?: string;
+    roomId?: string;
+    lang?: Lang;
+  };
+}) => {
   useGameSockets();
-
+  const sessionId = gameCookies.sessionId;
+  const roomId = gameCookies.roomId;
+  const lang = gameCookies.lang;
   const dispatch = useAppDispatch();
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -36,6 +54,22 @@ export const GameContainer = () => {
     })
   );
   const activeLetter = useAppSelector(selectDraggedLetter);
+
+  useEffect(() => {
+    //RoomId takes precedence over sessionId
+    if (sessionId && lang && !roomId) {
+      socket.sessionId = sessionId;
+      socket.emit("Selected Language", lang);
+      dispatch(setGameLanguage(lang));
+      dispatch(setGameStatus("looking"));
+    }
+  }, [sessionId, roomId, socket, dispatch]);
+
+  useEffect(() => {
+    if (roomId) {
+      dispatch(setGameRoomId(roomId));
+    }
+  }, [roomId, dispatch]);
 
   return (
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>

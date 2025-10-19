@@ -5,9 +5,12 @@ import MobileHeaderLinks from "./MobileHeaderLinks";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import { Links } from "./Links";
+import { getUserData } from "@/features/auth/utils/getServerSideSession";
+import UserInitializer from "./UserInitializer";
 
 export const Header = async () => {
   const locale = await getLocaleFromCookie(cookies);
+  const userPromise = getUserData();
   return (
     <header className="bg-primary text-white">
       <Container className="py-3 flex justify-between items-center">
@@ -15,6 +18,7 @@ export const Header = async () => {
           WordBattles
         </Link>
 
+        <UserInitializer userPromise={userPromise} />
         <div className="hidden md:block">
           <Links locale={locale} />
         </div>

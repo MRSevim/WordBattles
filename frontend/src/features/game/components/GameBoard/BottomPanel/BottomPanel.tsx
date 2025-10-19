@@ -1,4 +1,3 @@
-import useIsClient from "@/utils/hooks/isClient";
 import RightPanel from "./RightPanel";
 import LeftPanel from "./LeftPanel";
 import HandWrapper from "./HandWrapper";
@@ -7,11 +6,10 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import { selectGameStatus } from "@/features/game/lib/redux/selectors";
 
 export const BottomPanel = () => {
-  const isClient = useIsClient();
   const gameStatus = useAppSelector(selectGameStatus);
   const showBottomPanel = gameStatus === "playing" || gameStatus === "ended";
 
-  if (isClient && showBottomPanel) {
+  if (showBottomPanel) {
     return (
       <div className="p-2 xxs:p-4 md:pt-7 bg-gray w-full lg:w-2/3 flex flex-col md:flex-row justify-between relative">
         <TimerIndicator />

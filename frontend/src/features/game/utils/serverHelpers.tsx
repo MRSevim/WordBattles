@@ -1,11 +1,9 @@
-import { cookies } from "next/headers";
-import InitializeCookieData from "./InitializeCookieData";
 import { Lang } from "@/features/language/helpers/types";
-import { getLocaleFromCookie } from "@/features/language/lib/i18n";
+import { cookies } from "next/headers";
 
 type StringOrUnd = string | undefined;
 
-const LoadCookieData = async () => {
+export const getGameCookies = async () => {
   let sessionId: StringOrUnd;
   let roomId: StringOrUnd;
   let lang: Lang | undefined;
@@ -21,7 +19,5 @@ const LoadCookieData = async () => {
   }
 
   //  Return fallback-safe render
-  return <InitializeCookieData cookies={{ sessionId, roomId, lang }} />;
+  return { sessionId, roomId, lang };
 };
-
-export default LoadCookieData;

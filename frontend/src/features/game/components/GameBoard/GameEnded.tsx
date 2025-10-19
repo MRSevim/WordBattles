@@ -2,14 +2,12 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
 import { Modal } from "@/components/Modal";
 import { selectGameStatus, selectPlayers } from "../../lib/redux/selectors";
-import useIsClient from "@/utils/hooks/isClient";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
   const players = useAppSelector(selectPlayers);
-  const isClient = useIsClient();
   const [locale] = useLocaleContext();
 
   // Determine the winner and handle ties
@@ -25,7 +23,7 @@ export const GameEnded = () => {
     }
   });
 
-  if (gameStatus === "ended" && isClient) {
+  if (gameStatus === "ended") {
     return (
       <Modal>
         <div className="p-5 bg-slate-700 w-96 text-white">

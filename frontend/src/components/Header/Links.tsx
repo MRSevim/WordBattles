@@ -1,4 +1,5 @@
 "use client"; //this has to be client because it is used inside mobileHeaderLinks which is client
+
 import LanguageSwitcher from "@/features/language/components/LanguageSwitcher";
 import { Lang } from "@/features/language/helpers/types";
 import { t } from "@/features/language/lib/i18n";
