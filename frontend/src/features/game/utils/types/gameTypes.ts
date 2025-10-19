@@ -6,6 +6,8 @@ export interface Letter {
   amount: number;
   drawn?: boolean;
   fixed?: boolean;
+  formsNewWords?: boolean; // the words formed horizontally/vertically
+  newlyPlaced?: boolean; // only the tiles placed that turn
   class?: string;
   id: string;
 }

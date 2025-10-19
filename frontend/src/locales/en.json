@@ -97,6 +97,8 @@
     "gameHistory": "Game History",
     "generatedWords-one": " generated {{words}} word.",
     "generatedWords-multiple": " generated {{words}} words.",
+    "switched": " switched letters. ",
+    "passed": " passed their turn. ",
     "pointsPr": " points)",
     "leave": "Leave",
     "seconds": "seconds",

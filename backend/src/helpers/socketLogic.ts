@@ -5,6 +5,7 @@ import {
   completePlayerHand,
   findWordsOnBoard,
   fixBoard,
+  markNewlyPlacedAndNewWords,
   returnToHand,
   saveGame,
   switchLetters,
@@ -254,11 +255,15 @@ export const runSocketLogic = (io: Io) => {
         return;
       }
 
+      //detect and mark newlyPlaced tiles and new Words
+      markNewlyPlacedAndNewWords(board);
+
       // Calculate points for the current player
       const playerPoints = calculatePoints(board, wordsWithCoordinates, io, id);
 
       currentPlayer.score += playerPoints;
 
+      //fix the letters
       fixBoard(board);
 
       // Append to history

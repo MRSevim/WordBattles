@@ -7,14 +7,24 @@ import {
 } from "../../lib/redux/selectors";
 import { InitialData } from "../../utils/types/gameTypes";
 import { History, Word } from "../../utils/types/gameTypes";
-import { useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  RefObject,
+  use,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t, tReact } from "@/features/language/lib/i18n";
 
+const HistoryLengthContext = createContext<number | null>(null);
+
 export const GameHistory = () => {
   const [locale] = useLocaleContext();
+
   return (
-    <div className="p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto max-h-80">
+    <div className="history-scrollable p-2 xxs:p-4 bg-gray-100 rounded-lg shadow-md m-3 overflow-auto max-h-80">
       <h2 className="text-base xxs:text-xl font-bold text-center mb-1 sm:mb-4 text-gray-800">
         {t(locale, "game.gameHistory")}
       </h2>
@@ -28,13 +38,13 @@ const HistoryInner = () => {
   const players = useAppSelector(selectInitialPlayerData);
 
   return (
-    <>
+    <HistoryLengthContext value={history.length}>
       {history
         .map((item, i) => {
           return <HistoryItem key={i} i={i} item={item} players={players} />;
         })
         .reverse()}
-    </>
+    </HistoryLengthContext>
   );
 };
 
@@ -64,8 +74,12 @@ const HistoryItem = ({
           >
             {capitalizeFirstLetter(player.username)}
           </div>
-          {wordsLength === 0 && item.type !== "switch" && " sırasını geçti. "}
-          {wordsLength === 0 && item.type === "switch" && " harf değiştirdi. "}
+          {wordsLength === 0 &&
+            item.type !== "switch" &&
+            t(locale, "game.passed")}
+          {wordsLength === 0 &&
+            item.type === "switch" &&
+            t(locale, "game.switched")}
           {wordsLength > 0 && (
             <>
               {" "}
@@ -108,14 +122,32 @@ const WordComp = ({
   const [top, setTop] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
 
+  const historyLength = use(HistoryLengthContext);
+  if (!historyLength)
+    throw new Error("HistoryLengthContext must be used within its provider");
+
   useEffect(() => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    setTop(rect.bottom);
-  }, [ref.current]);
+    const container = document.querySelector(".history-scrollable");
+    if (!ref.current || !container) return;
+
+    const updatePosition = () => {
+      const wordRect = ref.current!.getBoundingClientRect();
+      setTop(wordRect.bottom);
+    };
+
+    //requestAnimationFrame prevents too much rerenders on fast scrolling
+    const handleScroll = () => requestAnimationFrame(updatePosition);
+
+    container.addEventListener("scroll", handleScroll);
+    updatePosition(); // initial calc
+
+    return () => {
+      container?.removeEventListener("scroll", handleScroll);
+    };
+  }, [ref.current, historyLength]);
 
   return (
-    <div key={i} className="inline">
+    <div className="inline">
       <div className="group relative inline">
         {wordsLength > 1 && i === wordsLength - 1 && "ve "}
         <span className="cursor-pointer" ref={ref}>

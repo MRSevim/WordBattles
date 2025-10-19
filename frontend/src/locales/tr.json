@@ -97,6 +97,8 @@
     "gameHistory": "Oyun Geçmişi",
     "generatedWords-one": " {{words}} kelimesini türetti.",
     "generatedWords-multiple": " {{words}} kelimelerini türetti",
+    "switched": " harf değiştirdi. ",
+    "passed": " sırasını geçti. ",
     "pointsPr": " puan)",
     "leave": "Ayrıl",
     "seconds": "saniye",

@@ -245,12 +245,76 @@ export const validateWords = async (
   return { validWords, invalidWords };
 };
 
+//makes whole board fixed
 export const fixBoard = (board: Board) => {
   for (let row = 0; row < board.length; row++) {
     for (let col = 0; col < board[row].length; col++) {
       const cell = board[row][col];
       if (cell) {
         cell.fixed = true;
+      }
+    }
+  }
+};
+
+//marks new letters and formed words
+export const markNewlyPlacedAndNewWords = (board: Board) => {
+  const rows = board.length;
+  const cols = board[0].length;
+
+  // Reset flags
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = board[r][c];
+      if (cell) {
+        cell.newlyPlaced = false;
+        cell.formsNewWords = false;
+      }
+    }
+  }
+
+  // Mark newlyPlaced tiles (unfixed tiles this turn)
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = board[r][c];
+      if (cell && !cell.fixed) {
+        cell.newlyPlaced = true;
+      }
+    }
+  }
+
+  // Mark formNewWords: all horizontal/vertical lines connected to newlyPlaced tiles
+  const directions: [number, number][] = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
+  outer: for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = board[r][c];
+      if (cell && cell.newlyPlaced) {
+        cell.formsNewWords = true;
+
+        for (const [dr, dc] of directions) {
+          let nr = r + dr;
+          let nc = c + dc;
+
+          while (
+            nr >= 0 &&
+            nr < rows &&
+            nc >= 0 &&
+            nc < cols &&
+            board[nr][nc]
+          ) {
+            board[nr][nc]!.formsNewWords = true;
+            nr += dr;
+            nc += dc;
+          }
+        }
+
+        break outer; // first newlyPlaced tile is enough
       }
     }
   }

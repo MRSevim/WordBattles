@@ -15,6 +15,8 @@ export interface Letter {
   drawn?: boolean;
   fixed?: boolean;
   class?: string;
+  formsNewWords?: boolean; // the words formed horizontally/vertically
+  newlyPlaced?: boolean; // only the tiles placed that turn
   id: string;
 }
 
