@@ -12,7 +12,7 @@ export const setCookie = (name: string, value: string, days: number = 7) => {
 };
 
 export const getCookie = (name: string): string | null => {
-  const cookies = document.cookie ? document.cookie.split("; ") : [];
+  const cookies = document?.cookie ? document.cookie.split("; ") : [];
 
   for (const cookie of cookies) {
     const [cookieName, cookieValue] = cookie.split("=");
