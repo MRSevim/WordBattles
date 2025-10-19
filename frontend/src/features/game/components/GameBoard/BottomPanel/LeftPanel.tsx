@@ -1,4 +1,7 @@
-import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
+import {
+  selectIsSwitching,
+  selectUndrawnLetterPool,
+} from "@/features/game/lib/redux/selectors";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { Button } from "./Button";
 import { toggleSwitching } from "@/features/game/lib/redux/slices/gameSlice";
@@ -16,13 +19,7 @@ const LeftPanel = () => {
 
   return (
     <div className="flex gap-2">
-      <Button
-        classes="bi bi-archive"
-        title={t(locale, "game.letterPool")}
-        onClick={() => {
-          dispatch(toggleLetterPool());
-        }}
-      />
+      <ToggleLetterPoolButton />
       <SwitchButton />
       <Button
         classes="bi bi-arrow-left-right"
@@ -39,6 +36,22 @@ const LeftPanel = () => {
         }}
       />
     </div>
+  );
+};
+
+const ToggleLetterPoolButton = () => {
+  const dispatch = useAppDispatch();
+  const [locale] = useLocaleContext();
+  const undrawnLetterPool = useAppSelector(selectUndrawnLetterPool);
+  return (
+    <i
+      onMouseDown={() => dispatch(toggleLetterPool())}
+      title={t(locale, "game.letterPool")}
+      className="bg-brown rounded-lg flex flex-col items-center justify-center w-9 h-9 text-center text-white cursor-pointer"
+    >
+      <i className="bi bi-archive text-lg leading-none mt-1"></i>
+      <span className="text-xxs">{undrawnLetterPool.length}</span>
+    </i>
   );
 };
 

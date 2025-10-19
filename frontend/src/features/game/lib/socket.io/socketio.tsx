@@ -23,6 +23,6 @@ if (process.env.NODE_ENV !== "production") {
   globalForSocket.socket = socket;
 }
 
-socket.onAny((event, ...args) => {
+/* socket.onAny((event, ...args) => {
   console.log(event, args);
-});
+}); */

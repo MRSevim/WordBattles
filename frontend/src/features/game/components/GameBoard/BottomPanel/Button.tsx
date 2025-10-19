@@ -12,7 +12,7 @@ export const Button = ({
       onMouseDown={onClick}
       title={title}
       className={
-        "bg-brown rounded-lg w-7 h-7 flex items-center justify-center xs:w-9 xs:h-9 text-center leading-9 text-white cursor-pointer " +
+        "bg-brown rounded-lg flex items-center justify-center w-9 h-9 text-center text-white cursor-pointer " +
         classes
       }
     ></i>
