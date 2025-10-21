@@ -1,5 +1,6 @@
 import { RootState } from "@/lib/redux/store";
 import { findSocketPlayer } from "../../utils/helpers";
+import { Coordinates } from "../../utils/types/gameTypes";
 
 //game
 export const selectGameStatus = (state: RootState) => state.game.status;
@@ -11,6 +12,9 @@ export const selectGameRoomId = (state: RootState) => state.game.roomId;
 export const selectEmptyLetterIds = (state: RootState) =>
   state.game.emptyLetterIds;
 export const selectGameLanguage = (state: RootState) => state.game.lang;
+export const getLetterOnBoard =
+  (state: RootState) => (coordinates: Coordinates) =>
+    state.game.board[coordinates.row][coordinates.col];
 
 //players
 export const selectPlayers = (state: RootState) => state.game.players;

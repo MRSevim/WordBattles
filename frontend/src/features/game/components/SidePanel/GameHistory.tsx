@@ -120,15 +120,15 @@ const WordComp = ({
   word: Word;
 }) => {
   const ref = useRef<HTMLSpanElement>(null);
+  const [locale] = useLocaleContext();
 
   return (
     <div className="inline">
       <div className="group relative inline">
-        {wordsLength > 1 && i === wordsLength - 1 && "ve "}
+        {wordsLength > 1 && i === wordsLength - 1 && t(locale, "game.and")}
         <span className="cursor-pointer" ref={ref}>
           {word.word}
         </span>
-
         <Meanings meanings={word.meanings} spanRef={ref} />
       </div>
       {wordsLength > 1 && i < wordsLength - 1 && ", "}

@@ -99,6 +99,7 @@
     "generatedWords-multiple": " generated {{words}} words.",
     "switched": " switched letters. ",
     "passed": " passed their turn. ",
+    "and": "and ",
     "pointsPr": " points)",
     "leave": "Leave",
     "seconds": "seconds",

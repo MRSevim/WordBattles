@@ -1,16 +1,18 @@
 import { Coordinates, Letter } from "@/features/game/utils/types/gameTypes";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RootState } from "@/lib/redux/store";
 import { LetterSkeleton } from "../LetterRelated/LetterSkeleton";
-import { selectGameStatus } from "@/features/game/lib/redux/selectors";
+import {
+  getLetterOnBoard,
+  selectGameStatus,
+} from "@/features/game/lib/redux/selectors";
 import { useDraggable } from "@dnd-kit/core";
 import { useEffect } from "react";
 import { setDraggingValues } from "@/features/game/lib/redux/slices/gameSlice";
 import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 
 export const LetterOnCell = ({ coordinates }: { coordinates: Coordinates }) => {
-  const letter = useAppSelector(
-    (state: RootState) => state.game.board[coordinates.row][coordinates.col]
+  const letter = useAppSelector((state) =>
+    getLetterOnBoard(state)(coordinates)
   );
 
   return (

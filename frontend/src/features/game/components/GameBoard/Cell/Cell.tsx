@@ -1,9 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { LetterOnCell } from "./LetterOnCell";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { RootState } from "@/lib/redux/store";
 import { useDroppable } from "@dnd-kit/core";
-import { selectDraggingActive } from "@/features/game/lib/redux/selectors";
+import {
+  getLetterOnBoard,
+  selectDraggingActive,
+} from "@/features/game/lib/redux/selectors";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 
@@ -13,73 +15,7 @@ interface CellProps {
 }
 
 export const Cell = ({ row, col }: CellProps) => {
-  const cls = useMemo(() => {
-    let cls = "";
-    if (row === 0 || row === 7 || row === 14) {
-      if (col === 0 || col === 7 || col === 14)
-        if (row !== 7 || col !== 7) {
-          cls = "triple-word";
-        } else {
-          cls = "center";
-        }
-    }
-    const arrDoubleWord = [1, 2, 3, 4, 10, 11, 12, 13];
-
-    if (arrDoubleWord.includes(row) && arrDoubleWord.includes(col)) {
-      if (row === col || row === Math.abs(col - 14)) {
-        cls = "double-word";
-      }
-    }
-
-    const arrDoubleLetter = [
-      {
-        first: [0, 14],
-        second: [3, 11],
-      },
-      {
-        first: [2, 12],
-        second: [6, 8],
-      },
-      {
-        first: [3, 11],
-        second: [7],
-      },
-      {
-        first: [6, 8],
-        second: [6, 8],
-      },
-    ];
-
-    arrDoubleLetter.forEach((arr) => {
-      if (
-        (arr.first.includes(row) && arr.second.includes(col)) ||
-        (arr.second.includes(row) && arr.first.includes(col))
-      ) {
-        cls = "double-letter";
-      }
-    });
-
-    const arrTripleLetter = [
-      {
-        first: [1, 13],
-        second: [5, 9],
-      },
-      {
-        first: [5, 9],
-        second: [1, 5, 9, 13],
-      },
-    ];
-
-    arrTripleLetter.forEach((arr) => {
-      if (
-        (arr.first.includes(row) && arr.second.includes(col)) ||
-        (arr.second.includes(row) && arr.first.includes(col))
-      ) {
-        cls = "triple-letter";
-      }
-    });
-    return cls;
-  }, [row, col]);
+  const cls = computeClass(row, col);
 
   const [locale] = useLocaleContext();
 
@@ -89,8 +25,8 @@ export const Cell = ({ row, col }: CellProps) => {
 
   const active = useAppSelector(selectDraggingActive);
 
-  const letter = useAppSelector(
-    (state: RootState) => state.game.board[coordinates.row][coordinates.col]
+  const letter = useAppSelector((state) =>
+    getLetterOnBoard(state)(coordinates)
   );
 
   const { setNodeRef } = useDroppable({
@@ -120,4 +56,73 @@ export const Cell = ({ row, col }: CellProps) => {
       </div>
     </>
   );
+};
+
+const computeClass = (row: number, col: number) => {
+  let cls = "";
+  if (row === 0 || row === 7 || row === 14) {
+    if (col === 0 || col === 7 || col === 14)
+      if (row !== 7 || col !== 7) {
+        cls = "triple-word";
+      } else {
+        cls = "center";
+      }
+  }
+  const arrDoubleWord = [1, 2, 3, 4, 10, 11, 12, 13];
+
+  if (arrDoubleWord.includes(row) && arrDoubleWord.includes(col)) {
+    if (row === col || row === Math.abs(col - 14)) {
+      cls = "double-word";
+    }
+  }
+
+  const arrDoubleLetter = [
+    {
+      first: [0, 14],
+      second: [3, 11],
+    },
+    {
+      first: [2, 12],
+      second: [6, 8],
+    },
+    {
+      first: [3, 11],
+      second: [7],
+    },
+    {
+      first: [6, 8],
+      second: [6, 8],
+    },
+  ];
+
+  arrDoubleLetter.forEach((arr) => {
+    if (
+      (arr.first.includes(row) && arr.second.includes(col)) ||
+      (arr.second.includes(row) && arr.first.includes(col))
+    ) {
+      cls = "double-letter";
+    }
+  });
+
+  const arrTripleLetter = [
+    {
+      first: [1, 13],
+      second: [5, 9],
+    },
+    {
+      first: [5, 9],
+      second: [1, 5, 9, 13],
+    },
+  ];
+
+  arrTripleLetter.forEach((arr) => {
+    if (
+      (arr.first.includes(row) && arr.second.includes(col)) ||
+      (arr.second.includes(row) && arr.first.includes(col))
+    ) {
+      cls = "triple-letter";
+    }
+  });
+
+  return cls;
 };
