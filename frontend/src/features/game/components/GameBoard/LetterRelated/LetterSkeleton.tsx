@@ -57,11 +57,10 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
           <div>{letter.letter}</div>
         )}
       </div>
-      {notFixed && (
-        <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
-          {letter.point}
-        </div>
-      )}
+
+      <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
+        {letter.point}
+      </div>
     </div>
   );
 };
