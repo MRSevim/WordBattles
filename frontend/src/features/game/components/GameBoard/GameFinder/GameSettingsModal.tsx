@@ -19,7 +19,7 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
 
   const findGame = () => {
     socket.connect();
-    socket.emit("Selected Language", lang);
+    socket.emit("Started Looking", lang);
     setCookie("lang", lang);
     dispatch(setGameLanguage(lang));
     dispatch(setGameStatus("looking"));

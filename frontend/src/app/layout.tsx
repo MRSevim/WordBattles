@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
-import Wrapper from "@/utils/Wrapper";
+import ClientWrapper from "@/utils/ClientWrapper";
 import { Header } from "@/components/Header/Header";
 import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
 import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
 import { cookies } from "next/headers";
 import { getLocaleFromCookie } from "@/features/language/lib/i18n";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
-import GameInitializers from "@/utils/GameInitializers";
+import { getUserData } from "@/features/auth/utils/getServerSideSession";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -30,6 +30,7 @@ export default async function RootLayout({
   const initialLocale = await getLocaleFromCookie(cookies);
   const initialTheme = (await cookies()).get("theme")?.value;
   const gameCookies = await getGameCookies();
+  const user = await getUserData();
 
   return (
     <html lang="en">
@@ -40,12 +41,11 @@ export default async function RootLayout({
       >
         <LocaleContextProvider initialLocale={initialLocale}>
           <ThemeContextProvider initialTheme={initialTheme}>
-            <Wrapper>
-              <GameInitializers gameCookies={gameCookies} />
+            <ClientWrapper user={user} gameCookies={gameCookies}>
               <Header />
               {children}
               <Analytics />
-            </Wrapper>
+            </ClientWrapper>
           </ThemeContextProvider>
         </LocaleContextProvider>
       </body>

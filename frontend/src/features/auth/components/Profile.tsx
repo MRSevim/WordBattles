@@ -34,11 +34,12 @@ const Profile = () => {
     }
     return error;
   }, "");
+
   return (
     <Container className="py-10 flex justify-center items-center gap-6">
       {userImage && (
         <Image
-          src={userImage || ""}
+          src={userImage}
           alt={t(locale, "avatar")}
           width={96}
           height={96}

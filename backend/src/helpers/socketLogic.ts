@@ -64,7 +64,7 @@ export const runSocketLogic = (io: Io) => {
       }
     }
 
-    socket.on("Selected Language", async (lang: Lang) => {
+    socket.on("Started Looking", async (lang: Lang) => {
       const startGame = (socket: Socket, _socket: Socket) => {
         const gameState = generateGameState(socket, _socket, lang);
         io.to(gameState.roomId).emit("Start Game", gameState);

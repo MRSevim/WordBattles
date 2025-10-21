@@ -57,7 +57,7 @@ const UserMenu = ({
       ) : user === null ? (
         <div
           className="flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 my-2 md:my-0 animate-pulse bg-gray-200"
-          style={{ width: "150px", height: "46px" }}
+          style={{ width: "100px", height: "46px" }}
         ></div>
       ) : (
         <div className="relative" ref={dropdownRef}>

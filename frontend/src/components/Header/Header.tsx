@@ -6,7 +6,6 @@ import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import { Links } from "./Links";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
-import UserInitializer from "./UserInitializer";
 
 export const Header = async () => {
   const locale = await getLocaleFromCookie(cookies);
@@ -18,7 +17,6 @@ export const Header = async () => {
           WordBattles
         </Link>
 
-        <UserInitializer userPromise={userPromise} />
         <div className="hidden md:block">
           <Links locale={locale} />
         </div>
