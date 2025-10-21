@@ -8,7 +8,7 @@ const Signin = () => {
   const [locale] = useLocaleContext();
   return (
     <Container className="flex items-center justify-center py-10">
-      <div className="w-full max-w-md shadow-xl rounded-2xl p-8">
+      <div className="w-full max-w-md shadow-xl rounded-2xl p-8 dark:bg-white">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
           {t(locale, "signIn")}
         </h1>

@@ -5,8 +5,11 @@ import { Analytics } from "@vercel/analytics/react";
 import Wrapper from "@/utils/Wrapper";
 import { Header } from "@/components/Header/Header";
 import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
+import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
 import { cookies } from "next/headers";
 import { getLocaleFromCookie } from "@/features/language/lib/i18n";
+import { getGameCookies } from "@/features/game/utils/serverHelpers";
+import GameInitializers from "@/utils/GameInitializers";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -25,16 +28,25 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const initialLocale = await getLocaleFromCookie(cookies);
+  const initialTheme = (await cookies()).get("theme")?.value;
+  const gameCookies = await getGameCookies();
 
   return (
     <html lang="en">
-      <body className={`${geistSans.className} antialiased`}>
+      <body
+        className={`${geistSans.className} antialiased ${
+          initialTheme === "dark" ? "dark" : ""
+        }`}
+      >
         <LocaleContextProvider initialLocale={initialLocale}>
-          <Wrapper>
-            <Header />
-            {children}
-            <Analytics />
-          </Wrapper>
+          <ThemeContextProvider initialTheme={initialTheme}>
+            <Wrapper>
+              <GameInitializers gameCookies={gameCookies} />
+              <Header />
+              {children}
+              <Analytics />
+            </Wrapper>
+          </ThemeContextProvider>
         </LocaleContextProvider>
       </body>
     </html>

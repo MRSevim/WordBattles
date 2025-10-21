@@ -23,7 +23,7 @@ export default function ErrorBoundary({
       <div className="bg-white shadow-xl rounded-2xl p-10 max-w-md w-full">
         <div className="flex flex-col items-center gap-4">
           <div className="h-16 w-16 flex items-center justify-center rounded-full bg-primary">
-            <i className="bi bi-exclamation-circle text-2xl text-primary-foreground"></i>
+            <i className="bi bi-exclamation-circle text-2xl text-white"></i>
           </div>
 
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -35,7 +35,7 @@ export default function ErrorBoundary({
 
           <button
             onClick={() => reset()}
-            className="mt-6 px-6 py-2 rounded-lg bg-primary text-primary-foreground font-medium shadow hover:opacity-90 transition"
+            className="mt-6 px-6 py-2 rounded-lg bg-primary text-white font-medium shadow hover:opacity-90 transition"
           >
             {t(locale, "errorBoundary.tryAgain")}
           </button>

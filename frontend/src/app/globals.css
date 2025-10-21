@@ -5,6 +5,20 @@
   --primary: #1b48b1;
   --primary-foreground: #ffffff;
 }
+
+/* When dark mode is active */
+body.dark {
+  --primary-foreground: #0a0a0a;
+  color: white;
+}
+
+body {
+  background-color: var(--primary-foreground);
+}
+
+/* makes dark variant apply based on class of ancestors instead of prefersColorScheme */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --breakpoint-xxs: 28rem;
   --breakpoint-xs: 35rem;

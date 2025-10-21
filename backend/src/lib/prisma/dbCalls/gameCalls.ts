@@ -3,10 +3,10 @@ import {
   GameState,
   GameStatus,
   HistoryArray,
-  Lang,
   LettersArray,
   Player,
 } from "../../../types/gameTypes";
+import { Lang } from "../../../types/types";
 import { prisma, Prisma } from "../prisma";
 
 const asJson = (value: any): Prisma.InputJsonValue => value;
@@ -85,7 +85,7 @@ export async function updateCurrentRoomIdInDB(
   try {
     await prisma.user.update({
       where: { id: userId },
-      data: { currentRoomId: roomId },
+      data: { currentRoomId: roomId ?? null },
     });
   } catch (error) {
     console.error(

@@ -6,12 +6,18 @@
   "avatar": "Kullanıcı avatarı",
   "connectionFailed": "Bağlantı başarısız: ",
   "timeIsUp": "Süreniz doldu!",
+  "switchTheme": "Site temasını değiştir",
   "notYourTurn": "Sizin sıranız değil!",
   "notInActiveGame": "Devam eden bir oyunda değilsiniz!",
   "errorBoundary": {
     "somethingWentWrong": "Bir şeyler yanlış gitti!",
     "tryAgain": "Tekrar dene...",
     "unexpected": "Umulmadık bir sorun oluştu. Lütfen tekrar deneyin."
+  },
+  "notFound": {
+    "notFound": "Sayfa bulunamadı",
+    "explanation": "Aradığınız sayfa yok veya yeri değiştirilmiş.",
+    "home": "Anasayfaya git"
   },
   "langSwitcher": {
     "language": "Dil",

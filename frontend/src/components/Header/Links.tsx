@@ -6,6 +6,7 @@ import { t } from "@/features/language/lib/i18n";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
+import { ThemeToggler } from "./ThemeToggler";
 
 export const Links = ({
   mobile,
@@ -41,6 +42,7 @@ export const Links = ({
         {t(locale, "header.leaderboard")}
       </Link>
       <LanguageSwitcher />
+      <ThemeToggler />
       <UserMenu onClick={closeMenu} locale={locale} />
     </nav>
   );

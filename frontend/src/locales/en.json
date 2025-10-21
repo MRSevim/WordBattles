@@ -4,6 +4,7 @@
   "avatar": "User Avatar",
   "connectionFailed": "Connection failed: ",
   "timeIsUp": "Time is up!",
+  "switchTheme": "Switch site theme",
   "notYourTurn": "It is not your turn!",
   "notInActiveGame": "You are not in an active game!",
   "continueWithGoogle": "Continue with Google",
@@ -12,6 +13,11 @@
     "somethingWentWrong": "Something went wrong!",
     "tryAgain": "Try again...",
     "unexpected": "An unexpected error occurred. Please try again..."
+  },
+  "notFound": {
+    "notFound": "Page not found",
+    "explanation": "The page you are looking for doesn’t exist or may have been moved.",
+    "home": "Go to homepage"
   },
   "langSwitcher": {
     "language": "Language",
