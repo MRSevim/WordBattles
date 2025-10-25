@@ -71,14 +71,16 @@ export const GameEnded = () => {
   }
 
   return (
-    <Modal>
-      <div className="p-6 bg-slate-800 rounded-2xl text-white shadow-lg">
+    <Modal z={40} className="items-start sm:items-center">
+      <div className="p-2 xxs:p-4 bg-slate-800 rounded-2xl text-white shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-2">
           {t(locale, "game.gameEnded")}
         </h2>
-        <p className="text-center text-gray-300 mb-4 italic">{reasonText}</p>
+        <p className="text-center text-gray-300 mb-2 xxs:mb-4 italic">
+          {reasonText}
+        </p>
 
-        <div className="grid grid-cols-3 grid-rows-[repeat(10,minmax(0,auto))] gap-2 justify-items-center items-center">
+        <div className="grid grid-cols-3 grid-rows-[repeat(10,minmax(0,auto))] gap-1 xxs:gap-2">
           <PlayerComp player={players[0]} winner={winner} />
           <Titles />
           <PlayerComp player={players[1]} winner={winner} />
@@ -143,7 +145,7 @@ const PlayerComp = ({
       </div>
 
       {/* Username */}
-      <h3 className="font-semibold text-lg">{player.username}</h3>
+      <h3 className="font-semibold text-lg text-center">{player.username}</h3>
 
       {/* Stats */}
       <div className="text-sm space-y-1 text-gray-200 grid grid-rows-subgrid row-span-8 w-full">

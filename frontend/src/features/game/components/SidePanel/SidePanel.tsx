@@ -14,6 +14,7 @@ import "./SidePanel.css";
 import { removeCookie } from "@/utils/helpers";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
+import { Button } from "../GameBoard/BottomPanel/Button";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -21,8 +22,8 @@ export const SidePanel = () => {
   return (
     <div
       className={
-        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-40 flex flex-col " +
-        (sidePanelOpen ? "block" : "hidden lg:block")
+        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-40 flex flex-col transition-transform lg:transition-none duration-200 ease-in-out " +
+        (sidePanelOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0")
       }
     >
       <OngoingGameContainer />
@@ -49,10 +50,17 @@ const OngoingGameContainer = () => {
       {!gameOngoing && <Loader />}
       {gameOngoing && (
         <>
-          <div className="flex justify-end">
+          <div className="flex justify-between m-2 xxs:m-3">
+            <Button
+              classes="bi bi bi-x-lg block lg:invisible"
+              title={t(locale, "game.toggleSidePanel")}
+              onClick={() => {
+                dispatch(toggleSidePanel());
+              }}
+            />
             <div
               onClick={leave}
-              className="bg-brown rounded-lg p-2 m-2 xxs:m-3 flex justify-center items-center gap-2 text-white cursor-pointer"
+              className="bg-brown rounded-lg p-2 flex justify-center items-center gap-2 text-white cursor-pointer"
             >
               <span>{t(locale, "game.leave")}</span>
               <i className="bi bi-door-open"></i>

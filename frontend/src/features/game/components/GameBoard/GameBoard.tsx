@@ -39,21 +39,19 @@ export const GameContainer = () => {
 
   return (
     <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, dispatch)}>
-      <div className="w-full flex flex-col items-center text-black">
-        <div className="w-full relative lg:flex">
-          <div className="w-full lg:w-2/3 flex justify-center overflow-auto">
-            <div className="relative">
+      <div className="w-full flex items-center text-black relative overflow-x-hidden">
+        <div className="w-full lg:w-2/3 flex flex-col">
+          <div className="flex overflow-auto">
+            <div className="relative flex justify-center flex-1">
               <GameFinder />
               <LetterPool />
               <GameEnded />
               <Board />
             </div>
           </div>
-          <SidePanel />
-        </div>
-        <div className="w-full relative lg:flex px-2">
           <BottomPanel />
         </div>
+        <SidePanel />
       </div>
       <DragOverlay dropAnimation={null}>
         {activeLetter ? <NakedLetterSkeleton letter={activeLetter} /> : null}
