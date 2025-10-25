@@ -20,7 +20,6 @@ import {
 } from "./memoryGameHelpers";
 import {
   loadGameFromDB,
-  removeGameFromDB,
   updateCurrentRoomIdInDB,
 } from "../lib/prisma/dbCalls/gameCalls";
 import {
@@ -101,7 +100,7 @@ export const runSocketLogic = (io: Io) => {
         switchedIndices: number[];
         state: GameState;
       }) => {
-        const { players, roomId, undrawnLetterPool } = state;
+        const { players, roomId } = state;
         const currentPlayer = players.find((player) => player.turn);
         if (state.status !== "playing" || !currentPlayer) return;
         // Append to history
@@ -114,8 +113,7 @@ export const runSocketLogic = (io: Io) => {
 
         switchLetters(switchedIndices, state, currentPlayer.hand);
 
-        currentPlayer.passCount = 0;
-        state.passCount = 0;
+        currentPlayer.consecutivePassCount = 0;
 
         switchTurns(state, io);
 
@@ -136,8 +134,8 @@ export const runSocketLogic = (io: Io) => {
         playerPoints: 0,
       });
 
-      state.passCount += 1;
-      currentPlayer.passCount += 1;
+      currentPlayer.consecutivePassCount += 1;
+      currentPlayer.totalPassCount += 1;
       switchTurns(state, io);
 
       io.to(roomId).emit("Play Made", state);
@@ -168,9 +166,9 @@ export const runSocketLogic = (io: Io) => {
       const everybodyLeft = state.players.every((player) => player.leftTheGame);
 
       if (everybodyLeft) {
-        // If no sockets are left, remove the game from storage
+        // If no sockets are left, remove the game from memory
         removeGameFromMemory(roomId);
-        removeGameFromDB(roomId);
+        /* removeGameFromDB(roomId); */
       } else {
         saveGame(state, io);
         // Otherwise, notify remaining players
@@ -274,8 +272,7 @@ export const runSocketLogic = (io: Io) => {
       });
 
       // Switch turns
-      currentPlayer.passCount = 0;
-      state.passCount = 0;
+      currentPlayer.consecutivePassCount = 0;
       completePlayerHand(currentPlayer, undrawnLetterPool);
       switchTurns(state, io);
 

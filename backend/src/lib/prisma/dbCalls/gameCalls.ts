@@ -1,5 +1,6 @@
 import {
   Board,
+  EndReason,
   GameState,
   GameStatus,
   HistoryArray,
@@ -7,7 +8,7 @@ import {
   Player,
 } from "../../../types/gameTypes";
 import { Lang } from "../../../types/types";
-import { prisma, Prisma } from "../prisma";
+import { prisma, Prisma, Game as PrismaGame } from "../prisma";
 
 const asJson = (value: any): Prisma.InputJsonValue => value;
 
@@ -15,26 +16,10 @@ export async function saveGameToDB(game: GameState) {
   try {
     await prisma.game.upsert({
       where: { roomId: game.roomId },
-      update: {
-        status: game.status,
-        lang: game.lang,
-        players: asJson(game.players),
-        undrawnLetters: asJson(game.undrawnLetterPool),
-        passCount: game.passCount,
-        emptyLetterIds: game.emptyLetterIds,
-        board: asJson(game.board),
-        history: asJson(game.history),
-      },
+      update: fromGameState(game),
       create: {
         roomId: game.roomId,
-        lang: game.lang,
-        status: game.status,
-        players: asJson(game.players),
-        undrawnLetters: asJson(game.undrawnLetterPool),
-        passCount: game.passCount,
-        emptyLetterIds: game.emptyLetterIds,
-        board: asJson(game.board),
-        history: asJson(game.history),
+        ...fromGameState(game),
       },
     });
   } catch (error) {
@@ -49,17 +34,7 @@ export async function loadGameFromDB(
     const game = await prisma.game.findUnique({ where: { roomId } });
     if (!game) return null;
 
-    return {
-      status: game.status as GameStatus,
-      players: game.players as any as Player[],
-      lang: game.lang as any as Lang,
-      undrawnLetterPool: game.undrawnLetters as any as LettersArray,
-      roomId: game.roomId,
-      passCount: game.passCount,
-      emptyLetterIds: game.emptyLetterIds as any as string[],
-      board: game.board as any as Board,
-      history: game.history as any as HistoryArray,
-    };
+    return toGameState(game);
   } catch (error) {
     console.error(`❌ [loadGameFromDB] Failed for room ${roomId}:`, error);
 
@@ -99,19 +74,42 @@ export async function loadAllGamesFromDB(): Promise<GameState[]> {
   try {
     const games = await prisma.game.findMany();
 
-    return games.map((game) => ({
-      status: game.status as GameStatus,
-      lang: game.lang as any as Lang,
-      players: game.players as any as Player[],
-      undrawnLetterPool: game.undrawnLetters as any as LettersArray,
-      roomId: game.roomId,
-      passCount: game.passCount,
-      emptyLetterIds: game.emptyLetterIds as any as string[],
-      board: game.board as any as Board,
-      history: game.history as any as HistoryArray,
-    }));
+    return games.map((game) => toGameState(game));
   } catch (error) {
     console.error("❌ [loadAllGamesFromDB] Failed to load games:", error);
     return [];
   }
 }
+
+const toGameState = (game: PrismaGame): GameState => {
+  return {
+    status: game.status as GameStatus,
+    lang: game.lang as any as Lang,
+    players: game.players as any as Player[],
+    undrawnLetterPool: game.undrawnLetters as any as LettersArray,
+    roomId: game.roomId,
+    emptyLetterIds: game.emptyLetterIds as any as string[],
+    board: game.board as any as Board,
+    history: game.history as any as HistoryArray,
+    winnerId: game.winnerId || undefined,
+    endReason: game.endReason as EndReason,
+    endingPlayerId: game.endingPlayerId || undefined,
+    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked,
+  };
+};
+
+const fromGameState = (game: GameState) => {
+  return {
+    lang: game.lang,
+    status: game.status,
+    players: asJson(game.players),
+    undrawnLetters: asJson(game.undrawnLetterPool),
+    emptyLetterIds: game.emptyLetterIds,
+    board: asJson(game.board),
+    history: asJson(game.history),
+    winnerId: game.winnerId,
+    endReason: game.endReason,
+    endingPlayerId: game.endingPlayerId,
+    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked,
+  };
+};

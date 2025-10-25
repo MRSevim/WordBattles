@@ -1,4 +1,3 @@
-import { capitalizeFirstLetter } from "@/features/game/utils/helpers";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import {
@@ -72,7 +71,7 @@ const HistoryItem = ({
               "inline " + (player?.id === socket.sessionId ? "font-bold" : "")
             }
           >
-            {capitalizeFirstLetter(player.username)}
+            {player.username}
           </div>
           {wordsLength === 0 &&
             item.type !== "switch" &&

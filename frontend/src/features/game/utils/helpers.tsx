@@ -5,10 +5,6 @@ import { socket } from "@/features/game/lib/socket.io/socketio";
 import { setDraggingValues } from "../lib/redux/slices/gameSlice";
 import { moveLetter } from "@/features/game/lib/redux/slices/gameSlice";
 
-export const capitalizeFirstLetter = (string: string): string => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
 export const initialBoard: Board = Array.from({ length: 15 }, () =>
   Array(15).fill(null)
 );

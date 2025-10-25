@@ -31,10 +31,18 @@ export interface Player {
   username: string;
   turn: boolean;
   id: string;
+  image?: string;
+  email?: string;
   score: number;
   leftTheGame: boolean;
   timer: number;
-  passCount: number;
+  consecutivePassCount: number; //This only increases when timer runs out on player's turn or player passes
+  totalPassCount: number; //Does not reset when player plays after passing
+  scoreDiff: number;
+  totalWords: number;
+  highestScoringWord?: { word: string; points: number };
+  highestScoringMove?: { words: string; points: number };
+  avgPerWord: number;
 }
 
 export interface Word {
@@ -53,16 +61,25 @@ export interface History {
   type?: string;
 }
 
+export type EndReason =
+  | "consecutivePasses"
+  | "allTilesUsed"
+  | "playerLeft"
+  | "none";
+
 export interface GameState {
   status: GameStatus;
   players: Player[];
   emptyLetterIds: string[];
   undrawnLetterPool: LettersArray;
   roomId: string;
-  passCount: number;
   board: Board;
   lang: Lang | "";
   history: History[];
+  winnerId?: string;
+  endReason: EndReason;
+  endingPlayerId?: string;
+  pointDiffAppliedToRanked: boolean;
 }
 
 export interface GameStateWithInteractivity extends GameState {

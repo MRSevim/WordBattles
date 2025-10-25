@@ -79,10 +79,13 @@ model Game {
   status          String
   players         Json
   undrawnLetters  Json
-  passCount       Int
   emptyLetterIds  Json
   board           Json
   history         Json
+  winnerId        String?
+  endReason       String
+  endingPlayerId    String?
+  pointDiffAppliedToRanked Boolean
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

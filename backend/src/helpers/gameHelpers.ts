@@ -34,9 +34,11 @@ const checkGameEnd = (state: GameState) => {
     finishingPlayer.score += unfinishedPlayerHandSize;
     gameEnded = true;
   }
-  const playerPassedEnough = players.some((player) => player.passCount >= 2);
-  const playersPassedEnough = state.passCount >= 4;
-  if (playerPassedEnough || playersPassedEnough) {
+  const playerPassedEnough = players.some(
+    (player) => player.consecutivePassCount >= 2
+  );
+
+  if (playerPassedEnough) {
     // Logic for ending the game due to passes
     state.status = "ended";
 
@@ -51,7 +53,9 @@ const checkGameEnd = (state: GameState) => {
 
 export const applyPointDifference = async (state: GameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
-  const passedPlayer = state.players.find((player) => player.passCount >= 2);
+  const passedPlayer = state.players.find(
+    (player) => player.consecutivePassCount >= 2
+  );
 
   if (everyoneIsUser) {
     // Calculate score difference

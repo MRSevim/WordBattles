@@ -40,7 +40,7 @@
     "p2": "İlk oyuncu, ilk sırada, merkezdeki hücreyi kullanarak, elindeki harflerle, soldan sağa veya yukarıdan aşağıya olacak şekilde anlamlı bir (sözlükte olan; Türkçe oyunlar için, kelimeler https://sozluk.gov.tr/gts?ara='kelime' urlsinden kelime yerine aranan kelime yazılarak çekilmektedir) kelime türetir. (Harfleri hücrelere yerleştirir ve oyna butonuna basar). Yerleştirilen harfler yatay veya dikey hizalanmış olmak zorundadır. Hem yatay, hem dikey hizalananlar geçersizdir. Tek harflik kelimeler, sözlükte bulunsa bile sayılmaz. Doğru oyunu yaptıktan, harf değiştirdikten, sırasını geçtikten veya süresi bittikten sonra sıra diğer oyuncuya geçer.",
     "p3": "Doğru kelimeler türetirse oyuncular puan alır (bkz. Puan hesaplama) ve harf havuzundan harf/harfler çekerek elindeki harfleri yediye tamamlar.",
     "p4": "Diğer oyuncu da yine aynı şekilde kelime türetmeye çalışır. Dolu olan hücrelere harf yerleştiremez. Kelimeler, dolu olan hücrelerin en az biri ile yatay veya dikey olarak bağlantılı şekilde türetilmiş olmalıdır. İkinci oyuncudan devam edecek şekilde oyuncular, her turda, birden fazla kelime türetebilir. Çapraz, bağlantısız veya hizalanmamış kelimeler kabul edilmez.",
-    "p5": "Oyun devam eden durumlarda sonlanır: 1. Havuzdaki tüm harfler çekilince ve bir oyuncu elindeki harfleri bitirince 2. Dört defa üstüste pas geçilince 3. Bir oyuncu 2 tur boyunca pas geçince 4. Bir oyuncu oyundan ayrılınca",
+    "p5": "Oyun devam eden durumlarda sonlanır: 1. Havuzdaki tüm harfler çekilince ve bir oyuncu elindeki harfleri bitirince 2. Bir oyuncu 2 tur art arda pas geçince 3. Bir oyuncu oyundan ayrılınca",
     "pointCalculation": "Puan Hesaplama",
     "p6": "Oyuncular türettikleri kelimenin/kelimelerin harflerinin puanları toplamı kadar puan alır. (bkz. Harf Havuzu)",
     "p7": "Bonus hücrelere yerleştirilerek türetilen harfler/kelimeler fazladan puan verir. Çifte Harfe (H2) yerleştirilen harf puanını iki katına çıkarırken üçlüye (H3) yerleştirilen harf üç katına çıkarır. Çifte kelimeye (K2) yerleştirilerek türetilen kelime puanını iki katına çıkarırken üçlüye yerleştirilen türetilen üçlü kelime (K3) üç katına çıkarır. Bonuslarda önce harf bonusu hesaplanır ve sonra kelime bonusu o hesapla çarpılır. Eğer bir bonus harf hücresi iki veya daha fazla kelime türetiyorsa bonus bütün kelimelere uygulanır. Kelime bonusu kullanılarak birden fazla kelime türetiliyorsa da bonus, üstünden geçen bütün kelimelere uygulanır. Bir kelime birden fazla kelime bonusundan geçiyorsa çarpanlar üst üste çarpılır. Boş harfler puan sağlamaz ancak boş harf, kelime bonusuna yerleştirilerek kelime türetilmişse bile, kelime bonus puanı kazanılır. Merkez hücre çifte kelime bonusu sağlar.",
@@ -48,7 +48,7 @@
     "p9": "Eğer tüm harfler çekilmiş ve bir oyuncu elindeki harfleri bitirmiş ise, elindeki harfleri bitiren oyuncu, diğer oyuncunun elindeki harf sayısı kadar puan kazanır. Diğer oyuncu elindeki harf sayısı kadar puan kaybeder.",
     "p10": "Oyun bitiminde iki oyuncu arasındaki puan farkı, her oyuncunun dereceli puanına eklenir. Örnek: Oyun 30 puan farkıyla bitmişse, kazanan oyuncu +30 dereceli puanı alırken, kaybeden -30 alır. Derece puanı ekleme ve çıkarmaları, 2 oyuncu da hesabına giriş yaptıysa yapılır.",
     "p11": "Oyun bitmeden bir oyuncu ayrılırsa (oyundan çıkar veya iki tur boyunca pas geçer), ayrılan oyuncu geride ise ayrılmadan önceki puan farkı, oyuncuların dereceli puanlarına eklenir. Diğer durumda dereceli puan değişimleri uygulanmaz.",
-    "letterPool": "Harf Havuzu",
+    "letterPool": "Harf Havuzu (Türkçe)",
     "letter": "Harf",
     "points": "Puan",
     "amount": "Miktar",
@@ -121,6 +121,22 @@
       "selectLanguage": "Oyun dili seç:",
       "find": "Bul",
       "en": "İngilizce"
+    },
+    "endedModal": {
+      "endReason": {
+        "consecutivePasses": "{{player}} 2 tur üstüste pas geçti.",
+        "allTilesUsed": "{{player}} havuz boş iken elindeki tüm taşları bitirdi.",
+        "playerLeft": "{{player}} oyundan ayrıldı.",
+        "default": "Oyun bilinmeyen sebeple sonlandı."
+      },
+      "points": "Puan",
+      "pointsDiff": "Puan farkı",
+      "totalWordsPlayed": "Üretilen toplam kelime",
+      "highestScoreWord": "En yüksek skorlu kelime",
+      "highestScoreMove": "En yüksek skorlu hamle",
+      "avgPointsPerWord": "Kelime başına ortalama puan",
+      "totalPassCount": "Toplam pas sayısı",
+      "endBonus": "Oyun sonundaki el bonusu"
     }
   }
 }

@@ -2,7 +2,7 @@
 import { BottomPanel } from "./BottomPanel/BottomPanel";
 import { GameFinder } from "./GameFinder/GameFinder";
 import { LetterPool } from "./LetterPool";
-import { GameEnded } from "./GameEnded";
+import { GameEnded } from "./GameEnded/GameEnded";
 import useGameSockets from "../../utils/hooks/useGameSockets";
 import { Board } from "./Cells";
 import { SidePanel } from "../SidePanel/SidePanel";

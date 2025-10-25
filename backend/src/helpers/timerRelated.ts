@@ -33,8 +33,8 @@ export const setUpTimerInterval = (state: GameState, io: Io) => {
         words: [],
         playerPoints: 0,
       });
-      currentPlayer.passCount += 1;
-      state.passCount += 1;
+      currentPlayer.consecutivePassCount += 1;
+      currentPlayer.totalPassCount += 1;
       switchTurns(state, io);
     }
   }, 1000);

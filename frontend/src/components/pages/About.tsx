@@ -42,13 +42,13 @@ export const About = async () => {
 };
 const LetterTable = ({ locale }: { locale: Lang }) => {
   return (
-    <div className="container mx-auto p-6">
+    <div className="p-6">
       <h1 className="text-3xl font-bold mb-4 text-center">
         {t(locale, "about.letterPool")}
       </h1>
-      <table className="min-w-full bg-white border border-gray-200">
+      <table className="min-w-full border border-gray-200">
         <thead>
-          <tr className="bg-gray-100 text-gray-700">
+          <tr>
             <th className="py-2 px-4 border-b">{t(locale, "about.letter")}</th>
             <th className="py-2 px-4 border-b">{t(locale, "about.points")}</th>
             <th className="py-2 px-4 border-b">{t(locale, "about.amount")}</th>
@@ -56,7 +56,7 @@ const LetterTable = ({ locale }: { locale: Lang }) => {
         </thead>
         <tbody>
           {letters[locale].map((letter, index) => (
-            <tr key={index} className="hover:bg-gray-50">
+            <tr key={index} className="hover:bg-gray-50 hover:text-black">
               <td className="py-2 px-4 border-b text-center">
                 {letter.letter || t(locale, "about.empty")}
               </td>

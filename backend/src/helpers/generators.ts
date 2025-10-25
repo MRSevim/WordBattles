@@ -15,28 +15,36 @@ export const generateGameState = (
   const playersStatus = generatePlayersStatus(letterPool, lang);
 
   const generateGuestIdsCaller = () => generateGuestId(t(lang, "guest"));
+
+  const getInitialPlayerValues = () => ({
+    score: 0,
+    consecutivePassCount: 0,
+    totalPassCount: 0,
+    leftTheGame: false,
+    timer: gameTime,
+    scoreDiff: 0,
+    totalWords: 0,
+    avgPerWord: 0,
+  });
+
   const players = [
     {
       hand: playersStatus.players[0],
       username: socket.user?.name || generateGuestIdsCaller(),
+      image: socket.user?.image || undefined,
       email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
       id: socket.sessionId,
-      score: 0,
-      passCount: 0,
-      leftTheGame: false,
-      timer: gameTime,
+      ...getInitialPlayerValues(),
     },
     {
       hand: playersStatus.players[1],
       username: _socket.user?.name || generateGuestIdsCaller(),
+      image: _socket.user?.image || undefined,
       email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
       id: _socket.sessionId,
-      score: 0,
-      passCount: 0,
-      leftTheGame: false,
-      timer: gameTime,
+      ...getInitialPlayerValues(),
     },
   ];
   const roomId = uuidv6();
@@ -51,11 +59,12 @@ export const generateGameState = (
     players,
     undrawnLetterPool: playersStatus.undrawnletterPool,
     roomId,
-    passCount: 0,
     emptyLetterIds,
     board: Array.from({ length: 15 }, () => Array(15).fill(null)),
     history: [],
     lang,
+    endReason: "none",
+    pointDiffAppliedToRanked: false,
   };
   return state;
 };
