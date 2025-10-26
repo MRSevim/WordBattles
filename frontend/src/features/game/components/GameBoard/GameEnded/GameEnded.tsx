@@ -1,12 +1,19 @@
 import { useAppSelector } from "@/lib/redux/hooks";
 import { Modal } from "@/components/Modal";
-import { selectGameStatus, selectPlayers } from "../../../lib/redux/selectors";
+import {
+  selectEndReason,
+  selectGameStatus,
+  selectPlayers,
+  selectWinnerId,
+} from "../../../lib/redux/selectors";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t, tReact } from "@/features/language/lib/i18n";
+import { t } from "@/features/language/lib/i18n";
 import Image from "next/image";
 import { Player } from "../../../utils/types/gameTypes";
 import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
+import EndingPlayerDisplay from "./EndingPlayerDisplay";
+import PointDiffAppliedDisplay from "./PointDiffAppliedDisplay";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
@@ -15,100 +22,34 @@ export const GameEnded = () => {
 
   if (gameStatus !== "ended") return null;
 
-  // Determine the winner
-  let winner: Player | undefined = undefined;
-  let maxScore = -Infinity;
-
-  // 🧩 Determine reason for game end
-  let endReason:
-    | "consecutivePasses"
-    | "allTilesUsed"
-    | "playerLeft"
-    | "normal" = "normal";
-
-  const passingPlayer = players.find((p) => p.consecutivePassCount >= 2);
-  const leavingPlayer = players.find((p) => p.leftTheGame);
-  const finishingPlayer = players.find((p) => p.hand.length === 0);
-
-  if (passingPlayer) {
-    endReason = "consecutivePasses";
-  } else if (leavingPlayer) {
-    endReason = "playerLeft";
-  } else if (finishingPlayer) {
-    players.forEach((player) => {
-      if (player.score > maxScore) {
-        maxScore = player.score;
-        winner = player;
-      }
-    });
-    endReason = "allTilesUsed";
-  }
-
-  // 🗣️ Localized reason text
-  let reasonText;
-  switch (endReason) {
-    case "consecutivePasses":
-      reasonText = tReact(
-        locale,
-        "game.endedModal.endReason.consecutivePasses",
-        {
-          player: <Bolded text={passingPlayer?.username} />,
-        }
-      );
-      break;
-    case "allTilesUsed":
-      reasonText = tReact(locale, "game.endedModal.endReason.allTilesUsed", {
-        player: <Bolded text={finishingPlayer?.username} />,
-      });
-      break;
-    case "playerLeft":
-      reasonText = tReact(locale, "game.endedModal.endReason.playerLeft", {
-        player: <Bolded text={leavingPlayer?.username} />,
-      });
-      break;
-    default:
-      reasonText = t(locale, "game.endedModal.endReason.default");
-  }
-
   return (
     <Modal z={40} className="items-start sm:items-center">
       <div className="p-2 xxs:p-4 bg-slate-800 rounded-2xl text-white shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-2">
           {t(locale, "game.gameEnded")}
         </h2>
-        <p className="text-center text-gray-300 mb-2 xxs:mb-4 italic">
-          {reasonText}
-        </p>
+        <div className="text-center text-gray-300 italic mb-2 xxs:mb-4">
+          <EndingPlayerDisplay />
+          <PointDiffAppliedDisplay />
+        </div>
 
         <div className="grid grid-cols-3 grid-rows-[repeat(10,minmax(0,auto))] gap-1 xxs:gap-2">
-          <PlayerComp player={players[0]} winner={winner} />
+          <PlayerComp player={players[0]} />
           <Titles />
-          <PlayerComp player={players[1]} winner={winner} />
+          <PlayerComp player={players[1]} />
         </div>
       </div>
     </Modal>
   );
 };
 
-const Bolded = ({ text }: { text?: string }) => (
-  <span className="font-bold">{text || ""}</span>
-);
-
-const PlayerComp = ({
-  player,
-  winner,
-}: {
-  player: Player;
-  winner?: Player;
-}) => {
+const PlayerComp = ({ player }: { player: Player }) => {
+  const winnerId = useAppSelector(selectWinnerId);
   const players = useAppSelector(selectPlayers);
-  const isWinner = player.id === winner?.id;
-  const hasLeft = player.leftTheGame;
-  const scoreDiff =
-    (players.find((p) => p.id === player.id)?.score ?? 0) -
-    (players.find((p) => p.id !== player.id)?.score ?? 0);
-
+  const otherPlayer = players.find((p) => p.id !== player.id);
+  const isWinner = player.id === winnerId;
   const isYou = player.id === socket.sessionId;
+  const endReason = useAppSelector(selectEndReason);
 
   return (
     <div className="bg-slate-700 rounded-xl p-4 grid-rows-subgrid grid row-span-full">
@@ -132,7 +73,7 @@ const PlayerComp = ({
             👑
           </span>
         )}
-        {hasLeft && (
+        {player.leftTheGame && (
           <span className="absolute -bottom-2 -right-2 text-sm text-red-400">
             (Left)
           </span>
@@ -152,24 +93,52 @@ const PlayerComp = ({
         {/*  Points */}
         <Paragraph text={player.score} />
         {/* Points diff */}
-        <Paragraph text={scoreDiff > 0 ? "+" + scoreDiff : scoreDiff} />
+        <Paragraph text={player.scoreDiff} />
         {/* Total Words Played */}
-        <Paragraph text={"-"} />
+        <Paragraph text={player.totalWords} />
         {/* Highest scoring word */}
-        <Paragraph text={"-"} />
+        <Paragraph
+          text={
+            player.highestScoringWord
+              ? `${player.highestScoringWord.word}(${player.highestScoringWord.points})`
+              : undefined
+          }
+        />
         {/* Highest scoring move */}
-        <Paragraph text={"-"} />
+        <Paragraph
+          text={
+            player.highestScoringMove
+              ? `${player.highestScoringMove?.words.join(", ")}(${
+                  player.highestScoringMove.points
+                })`
+              : undefined
+          }
+        />
         {/* Avg points per word */}
-        <Paragraph text={"-"} />
+        <Paragraph text={player.avgPerWord} />
         {/* Total pass count */}
-        <Paragraph text={"-"} />
+        <Paragraph text={player.totalPassCount} />
         {/* Endgame bonus */}
-        <Paragraph text={"-"} />
+        <Paragraph
+          text={
+            endReason === "allTilesUsed"
+              ? isWinner
+                ? otherPlayer?.hand.length
+                : -player.hand.length
+              : undefined
+          }
+        />
       </div>
     </div>
   );
 };
 
-const Paragraph = ({ text }: { text: string | number }) => (
-  <p className="text-center m-0">{text}</p>
-);
+const Paragraph = ({ text }: { text: string | number | undefined }) => {
+  const [locale] = useLocaleContext();
+
+  return (
+    <p className="text-center m-0">
+      {text ?? t(locale, "game.endedModal.unavailable")}
+    </p>
+  );
+};

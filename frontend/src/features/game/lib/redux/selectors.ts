@@ -15,6 +15,12 @@ export const selectGameLanguage = (state: RootState) => state.game.lang;
 export const getLetterOnBoard =
   (state: RootState) => (coordinates: Coordinates) =>
     state.game.board[coordinates.row][coordinates.col];
+export const selectEndingPlayerId = (state: RootState) =>
+  state.game.endingPlayerId;
+export const selectEndReason = (state: RootState) => state.game.endReason;
+export const selectPointDiffApplied = (state: RootState) =>
+  state.game.pointDiffAppliedToRanked;
+export const selectWinnerId = (state: RootState) => state.game.winnerId;
 
 //players
 export const selectPlayers = (state: RootState) => state.game.players;

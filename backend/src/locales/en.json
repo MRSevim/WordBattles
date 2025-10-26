@@ -7,5 +7,5 @@
   "moreThanOneLetter": "Words must be more than one letter.",
   "invalidWords": "Invalid words:",
   "errorDuringWordVal": "Something went wrong during word validation.",
-  "guest": "konuk"
+  "guest": "guest"
 }

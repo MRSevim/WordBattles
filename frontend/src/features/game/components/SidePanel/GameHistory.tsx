@@ -150,10 +150,12 @@ const Meanings = ({
 
   useEffect(() => {
     const container = document.querySelector(".history-scrollable");
+
     if (!spanRef.current || !container) return;
 
     const updatePosition = () => {
       const wordRect = spanRef.current!.getBoundingClientRect();
+
       setTop(wordRect.bottom);
     };
 

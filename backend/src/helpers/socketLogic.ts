@@ -163,8 +163,10 @@ export const runSocketLogic = (io: Io) => {
       }
       if (leavingPlayer) {
         leavingPlayer.leftTheGame = true;
-        state.endReason = "playerLeft";
-        state.endingPlayerId = leavingPlayer.id;
+        if (state.status !== "ended") {
+          state.endReason = "playerLeft";
+          state.endingPlayerId = leavingPlayer.id;
+        }
       }
       state.status = "ended";
       socket.leave(roomId);
@@ -274,7 +276,9 @@ export const runSocketLogic = (io: Io) => {
 
       currentPlayer.score += playerPoints;
       currentPlayer.totalWords += checkedWords.validWords.length;
-      currentPlayer.avgPerWord = currentPlayer.score / currentPlayer.totalWords;
+      currentPlayer.avgPerWord = Number(
+        (currentPlayer.score / currentPlayer.totalWords).toFixed(2)
+      );
 
       //fix the letters
       fixBoard(board);

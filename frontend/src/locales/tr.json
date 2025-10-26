@@ -136,7 +136,9 @@
       "highestScoreMove": "En yüksek skorlu hamle",
       "avgPointsPerWord": "Kelime başına ortalama puan",
       "totalPassCount": "Toplam pas sayısı",
-      "endBonus": "Oyun sonundaki el bonusu"
+      "endBonus": "Oyun sonundaki el bonusu",
+      "pointDiffApplied": "Puan farkları dereceli puanlarına eklendi.",
+      "unavailable": "Veri yok."
     }
   }
 }

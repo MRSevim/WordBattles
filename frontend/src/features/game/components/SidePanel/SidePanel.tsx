@@ -22,8 +22,8 @@ export const SidePanel = () => {
   return (
     <div
       className={
-        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-40 flex flex-col transition-transform lg:transition-none duration-200 ease-in-out " +
-        (sidePanelOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0")
+        "w-full h-full top-0 left-0 absolute lg:relative lg:w-1/3 bg-gray z-40 flex flex-col transition-left lg:transition-none duration-200 ease-in-out " +
+        (sidePanelOpen ? "left-0" : "left-full lg:left-0")
       }
     >
       <OngoingGameContainer />

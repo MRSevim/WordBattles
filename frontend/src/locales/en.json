@@ -136,7 +136,9 @@
       "highestScoreMove": "Highest score move",
       "avgPointsPerWord": "Averate points per word",
       "totalPassCount": "Total Pass Count",
-      "endBonus": "Hand bonus at game end"
+      "endBonus": "Hand bonus at game end",
+      "pointDiffApplied": "Point differences are applied to ranked points.",
+      "unavailable": "Unavailable Data"
     }
   }
 }
