@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { findSocketPlayer, initialBoard } from "@/features/game/utils/helpers";
+import {
+  computeClass,
+  findSocketPlayer,
+  initialBoard,
+} from "@/features/game/utils/helpers";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { toast } from "react-toastify";
 import {
@@ -128,9 +132,10 @@ export const gameSlice = createSlice({
 
       // Place it in the correct spot
       if (targetData.coordinates) {
+        const row = targetData.coordinates.row;
+        const col = targetData.coordinates.col;
         //  Add to board
-        state.board[targetData.coordinates.row][targetData.coordinates.col] =
-          letter;
+        state.board[row][col] = { ...letter, class: computeClass(row, col) };
       } else if (targetData?.id) {
         // If target not found, append at the end safely
         if (targetIndex === -1) player.hand.push(letter);
