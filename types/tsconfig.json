@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    /* Truncated compiler options to list only relevant options */
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "composite": true,
+    "emitDeclarationOnly": true
+  }
+}

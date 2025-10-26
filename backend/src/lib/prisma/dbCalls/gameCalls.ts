@@ -6,8 +6,8 @@ import {
   HistoryArray,
   LettersArray,
   Player,
+  Lang,
 } from "../../../types/gameTypes";
-import { Lang } from "../../../types/types";
 import { prisma, Prisma, Game as PrismaGame } from "../prisma";
 
 const asJson = (value: any): Prisma.InputJsonValue => value;
@@ -94,7 +94,7 @@ const toGameState = (game: PrismaGame): GameState => {
     winnerId: game.winnerId || undefined,
     endReason: game.endReason as EndReason,
     endingPlayerId: game.endingPlayerId || undefined,
-    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked,
+    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked ?? undefined,
   };
 };
 

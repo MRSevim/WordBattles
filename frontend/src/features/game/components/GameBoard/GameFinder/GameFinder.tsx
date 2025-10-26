@@ -24,7 +24,7 @@ export const GameFinder = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const [locale] = useLocaleContext();
   const lang = useAppSelector(selectGameLanguage);
-  const looking = gameStatus === "looking" && lang;
+  const looking = gameStatus === "looking";
   const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -32,7 +32,7 @@ export const GameFinder = () => {
     if (roomId || looking) {
       socket.connect();
     }
-  }, [roomId, gameStatus, gameStatus, lang]);
+  }, [roomId, gameStatus]);
 
   useEffect(() => {
     if (looking) socket.emit("Started Looking", lang);

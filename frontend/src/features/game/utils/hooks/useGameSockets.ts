@@ -2,12 +2,10 @@
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useEffect } from "react";
-import { GameState, InitialDataRaw, Player } from "../types/gameTypes";
+import { GameState, InitialData, Player } from "../types/gameTypes";
 import {
   leaveGame,
-  setGameRoomId,
   setGameState,
-  setGameStatus,
   setTimer,
 } from "../../lib/redux/slices/gameSlice";
 import { toast } from "react-toastify";
@@ -58,7 +56,7 @@ export default function useGameSockets() {
       setCookie("roomId", game.roomId);
     });
 
-    socket.on("Initialize Data", (game: InitialDataRaw) => {
+    socket.on("Initialize Data", (game: InitialData) => {
       dispatch(setInitialData(game));
     });
 

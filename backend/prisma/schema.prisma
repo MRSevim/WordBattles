@@ -85,7 +85,7 @@ model Game {
   winnerId        String?
   endReason       String
   endingPlayerId    String?
-  pointDiffAppliedToRanked Boolean
+  pointDiffAppliedToRanked Boolean?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

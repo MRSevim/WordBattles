@@ -2,7 +2,7 @@
 import { User } from "@prisma/client";
 import { Request } from "express";
 import { Server, Socket, ExtendedError } from "socket.io";
-
+import { Lang } from "./gameTypes";
 export { User };
 
 //express types
@@ -23,5 +23,3 @@ declare module "socket.io" {
     siteLocale: Lang;
   }
 }
-
-export type Lang = "tr" | "en";

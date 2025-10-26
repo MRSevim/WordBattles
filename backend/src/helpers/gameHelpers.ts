@@ -8,10 +8,11 @@ import {
   WordWithCoordinates,
   Letter,
   GameState,
+  Lang,
 } from "../types/gameTypes";
 import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
-import { Io, Lang } from "../types/types";
+import { Io } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
 import { gameTime, HAND_SIZE, letters } from "./misc";
 
@@ -29,20 +30,27 @@ const checkGameEnd = (state: GameState) => {
   if (isLetterPoolEmpty && hasFinishedTiles && unfinishedPlayer) {
     // Player has finished their tiles and pool is empty
     state.status = "ended";
+    state.endReason = "allTilesUsed";
+    state.endingPlayerId = finishingPlayer.id;
     const unfinishedPlayerHandSize = unfinishedPlayer.hand.length;
     unfinishedPlayer.score -= unfinishedPlayerHandSize;
     finishingPlayer.score += unfinishedPlayerHandSize;
     gameEnded = true;
+
+    applyWinner(state);
   }
-  const playerPassedEnough = players.some(
+  const passedPlayer = players.find(
     (player) => player.consecutivePassCount >= 2
   );
 
-  if (playerPassedEnough) {
+  if (passedPlayer) {
     // Logic for ending the game due to passes
     state.status = "ended";
-
+    state.endReason = "consecutivePasses";
+    state.endingPlayerId = passedPlayer.id;
     gameEnded = true;
+
+    applyWinner(state);
   }
   if (gameEnded) {
     applyPointDifference(state);
@@ -51,45 +59,56 @@ const checkGameEnd = (state: GameState) => {
   return gameEnded;
 };
 
-export const applyPointDifference = async (state: GameState) => {
-  const everyoneIsUser = state.players.every((player) => player.email);
+export const applyWinner = (state: GameState) => {
   const passedPlayer = state.players.find(
     (player) => player.consecutivePassCount >= 2
   );
 
-  if (everyoneIsUser) {
-    // Calculate score difference
-    const [player1, player2] = state.players;
-    const scoreDifference = Math.abs(player1.score - player2.score);
-    // Determine the winner and loser
-    let winner, loser;
+  // Calculate score difference
+  const [player1, player2] = state.players;
+  const scoreDifference = Math.abs(player1.score - player2.score);
+  // Determine the winner and loser
+  let winner, loser;
 
-    if (passedPlayer) {
-      // If a player passed enough and they were behind, apply the score difference
-      if (
-        passedPlayer.score <
-        (passedPlayer === player1 ? player2 : player1).score
-      ) {
-        loser = passedPlayer;
-        winner = passedPlayer === player1 ? player2 : player1;
-      } else {
-        // If the passed player was not behind, don't apply the difference
-        return;
-      }
+  if (passedPlayer) {
+    // If a player passed enough and they were behind, apply the score difference
+    if (
+      passedPlayer.score < (passedPlayer === player1 ? player2 : player1).score
+    ) {
+      loser = passedPlayer;
+      winner = passedPlayer === player1 ? player2 : player1;
     } else {
-      // Normal end game scenario
-      if (player1.score > player2.score) {
-        winner = player1;
-        loser = player2;
-      } else if (player2.score > player1.score) {
-        winner = player2;
-        loser = player1;
-      } else {
-        // Tie scenario, no score difference applied
-        return;
-      }
+      // If the passed player was not behind, don't apply the difference
+      return;
     }
+  } else {
+    // Normal end game scenario
+    if (player1.score > player2.score) {
+      winner = player1;
+      loser = player2;
+    } else if (player2.score > player1.score) {
+      winner = player2;
+      loser = player1;
+    } else {
+      // Tie scenario, no score difference applied
+      return;
+    }
+  }
+  state.winnerId = winner.id;
 
+  winner.scoreDiff = scoreDifference;
+  loser.scoreDiff = -scoreDifference;
+};
+
+export const applyPointDifference = async (state: GameState) => {
+  const everyoneIsUser = state.players.every((player) => player.email);
+  const [player1, player2] = state.players;
+  const scoreDifference = Math.abs(player1.score - player2.score);
+  const winner = state.players.find((player) => player.id === state.winnerId);
+  const loser = state.players.find((player) => player.id !== state.winnerId);
+
+  if (everyoneIsUser && winner && loser) {
+    state.pointDiffAppliedToRanked = true;
     try {
       // Update the winner's score
       await prisma.user.update({
@@ -466,7 +485,8 @@ export const calculatePoints = (
   board: Board,
   wordsWithCoordinates: WordWithCoordinates[],
   io: any,
-  id: string
+  socketId: string,
+  currentPlayer: Player
 ): number => {
   let totalPoints = 0;
 
@@ -474,7 +494,7 @@ export const calculatePoints = (
   const newlyPlacedLetters: string[] = [];
 
   // Iterate over each word
-  wordsWithCoordinates.forEach(({ start, end }) => {
+  wordsWithCoordinates.forEach(({ word, start, end }) => {
     let wordPoints = 0;
     let wordMultiplier = 1;
 
@@ -509,18 +529,34 @@ export const calculatePoints = (
         if (cell.letter) newlyPlacedLetters.push(cell.letter);
       }
 
-      // Add letter points to word total
+      // Add points to word total
       wordPoints += letterPoints;
     });
+    const wordPointsWithMultiplier = wordPoints * wordMultiplier;
+    if (
+      wordPointsWithMultiplier > (currentPlayer.highestScoringWord?.points || 0)
+    ) {
+      currentPlayer.highestScoringWord = {
+        word,
+        points: wordPointsWithMultiplier,
+      };
+    }
 
-    // Apply word multiplier
-    totalPoints += wordPoints * wordMultiplier;
+    // Apply to total
+    totalPoints += wordPointsWithMultiplier;
   });
 
   // Bingo: if player used all tiles in their hand
   if (newlyPlacedLetters.length === HAND_SIZE) {
-    io.to(id).emit("Bingo");
+    io.to(socketId).emit("Bingo");
     totalPoints += 50;
+  }
+
+  if (totalPoints > (currentPlayer.highestScoringMove?.points || 0)) {
+    currentPlayer.highestScoringMove = {
+      words: [...wordsWithCoordinates.map(({ word }) => word)],
+      points: totalPoints,
+    };
   }
 
   return totalPoints;

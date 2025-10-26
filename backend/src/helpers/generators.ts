@@ -1,7 +1,12 @@
 // generators
-import { GameState, InitialLetters, LettersArray } from "../types/gameTypes";
+import {
+  GameState,
+  InitialLetters,
+  LettersArray,
+  Lang,
+} from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
-import { Lang, Socket } from "../types/types";
+import { Socket } from "../types/types";
 import { gameTime, generateGuestId, letters, HAND_SIZE } from "./misc";
 import { t } from "../lib/i18n";
 
@@ -64,7 +69,6 @@ export const generateGameState = (
     history: [],
     lang,
     endReason: "none",
-    pointDiffAppliedToRanked: false,
   };
   return state;
 };

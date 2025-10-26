@@ -1,4 +1,4 @@
-import { Lang } from "../types/types";
+import { Lang } from "../types/gameTypes";
 const en = require("../locales/en.json");
 const tr = require("../locales/tr.json");
 

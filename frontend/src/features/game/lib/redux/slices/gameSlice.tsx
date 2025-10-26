@@ -34,14 +34,14 @@ const initialState: GameStateWithInteractivity = {
   players: [],
   undrawnLetterPool: [],
   roomId: "",
-  passCount: 0,
-  lang: "",
+  lang: "en",
   emptyLetterIds: [],
   board: initialBoard,
   history: [],
   draggingValues: initialDraggingValues,
   switching: false,
   switchIndices: [],
+  endReason: "none",
 };
 
 export const gameSlice = createSlice({

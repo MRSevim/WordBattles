@@ -1,6 +1,6 @@
 //misc
-import { GameState, InitialLetters } from "../types/gameTypes";
-import { Io, Lang } from "../types/types";
+import { GameState, InitialLetters, Lang } from "../types/gameTypes";
+import { Io } from "../types/types";
 
 export function generateGuestId(prefix = "guest") {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // readable characters
@@ -13,7 +13,10 @@ export function generateGuestId(prefix = "guest") {
 
 export const sendInitialData = (io: Io, gameState: GameState) => {
   io.to(gameState.roomId).emit("Initialize Data", {
-    ...gameState,
+    players: gameState.players.map((player) => ({
+      username: player.username,
+      id: player.id,
+    })),
     validLetters: getValidLetters(gameState.lang),
   });
 };

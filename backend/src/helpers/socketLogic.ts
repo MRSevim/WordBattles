@@ -26,8 +26,9 @@ import {
   CheckedWords,
   GameState,
   WordWithCoordinates,
+  Lang,
 } from "../types/gameTypes";
-import { Io, Lang, Socket } from "../types/types";
+import { Io, Socket } from "../types/types";
 import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 
@@ -147,17 +148,23 @@ export const runSocketLogic = (io: Io) => {
       const leavingPlayer = state.players.find(
         (player) => player.id === socket.sessionId
       );
+      const otherPlayer = leavingPlayer === player1 ? player2 : player1;
 
       if (
         leavingPlayer &&
         state.status === "playing" &&
-        leavingPlayer.score <
-          (leavingPlayer === player1 ? player2 : player1).score
+        leavingPlayer.score < otherPlayer.score
       ) {
+        const scoreDifference = Math.abs(player1.score - player2.score);
+        state.winnerId = otherPlayer.id;
+        leavingPlayer.scoreDiff = -scoreDifference;
+        otherPlayer.scoreDiff = scoreDifference;
         applyPointDifference(state);
       }
       if (leavingPlayer) {
         leavingPlayer.leftTheGame = true;
+        state.endReason = "playerLeft";
+        state.endingPlayerId = leavingPlayer.id;
       }
       state.status = "ended";
       socket.leave(roomId);
@@ -257,9 +264,17 @@ export const runSocketLogic = (io: Io) => {
       markNewlyPlacedAndNewWords(board);
 
       // Calculate points for the current player
-      const playerPoints = calculatePoints(board, wordsWithCoordinates, io, id);
+      const playerPoints = calculatePoints(
+        board,
+        wordsWithCoordinates,
+        io,
+        id,
+        currentPlayer
+      );
 
       currentPlayer.score += playerPoints;
+      currentPlayer.totalWords += checkedWords.validWords.length;
+      currentPlayer.avgPerWord = currentPlayer.score / currentPlayer.totalWords;
 
       //fix the letters
       fixBoard(board);

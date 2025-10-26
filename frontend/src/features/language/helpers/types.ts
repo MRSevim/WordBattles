@@ -1,1 +1,3 @@
-export type Lang = "tr" | "en";
+import { Lang } from "../../../../../types";
+
+export type { Lang };
