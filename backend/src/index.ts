@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
 import { runSocketLogic } from "./helpers/socketLogic";
 import ladderRoutes from "./routes/ladderRoutes";
+import userRoutes from "./routes/userRoutes";
 import { notFound, errorHandler } from "./middlewares/errorMiddlewares";
 import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
@@ -53,6 +54,7 @@ app.use(parseCookies);
 useSocketMiddleware(io);
 
 app.use("/api/ladder", ladderRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("This is WordBattles backend.");

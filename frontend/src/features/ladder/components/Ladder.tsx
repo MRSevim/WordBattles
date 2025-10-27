@@ -8,13 +8,13 @@ interface User {
   username: string;
   email: string;
   image: string;
-  rankedScore: number;
+  rankedPoints: number;
 }
 
 interface UserRank {
   rank: number;
   username: string;
-  rankedScore: number;
+  rankedPoints: number;
 }
 
 export const Ladder = async ({
@@ -40,7 +40,7 @@ export const Ladder = async ({
               <span>
                 {index + 1 + (page - 1) * limit}: {user.username}
               </span>
-              <span className="font-bold"> {user.rankedScore}</span>
+              <span className="font-bold"> {user.rankedPoints}</span>
             </div>
           ))}
 
@@ -58,7 +58,7 @@ export const Ladder = async ({
                 </span>
                 <span className="font-bold">
                   {" "}
-                  {ladder.userRank.rankedScore}
+                  {ladder.userRank.rankedPoints}
                 </span>
               </div>
             </div>

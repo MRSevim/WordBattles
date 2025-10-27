@@ -31,6 +31,7 @@ import {
 import { Io, Socket } from "../types/types";
 import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
+import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
 
 export let waitingPlayers: Record<Lang, Socket[]> = { tr: [], en: [] };
 
@@ -150,25 +151,27 @@ export const runSocketLogic = (io: Io) => {
       );
       const otherPlayer = leavingPlayer === player1 ? player2 : player1;
 
-      if (
-        leavingPlayer &&
-        state.status === "playing" &&
-        leavingPlayer.score < otherPlayer.score
-      ) {
-        const scoreDifference = Math.abs(player1.score - player2.score);
-        state.winnerId = otherPlayer.id;
-        leavingPlayer.scoreDiff = -scoreDifference;
-        otherPlayer.scoreDiff = scoreDifference;
-        applyPointDifference(state);
+      if (leavingPlayer && state.status === "playing") {
+        const pointsDifference = Math.abs(player1.points - player2.points);
+        const isBehind = leavingPlayer.points < otherPlayer.points;
+        if (isBehind || pointsDifference === 0) {
+          // penalize on tie too
+
+          state.winnerId = otherPlayer.id;
+          leavingPlayer.pointsDiff = -pointsDifference;
+          otherPlayer.pointsDiff = pointsDifference;
+          applyPointDifference(state);
+        }
       }
       if (leavingPlayer) {
         leavingPlayer.leftTheGame = true;
         if (state.status !== "ended") {
+          state.status = "ended";
           state.endReason = "playerLeft";
           state.endingPlayerId = leavingPlayer.id;
+          applyPlayerStats(state);
         }
       }
-      state.status = "ended";
       socket.leave(roomId);
       updateCurrentRoomIdInDB(socket.user?.id, undefined);
 
@@ -274,10 +277,10 @@ export const runSocketLogic = (io: Io) => {
         currentPlayer
       );
 
-      currentPlayer.score += playerPoints;
+      currentPlayer.points += playerPoints;
       currentPlayer.totalWords += checkedWords.validWords.length;
       currentPlayer.avgPerWord = Number(
-        (currentPlayer.score / currentPlayer.totalWords).toFixed(2)
+        (currentPlayer.points / currentPlayer.totalWords).toFixed(2)
       );
 
       //fix the letters

@@ -22,12 +22,12 @@ export const generateGameState = (
   const generateGuestIdsCaller = () => generateGuestId(t(lang, "guest"));
 
   const getInitialPlayerValues = () => ({
-    score: 0,
+    points: 0,
     consecutivePassCount: 0,
     totalPassCount: 0,
     leftTheGame: false,
     timer: gameTime,
-    scoreDiff: 0,
+    pointsDiff: 0,
     totalWords: 0,
     avgPerWord: 0,
   });

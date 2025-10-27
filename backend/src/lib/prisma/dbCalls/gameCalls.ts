@@ -19,6 +19,7 @@ export async function saveGameToDB(game: GameState) {
       update: fromGameState(game),
       create: {
         roomId: game.roomId,
+        playerIds: game.players.map((p) => p.id),
         ...fromGameState(game),
       },
     });

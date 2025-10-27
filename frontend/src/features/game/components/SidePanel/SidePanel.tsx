@@ -97,9 +97,9 @@ const PlayerContainer = ({ player }: { player: Player }) => {
         (player.id === socket.sessionId ? "border-solid border-2" : "")
       }
     >
-      <UsernameAndScore
+      <UsernameAndPoints
         username={player.username}
-        score={player.score}
+        points={player.points}
         leftTheGame={player.leftTheGame}
       />
       <div className="mt-2 w-20">
@@ -121,21 +121,21 @@ const PlayerContainer = ({ player }: { player: Player }) => {
   );
 };
 
-const UsernameAndScore = ({
+const UsernameAndPoints = ({
   username,
-  score,
+  points,
   leftTheGame,
 }: {
   username: string;
   leftTheGame: boolean;
-  score: number;
+  points: number;
 }) => {
   const [locale] = useLocaleContext();
   return (
     <>
       <p>{username}</p>
       {leftTheGame && <p className="font-bold">{t(locale, "game.left")}</p>}
-      {t(locale, "game.points")} {score}
+      {t(locale, "game.points")} {points}
     </>
   );
 };

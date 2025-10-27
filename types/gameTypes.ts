@@ -2,13 +2,13 @@ export type Lang = "tr" | "en";
 
 export interface InitialLetters {
   letter: string;
-  point: number;
+  points: number;
   amount: number;
 }
 
 export interface Letter {
   letter: string;
-  point: number;
+  points: number;
   amount: number;
   drawn?: boolean;
   fixed?: boolean;
@@ -31,12 +31,12 @@ export interface Player {
   id: string;
   image?: string;
   email?: string;
-  score: number;
+  points: number;
   leftTheGame: boolean;
   timer: number;
   consecutivePassCount: number; //This only increases when timer runs out on player's turn or player passes
   totalPassCount: number; //Does not reset when player plays after passing
-  scoreDiff: number;
+  pointsDiff: number;
   totalWords: number;
   highestScoringWord?: { word: string; points: number };
   highestScoringMove?: { words: string[]; points: number };

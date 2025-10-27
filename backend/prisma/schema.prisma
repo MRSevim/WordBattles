@@ -16,12 +16,13 @@ model User {
   email         String 
   currentRoomId String?
   emailVerified Boolean   @default(false)
-  rankedScore   Int       @default(3000)
+  rankedPoints  Int       @default(3000)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  stats         PlayerStats?
 
   @@unique([email])
   @@map("user")
@@ -77,6 +78,7 @@ model Game {
   roomId          String   @unique
   lang            String
   status          String
+  playerIds       String[]
   players         Json
   undrawnLetters  Json
   emptyLetterIds  Json
@@ -88,4 +90,35 @@ model Game {
   pointDiffAppliedToRanked Boolean?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+   @@map("game")
+   @@index([playerIds], type: Gin)
+}
+
+model PlayerStats {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Win/Loss Records
+  totalGames Int @default(0)
+  wins       Int @default(0)
+  losses     Int @default(0)
+  ties       Int @default(0)
+  
+  // Scoring Stats
+  totalPoints      Int @default(0)  // Sum of all game points
+  totalWords       Int @default(0)  // Total words played across all games
+  totalPointsDiff   Int @default(0)  // Sum of pointsDiffs
+  
+  // Streaks
+  currentStreak     Int    @default(0)
+  currentStreakType String @default("none") // "win", "loss", or "none"
+  longestWinStreak  Int    @default(0)
+  longestLossStreak Int    @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("player_stats")
 }

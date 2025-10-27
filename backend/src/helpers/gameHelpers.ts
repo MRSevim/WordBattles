@@ -15,6 +15,7 @@ import { saveGameToMemory } from "./memoryGameHelpers";
 import { Io } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
 import { gameTime, HAND_SIZE, letters } from "./misc";
+import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
 
 // Function to check game end conditions
 const checkGameEnd = (state: GameState) => {
@@ -33,8 +34,8 @@ const checkGameEnd = (state: GameState) => {
     state.endReason = "allTilesUsed";
     state.endingPlayerId = finishingPlayer.id;
     const unfinishedPlayerHandSize = unfinishedPlayer.hand.length;
-    unfinishedPlayer.score -= unfinishedPlayerHandSize;
-    finishingPlayer.score += unfinishedPlayerHandSize;
+    unfinishedPlayer.points -= unfinishedPlayerHandSize;
+    finishingPlayer.points += unfinishedPlayerHandSize;
     gameEnded = true;
 
     applyWinner(state);
@@ -54,6 +55,7 @@ const checkGameEnd = (state: GameState) => {
   }
   if (gameEnded) {
     applyPointDifference(state);
+    applyPlayerStats(state);
   }
 
   return gameEnded;
@@ -64,16 +66,17 @@ export const applyWinner = (state: GameState) => {
     (player) => player.consecutivePassCount >= 2
   );
 
-  // Calculate score difference
+  // Calculate points difference
   const [player1, player2] = state.players;
-  const scoreDifference = Math.abs(player1.score - player2.score);
+  const pointsDifference = Math.abs(player1.points - player2.points);
   // Determine the winner and loser
   let winner, loser;
 
   if (passedPlayer) {
-    // If a player passed enough and they were behind, apply the score difference
+    // If a player passed enough and they were behind, apply the points difference
     if (
-      passedPlayer.score < (passedPlayer === player1 ? player2 : player1).score
+      passedPlayer.points <
+      (passedPlayer === player1 ? player2 : player1).points
     ) {
       loser = passedPlayer;
       winner = passedPlayer === player1 ? player2 : player1;
@@ -83,54 +86,54 @@ export const applyWinner = (state: GameState) => {
     }
   } else {
     // Normal end game scenario
-    if (player1.score > player2.score) {
+    if (player1.points > player2.points) {
       winner = player1;
       loser = player2;
-    } else if (player2.score > player1.score) {
+    } else if (player2.points > player1.points) {
       winner = player2;
       loser = player1;
     } else {
-      // Tie scenario, no score difference applied
+      // Tie scenario, no points difference applied
       return;
     }
   }
   state.winnerId = winner.id;
 
-  winner.scoreDiff = scoreDifference;
-  loser.scoreDiff = -scoreDifference;
+  winner.pointsDiff = pointsDifference;
+  loser.pointsDiff = -pointsDifference;
 };
 
 export const applyPointDifference = async (state: GameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
   const [player1, player2] = state.players;
-  const scoreDifference = Math.abs(player1.score - player2.score);
+  const pointsDifference = Math.abs(player1.points - player2.points);
   const winner = state.players.find((player) => player.id === state.winnerId);
   const loser = state.players.find((player) => player.id !== state.winnerId);
 
   if (everyoneIsUser && winner && loser) {
     state.pointDiffAppliedToRanked = true;
     try {
-      // Update the winner's score
+      // Update the winner's points
       await prisma.user.update({
         where: { id: winner.id },
         data: {
-          rankedScore: {
-            increment: scoreDifference,
+          rankedPoints: {
+            increment: pointsDifference,
           },
         },
       });
 
-      // Update the loser's score
+      // Update the loser's points
       await prisma.user.update({
         where: { id: loser.id },
         data: {
-          rankedScore: {
-            decrement: scoreDifference,
+          rankedPoints: {
+            decrement: pointsDifference,
           },
         },
       });
     } catch (error) {
-      console.error("Error updating ranked scores:", error);
+      console.error("Error updating ranked points:", error);
     }
   }
 };
@@ -513,7 +516,7 @@ export const calculatePoints = (
       const isNew = !cell.fixed;
 
       // Base points (always added)
-      let letterPoints = cell.point;
+      let letterPoints = cell.points;
 
       if (isNew) {
         // Letter multipliers

@@ -91,9 +91,9 @@ const PlayerComp = ({ player }: { player: Player }) => {
       {/* Stats */}
       <div className="text-sm space-y-1 text-gray-200 grid grid-rows-subgrid row-span-8 w-full">
         {/*  Points */}
-        <Paragraph text={player.score} />
+        <Paragraph text={player.points} />
         {/* Points diff */}
-        <Paragraph text={player.scoreDiff} />
+        <Paragraph text={player.pointsDiff} />
         {/* Total Words Played */}
         <Paragraph text={player.totalWords} />
         {/* Highest scoring word */}

@@ -2,7 +2,7 @@ export type User =
   | {
       id: string;
       currentRoomId: string | null;
-      rankedScore: number;
+      rankedPoints: number;
       createdAt: number;
       updatedAt: number;
       email: string;
