@@ -10,7 +10,7 @@ export const fetchLadder = async ({
   limit: number;
 }) => {
   const response = await fetchFromBackend(
-    `/api/ladder/ladder?page=${page}&limit=${limit}`
+    `/ladder/ladder?page=${page}&limit=${limit}`
   );
   const json = await response.json();
 

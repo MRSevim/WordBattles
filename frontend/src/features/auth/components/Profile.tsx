@@ -12,11 +12,13 @@ import { setUser } from "../lib/redux/slices/userSlice";
 import { routeStrings } from "@/utils/routeStrings";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
+import Link from "next/link";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
-  const userImage = useAppSelector(selectUser)?.image;
+  const user = useAppSelector(selectUser);
+  const userImage = user?.image;
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [locale] = useLocaleContext();
@@ -35,6 +37,10 @@ const Profile = () => {
     return error;
   }, "");
 
+  if (!user) return null;
+
+  const rankedPoints = user.rankedPoints;
+
   return (
     <Container className="py-10 flex justify-center items-center gap-6">
       {userImage && (
@@ -46,6 +52,18 @@ const Profile = () => {
           className="rounded-full object-cover"
         />
       )}
+
+      <div className="flex flex-col gap-2">
+        <p>
+          <span className="font-bold">
+            {t(locale, "publicUserPage.stats.rankedPoints")}
+          </span>{" "}
+          {rankedPoints}
+        </p>
+        <Link href={routeStrings.userPage(user.id)} className="underline">
+          {t(locale, "auth.profile.seePublicPage")}
+        </Link>
+      </div>
 
       {/* Delete button */}
       <button

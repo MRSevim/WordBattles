@@ -7,5 +7,7 @@
   "moreThanOneLetter": "Kelimeler bir harften uzun olmalıdır.",
   "invalidWords": "Geçersiz kelimeler:",
   "errorDuringWordVal": "Kelime doğrulama sırasında bir hata oluştu.",
-  "guest": "konuk"
+  "guest": "konuk",
+  "userIdRequired": "Kullanıcı Id gerekli.",
+  "userNotFound": "Kullanıcı bulunamadı."
 }

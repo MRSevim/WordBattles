@@ -7,5 +7,7 @@
   "moreThanOneLetter": "Words must be more than one letter.",
   "invalidWords": "Invalid words:",
   "errorDuringWordVal": "Something went wrong during word validation.",
-  "guest": "guest"
+  "guest": "guest",
+  "userIdRequired": "User Id is required.",
+  "userNotFound": "User not found."
 }
