@@ -2,7 +2,9 @@ import { prisma } from "../prisma";
 import { GameState, Player } from "../../../types/gameTypes";
 
 export async function applyPlayerStats(game: GameState) {
-  if (game.status !== "ended" || !game.players?.length) return;
+  const everyoneIsUser = game.players.every((player) => player.email);
+  if (game.status !== "ended" || !game.players?.length || !everyoneIsUser)
+    return;
 
   try {
     const winnerId = game.winnerId;
