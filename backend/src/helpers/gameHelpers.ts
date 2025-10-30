@@ -10,12 +10,12 @@ import {
   GameState,
   Lang,
 } from "../types/gameTypes";
-import { prisma } from "../lib/prisma/prisma";
 import { saveGameToMemory } from "./memoryGameHelpers";
 import { Io } from "../types/types";
 import { saveGameToDB } from "../lib/prisma/dbCalls/gameCalls";
 import { gameTime, HAND_SIZE, letters } from "./misc";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
+import { addOrUpdatePlayerRankPoints } from "../lib/prisma/dbCalls/playerRankCalls";
 
 // Function to check game end conditions
 const checkGameEnd = (state: GameState) => {
@@ -115,35 +115,18 @@ export const applyPointDifference = async (state: GameState) => {
     const season = state.season;
     const lang = state.lang;
     try {
-      // Update the winner's points in PlayerRank
-      await prisma.playerRank.update({
-        where: {
-          userId_lang_season: {
-            userId: winner.id,
-            lang,
-            season,
-          },
-        },
-        data: {
-          rankedPoints: { increment: pointsDifference },
-          lastPlayedAt: new Date(),
-        },
-      });
-
-      // Update the loser's points in PlayerRank
-      await prisma.playerRank.update({
-        where: {
-          userId_lang_season: {
-            userId: loser.id,
-            lang,
-            season,
-          },
-        },
-        data: {
-          rankedPoints: { decrement: pointsDifference },
-          lastPlayedAt: new Date(),
-        },
-      });
+      await addOrUpdatePlayerRankPoints(
+        winner.id,
+        lang,
+        season,
+        pointsDifference
+      );
+      await addOrUpdatePlayerRankPoints(
+        loser.id,
+        lang,
+        season,
+        -pointsDifference
+      );
     } catch (error) {
       console.error("Error updating ranked points:", error);
     }
