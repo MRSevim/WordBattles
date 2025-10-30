@@ -27,13 +27,18 @@ import {
   GameState,
   WordWithCoordinates,
   Lang,
+  GameOptions,
+  GameType,
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
 import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
 
-export let waitingPlayers: Record<Lang, Socket[]> = { tr: [], en: [] };
+let waitingPlayers: Record<Lang, Record<GameType, Socket[]>> = {
+  tr: { ranked: [], casual: [] },
+  en: { ranked: [], casual: [] },
+};
 
 export const runSocketLogic = (io: Io) => {
   io.on("connection", async (socket: Socket) => {
@@ -65,9 +70,18 @@ export const runSocketLogic = (io: Io) => {
       }
     }
 
-    socket.on("Started Looking", async (lang: Lang) => {
+    socket.on("Started Looking", async (options: GameOptions) => {
+      const { lang, type } = options;
+      const locale = socket.siteLocale;
+
+      // Only allow ranked games for logged-in users
+      if (type === "ranked" && !socket.user) {
+        socket.emit("Game Error", t(locale, "logInForRanked"));
+        return;
+      }
+
       const startGame = (socket: Socket, _socket: Socket) => {
-        const gameState = generateGameState(socket, _socket, lang);
+        const gameState = generateGameState(socket, _socket, options);
         io.to(gameState.roomId).emit("Start Game", gameState);
         sendInitialData(io, gameState);
         saveGame(gameState, io);
@@ -75,11 +89,13 @@ export const runSocketLogic = (io: Io) => {
         updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
       };
 
-      if (waitingPlayers[lang].length > 0) {
-        startGame(socket, waitingPlayers[lang][0]);
-        waitingPlayers[lang].shift();
+      const queue = waitingPlayers[lang][type];
+
+      if (queue.length > 0) {
+        const opponent = queue.shift()!;
+        startGame(socket, opponent);
       } else {
-        waitingPlayers[lang].push(socket);
+        queue.push(socket);
       }
     });
 
@@ -87,9 +103,11 @@ export const runSocketLogic = (io: Io) => {
       console.log("A user disconnected");
 
       Object.keys(waitingPlayers).forEach((lang) => {
-        waitingPlayers[lang as Lang] = waitingPlayers[lang as Lang].filter(
-          (s) => s !== socket
-        );
+        Object.keys(waitingPlayers[lang as Lang]).forEach((type) => {
+          waitingPlayers[lang as Lang][type as GameType] = waitingPlayers[
+            lang as Lang
+          ][type as GameType].filter((s) => s !== socket);
+        });
       });
     });
 

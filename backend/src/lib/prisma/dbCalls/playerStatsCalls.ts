@@ -3,24 +3,39 @@ import { GameState, Player } from "../../../types/gameTypes";
 
 export async function applyPlayerStats(game: GameState) {
   const everyoneIsUser = game.players.every((player) => player.email);
-  if (game.status !== "ended" || !game.players?.length || !everyoneIsUser)
+  const isRanked = game.type === "ranked";
+  if (
+    !isRanked ||
+    game.status !== "ended" ||
+    !game.players?.length ||
+    !everyoneIsUser
+  )
     return;
 
-  try {
-    const winnerId = game.winnerId;
-    const isTie =
-      game.players.length === 2 &&
-      game.players[0].points === game.players[1].points;
+  const winnerId = game.winnerId;
+  const season = game.season;
+  const lang = game.lang;
+  const isTie =
+    game.players.length === 2 &&
+    game.players[0].points === game.players[1].points;
 
-    for (const player of game.players) {
-      if (!player.id) continue;
+  try {
+    // Prepare an array of promises for updating/creating stats
+    const updatePromises = game.players.map(async (player) => {
+      if (!player.id) return;
 
       const isWinner = !isTie && player.id === winnerId;
       const isLoser = !isTie && player.id !== winnerId;
 
-      // Load existing stats (if any)
+      // Load existing stats for this user/lang/season
       const existing = await prisma.playerStats.findUnique({
-        where: { userId: player.id },
+        where: {
+          userId_lang_season: {
+            userId: player.id,
+            lang,
+            season,
+          },
+        },
       });
 
       const updatedStats = calculateUpdatedStats(
@@ -32,19 +47,30 @@ export async function applyPlayerStats(game: GameState) {
       );
 
       if (existing) {
-        await prisma.playerStats.update({
-          where: { userId: player.id },
+        return prisma.playerStats.update({
+          where: {
+            userId_lang_season: {
+              userId: player.id,
+              lang,
+              season,
+            },
+          },
           data: updatedStats,
         });
       } else {
-        await prisma.playerStats.create({
+        return prisma.playerStats.create({
           data: {
             userId: player.id,
+            lang,
+            season,
             ...updatedStats,
           },
         });
       }
-    }
+    });
+
+    // Run all updates in parallel
+    await Promise.all(updatePromises);
   } catch (error) {
     console.error(
       `❌ [applyPlayerStats] Failed for room ${game.roomId}:`,

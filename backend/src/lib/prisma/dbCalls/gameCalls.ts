@@ -7,6 +7,8 @@ import {
   LettersArray,
   Player,
   Lang,
+  GameType,
+  Season,
 } from "../../../types/gameTypes";
 import { prisma, Prisma, Game as PrismaGame } from "../prisma";
 
@@ -14,15 +16,40 @@ const asJson = (value: any): Prisma.InputJsonValue => value;
 
 export async function saveGameToDB(game: GameState) {
   try {
-    await prisma.game.upsert({
+    const dbGame = await prisma.game.upsert({
       where: { roomId: game.roomId },
       update: fromGameState(game),
       create: {
         roomId: game.roomId,
-        playerIds: game.players.map((p) => p.id),
         ...fromGameState(game),
       },
     });
+
+    // Filter only players who are logged in (have email)
+    const loggedInPlayers = game.players.filter((p) => p.email);
+
+    // Upsert GamePlayer entries for logged-in users
+    await Promise.all(
+      loggedInPlayers.map(async (player) => {
+        const user = await prisma.user.findUnique({
+          where: { email: player.email },
+        });
+        if (!user) return;
+        await prisma.gamePlayer.upsert({
+          where: {
+            gameId_userId: {
+              gameId: dbGame.id,
+              userId: user.id,
+            },
+          },
+          create: {
+            gameId: dbGame.id,
+            userId: user.id,
+          },
+          update: {}, // no additional updates for now
+        });
+      })
+    );
   } catch (error) {
     console.error(`❌ [saveGameToDB] Failed for room ${game.roomId}:`, error);
   }
@@ -95,7 +122,8 @@ const toGameState = (game: PrismaGame): GameState => {
     winnerId: game.winnerId || undefined,
     endReason: game.endReason as EndReason,
     endingPlayerId: game.endingPlayerId || undefined,
-    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked ?? undefined,
+    type: game.type as GameType,
+    season: game.season as Season,
   };
 };
 
@@ -111,6 +139,7 @@ const fromGameState = (game: GameState) => {
     winnerId: game.winnerId,
     endReason: game.endReason,
     endingPlayerId: game.endingPlayerId,
-    pointDiffAppliedToRanked: game.pointDiffAppliedToRanked,
+    type: game.type,
+    season: game.season,
   };
 };

@@ -9,5 +9,6 @@
   "errorDuringWordVal": "Kelime doğrulama sırasında bir hata oluştu.",
   "guest": "konuk",
   "userIdRequired": "Kullanıcı Id gerekli.",
-  "userNotFound": "Kullanıcı bulunamadı."
+  "userNotFound": "Kullanıcı bulunamadı.",
+  "logInForRanked": "Dereceli oynamak için giriş yapmalısın!"
 }

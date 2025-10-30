@@ -4,6 +4,7 @@ import {
   InitialLetters,
   LettersArray,
   Lang,
+  GameOptions,
 } from "../types/gameTypes";
 import { v6 as uuidv6 } from "uuid";
 import { Socket } from "../types/types";
@@ -13,8 +14,9 @@ import { t } from "../lib/i18n";
 export const generateGameState = (
   socket: Socket,
   _socket: Socket,
-  lang: Lang
+  options: GameOptions
 ) => {
+  const { lang, type } = options;
   const letterPool = generateLetterPool(letters[lang]);
   const emptyLetterIds = generateEmptyLetterIdsArray(letterPool);
   const playersStatus = generatePlayersStatus(letterPool, lang);
@@ -69,6 +71,8 @@ export const generateGameState = (
     history: [],
     lang,
     endReason: "none",
+    season: "Season1",
+    type,
   };
   return state;
 };

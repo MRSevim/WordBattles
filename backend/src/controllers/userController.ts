@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { getUser, getUserPastGames } from "../lib/prisma/dbCalls/userCalls";
 import { t } from "../lib/i18n";
+import { Lang, Season } from "../types/gameTypes";
 
 export const getUserController: RequestHandler = async (req, res) => {
   const userId = req.params.id;
@@ -12,7 +13,10 @@ export const getUserController: RequestHandler = async (req, res) => {
     throw new Error(t(locale, "userIdRequired"));
   }
 
-  const user = await getUser(userId);
+  const lang = (req.query.lang as Lang) || "en";
+  const season = (req.query.season as Season) || "Season1";
+
+  const user = await getUser(userId, lang, season);
 
   if (!user) {
     res.status(404);
@@ -31,9 +35,16 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
     throw new Error(t(req.cookies.locale, "userIdRequired"));
   }
 
+  const lang = (req.query.lang as Lang) || "en";
+  const season = (req.query.season as Season) || "Season1";
   const pageSize = 10;
 
-  const games = await getUserPastGames(userId, page, pageSize);
+  const games = await getUserPastGames(userId, {
+    page,
+    pageSize,
+    lang,
+    season,
+  });
 
   res.json({
     data: {

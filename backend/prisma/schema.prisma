@@ -16,13 +16,14 @@ model User {
   email         String 
   currentRoomId String?
   emailVerified Boolean   @default(false)
-  rankedPoints  Int       @default(3000)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
-  stats         PlayerStats?
+  stats         PlayerStats[]
+  ranks         PlayerRank[]
+  games         GamePlayer[]
 
   @@unique([email])
   @@map("user")
@@ -78,7 +79,8 @@ model Game {
   roomId          String   @unique
   lang            String
   status          String
-  playerIds       String[]
+  season          String
+  type            String // ranked or casual
   players         Json
   undrawnLetters  Json
   emptyLetterIds  Json
@@ -86,20 +88,34 @@ model Game {
   history         Json
   winnerId        String?
   endReason       String
-  endingPlayerId    String?
-  pointDiffAppliedToRanked Boolean?
+  endingPlayerId  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-   @@map("game")
-   @@index([playerIds], type: Gin)
+  gamePlayers     GamePlayer[]
+
+  @@map("game")
+  @@index([roomId])
+}
+
+model GamePlayer {
+  id        String   @id @default(cuid())
+  gameId    String
+  userId    String
+
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@map("game_player")
 }
 
 model PlayerStats {
   id        String   @id @default(cuid())
-  userId    String   @unique
+  userId    String  
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  lang      String 
+  season    String
   // Win/Loss Records
   totalGames Int @default(0)
   wins       Int @default(0)
@@ -119,6 +135,24 @@ model PlayerStats {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
+  @@unique([userId, lang, season])
   @@map("player_stats")
+}
+
+model PlayerRank {
+  id            String   @id @default(cuid())
+  userId        String
+  lang          String
+  season        String
+  rankedPoints  Int      @default(3000)
+  lastPlayedAt  DateTime?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, lang, season])
+  @@map("player_rank")
 }

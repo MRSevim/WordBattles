@@ -61,6 +61,8 @@ export interface History {
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 
+export type GameType = "ranked" | "casual";
+
 export type EndReason =
   | "consecutivePasses"
   | "allTilesUsed"
@@ -79,5 +81,13 @@ export interface GameState {
   winnerId?: string;
   endReason: EndReason;
   endingPlayerId?: string;
-  pointDiffAppliedToRanked?: boolean;
+  type: GameType;
+  season: Season;
 }
+
+export interface GameOptions {
+  type: GameType;
+  lang: Lang;
+}
+
+export type Season = "Season1";

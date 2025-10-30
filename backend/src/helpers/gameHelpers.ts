@@ -105,31 +105,43 @@ export const applyWinner = (state: GameState) => {
 
 export const applyPointDifference = async (state: GameState) => {
   const everyoneIsUser = state.players.every((player) => player.email);
+  const isRankedGame = state.type === "ranked";
   const [player1, player2] = state.players;
   const pointsDifference = Math.abs(player1.points - player2.points);
   const winner = state.players.find((player) => player.id === state.winnerId);
   const loser = state.players.find((player) => player.id !== state.winnerId);
 
-  if (everyoneIsUser && winner && loser) {
-    state.pointDiffAppliedToRanked = true;
+  if (isRankedGame && everyoneIsUser && winner && loser) {
+    const season = state.season;
+    const lang = state.lang;
     try {
-      // Update the winner's points
-      await prisma.user.update({
-        where: { id: winner.id },
-        data: {
-          rankedPoints: {
-            increment: pointsDifference,
+      // Update the winner's points in PlayerRank
+      await prisma.playerRank.update({
+        where: {
+          userId_lang_season: {
+            userId: winner.id,
+            lang,
+            season,
           },
+        },
+        data: {
+          rankedPoints: { increment: pointsDifference },
+          lastPlayedAt: new Date(),
         },
       });
 
-      // Update the loser's points
-      await prisma.user.update({
-        where: { id: loser.id },
-        data: {
-          rankedPoints: {
-            decrement: pointsDifference,
+      // Update the loser's points in PlayerRank
+      await prisma.playerRank.update({
+        where: {
+          userId_lang_season: {
+            userId: loser.id,
+            lang,
+            season,
           },
+        },
+        data: {
+          rankedPoints: { decrement: pointsDifference },
+          lastPlayedAt: new Date(),
         },
       });
     } catch (error) {

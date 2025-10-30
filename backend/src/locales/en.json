@@ -9,5 +9,6 @@
   "errorDuringWordVal": "Something went wrong during word validation.",
   "guest": "guest",
   "userIdRequired": "User Id is required.",
-  "userNotFound": "User not found."
+  "userNotFound": "User not found.",
+  "logInForRanked": "You must be logged in to play ranked!"
 }
