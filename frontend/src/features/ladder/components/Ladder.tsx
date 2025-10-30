@@ -2,6 +2,8 @@ import { LadderSearchParams } from "@/utils/types";
 import Container from "../../../components/Container";
 import Pagination from "../../../components/Paginations";
 import { fetchLadder } from "../utils/apiCalls";
+import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
+import { cookies } from "next/headers";
 
 interface User {
   _id: string;
@@ -30,10 +32,11 @@ export const Ladder = async ({
     userRank: UserRank;
     totalUsers: number;
   } | null = await fetchLadder({ page, limit });
+  const locale = await getLocaleFromCookie(cookies);
 
   return (
     <Container className="py-10">
-      {ladder && (
+      {ladder && ladder.ladder.length > 0 && ladder.totalUsers > 0 ? (
         <div>
           {ladder.ladder.map((user, index) => (
             <div key={user._id} className="flex justify-between p-2 border-b">
@@ -64,6 +67,8 @@ export const Ladder = async ({
             </div>
           )}
         </div>
+      ) : (
+        <p className="font-bold text-lg">{t(locale, "noData")}</p>
       )}
     </Container>
   );

@@ -133,7 +133,7 @@ const UserPage = async ({ user }: { user: User }) => {
           ) : (
             <div className="text-gray-600 dark:text-gray-400">
               {" "}
-              <Span>{t(locale, "publicUserPage.noData")}</Span>{" "}
+              <Span>{t(locale, "noData")}</Span>{" "}
             </div>
           )}
         </div>

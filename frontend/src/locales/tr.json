@@ -9,6 +9,7 @@
   "switchTheme": "Site temasını değiştir",
   "notYourTurn": "Sizin sıranız değil!",
   "notInActiveGame": "Devam eden bir oyunda değilsiniz!",
+  "noData": "Veri yok",
   "errorBoundary": {
     "somethingWentWrong": "Bir şeyler yanlış gitti!",
     "tryAgain": "Tekrar dene...",
@@ -158,7 +159,6 @@
       "longestWinStreak": "En Uzun Kazanma Serisi:",
       "longestLossStreak": "En Uzun Kaybetme Serisi:"
     },
-    "noData": "Veri yok",
     "pastGames": { "pastGames": "Son 30 Günün Oyunları" }
   }
 }

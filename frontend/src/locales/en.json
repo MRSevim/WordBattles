@@ -9,6 +9,7 @@
   "notInActiveGame": "You are not in an active game!",
   "continueWithGoogle": "Continue with Google",
   "signIn": "Sign in",
+  "noData": "No data",
   "errorBoundary": {
     "somethingWentWrong": "Something went wrong!",
     "tryAgain": "Try again...",
@@ -158,7 +159,6 @@
       "longestWinStreak": "Longest Win Streak:",
       "longestLossStreak": "Longest Loss Streak:"
     },
-    "noData": "No data",
     "pastGames": { "pastGames": "Past Games From Last 30 Days" }
   }
 }
