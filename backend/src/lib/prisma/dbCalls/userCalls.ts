@@ -37,8 +37,55 @@ export const getDivision = async (
 ) => {
   const { lang, season } = options;
   try {
-    // 1. Get all users who played 5 or more games in this lang and season
-    const rankedUsers = await prisma.playerRank.findMany({
+    // 1️⃣ Get the user's rankedPoints
+    const userRankEntry = await prisma.playerRank.findFirst({
+      where: {
+        userId,
+        lang,
+        season,
+        user: {
+          stats: {
+            some: {
+              lang,
+              season,
+              totalGames: { gte: 5 },
+            },
+          },
+        },
+      },
+      select: { rankedPoints: true },
+    });
+
+    if (!userRankEntry) return t(locale, "division.unranked");
+
+    const userPoints = userRankEntry.rankedPoints;
+
+    // 2️⃣ Count users with strictly higher points OR same points but lower userId
+    const position = await prisma.playerRank.count({
+      where: {
+        lang,
+        season,
+        OR: [
+          { rankedPoints: { gt: userPoints } },
+          {
+            rankedPoints: userPoints,
+            userId: { lt: userId }, // tie-breaker
+          },
+        ],
+        user: {
+          stats: {
+            some: {
+              lang,
+              season,
+              totalGames: { gte: 5 },
+            },
+          },
+        },
+      },
+    });
+
+    // 3️⃣ Count total eligible players
+    const totalPlayers = await prisma.playerRank.count({
       where: {
         lang,
         season,
@@ -47,38 +94,35 @@ export const getDivision = async (
             some: {
               lang,
               season,
-              totalGames: {
-                gte: 5,
-              },
+              totalGames: { gte: 5 },
             },
           },
         },
       },
-      orderBy: { rankedPoints: "desc" },
-      select: {
-        userId: true,
-        rankedPoints: true,
-      },
     });
 
-    // Find the user's position
-    const position = rankedUsers.findIndex((u) => u.userId === userId);
-
-    if (position === -1) return t(locale, "division.unranked");
-
-    const totalPlayers = rankedUsers.length;
-    if (totalPlayers < 10) return t(locale, "division.unranked");
-
-    const percentile = (position + 1) / totalPlayers;
-
-    if (percentile <= 0.1) return t(locale, "division.diamond");
-    if (percentile <= 0.4) return t(locale, "division.gold");
-    if (percentile <= 0.7) return t(locale, "division.silver");
-    if (percentile <= 1.0) return t(locale, "division.bronze");
-
-    return t(locale, "division.unranked");
+    return determineDivision(position, totalPlayers, locale);
   } catch (error) {
     console.error(`❌ [getDivision] Failed for user ${userId}:`, error);
     return t(locale, "division.unfetched");
   }
+};
+
+export const determineDivision = (
+  position: number,
+  totalPlayers: number,
+  locale: Lang
+) => {
+  if (position === -1) return t(locale, "division.unranked");
+
+  if (totalPlayers < 10) return t(locale, "division.unranked");
+
+  const percentile = (position + 1) / totalPlayers;
+
+  if (percentile <= 0.1) return t(locale, "division.diamond");
+  if (percentile <= 0.4) return t(locale, "division.gold");
+  if (percentile <= 0.7) return t(locale, "division.silver");
+  if (percentile <= 1.0) return t(locale, "division.bronze");
+
+  return t(locale, "division.unranked");
 };
