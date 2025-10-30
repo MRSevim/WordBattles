@@ -1,3 +1,4 @@
+import { getDivision } from "../../../helpers/misc";
 import { Lang, Season } from "../../../types/gameTypes";
 import { prisma } from "../prisma";
 
@@ -69,5 +70,53 @@ export async function getUserPastGames(
   } catch (error) {
     console.error(`❌ [getUserPastGames] Failed for user ${userId}:`, error);
     return [];
+  }
+}
+
+export async function getUserRank(
+  userId: string,
+  options: { lang: Lang; season: Season }
+) {
+  const { lang, season } = options;
+
+  try {
+    // 1. Get all users who played 5 or more games in this lang and season
+    const rankedUsers = await prisma.playerRank.findMany({
+      where: {
+        lang,
+        season,
+        user: {
+          stats: {
+            some: {
+              lang,
+              season,
+              totalGames: {
+                gte: 5,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { rankedPoints: "desc" },
+      select: {
+        userId: true,
+        rankedPoints: true,
+      },
+    });
+
+    // Find the user's position
+    const position = rankedUsers.findIndex((u) => u.userId === userId);
+
+    if (position === -1) return null; // user not ranked
+
+    const userRank = rankedUsers[position];
+
+    return {
+      division: getDivision(position, rankedUsers.length),
+      points: userRank.rankedPoints,
+    };
+  } catch (error) {
+    console.error(`❌ [getUserRank] Failed for user ${userId}:`, error);
+    return null;
   }
 }

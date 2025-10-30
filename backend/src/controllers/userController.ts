@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
-import { getUser, getUserPastGames } from "../lib/prisma/dbCalls/userCalls";
+import {
+  getUser,
+  getUserPastGames,
+  getUserRank,
+} from "../lib/prisma/dbCalls/userCalls";
 import { t } from "../lib/i18n";
 import { Lang, Season } from "../types/gameTypes";
 
@@ -52,5 +56,20 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
       pageSize,
       games,
     },
+  });
+};
+
+export const getUserRankController: RequestHandler = async (req, res) => {
+  const userId = req.params.id;
+  if (!userId) {
+    res.status(400);
+    throw new Error(t(req.cookies.locale, "userIdRequired"));
+  }
+  const lang = (req.query.lang as Lang) || "en";
+  const season = (req.query.season as Season) || "Season1";
+  const rank = await getUserRank(userId, { lang, season });
+
+  res.json({
+    data: rank,
   });
 };

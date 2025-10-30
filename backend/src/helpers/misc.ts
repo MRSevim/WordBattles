@@ -21,6 +21,20 @@ export const sendInitialData = (io: Io, gameState: GameState) => {
   });
 };
 
+// Helper: determine division based on percentage
+export const getDivision = (position: number, totalPlayers: number) => {
+  if (totalPlayers < 10) return "none";
+
+  const percentile = (position + 1) / totalPlayers;
+
+  if (percentile <= 0.1) return "diamond";
+  if (percentile <= 0.4) return "gold";
+  if (percentile <= 0.7) return "silver";
+  if (percentile <= 1.0) return "bronze";
+
+  return "none";
+};
+
 export const gameTime = 100000;
 
 export const letters: Record<Lang, InitialLetters[]> = {
