@@ -18,8 +18,7 @@ export const getLetterOnBoard =
 export const selectEndingPlayerId = (state: RootState) =>
   state.game.endingPlayerId;
 export const selectEndReason = (state: RootState) => state.game.endReason;
-export const selectPointDiffApplied = (state: RootState) =>
-  state.game.pointDiffAppliedToRanked;
+export const selectGameType = (state: RootState) => state.game.type;
 export const selectWinnerId = (state: RootState) => state.game.winnerId;
 
 //players

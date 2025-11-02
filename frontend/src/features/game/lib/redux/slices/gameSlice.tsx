@@ -13,6 +13,7 @@ import {
   GameState,
   GameStateWithInteractivity,
   GameStatus,
+  GameType,
   Player,
 } from "@/features/game/utils/types/gameTypes";
 import {
@@ -46,6 +47,8 @@ const initialState: GameStateWithInteractivity = {
   switching: false,
   switchIndices: [],
   endReason: "none",
+  type: "casual",
+  season: "Season1",
 };
 
 export const gameSlice = createSlice({
@@ -57,6 +60,9 @@ export const gameSlice = createSlice({
     },
     setGameLanguage: (state, action: PayloadAction<Lang>) => {
       state.lang = action.payload;
+    },
+    setGameType: (state, action: PayloadAction<GameType>) => {
+      state.type = action.payload;
     },
     leaveGame: (state) => {
       socket.emit("Leave Game", { state: getStrippedState(state) });
@@ -311,6 +317,7 @@ export const {
   toggleSwitching,
   changeSwitchValue,
   setGameLanguage,
+  setGameType,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

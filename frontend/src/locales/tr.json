@@ -113,6 +113,7 @@
     "seconds": "saniye",
     "second": "saniye",
     "left": "Ayrıldı",
+    "you": "Sen",
     "notEnoughLetter": "Havuzda yeterli harf yok!",
     "ongoing": {
       "ongoingGameWarning": "Şu anda devam eden oyununuz bulunmaktadır!",
@@ -122,7 +123,8 @@
     "finder": {
       "selectLanguage": "Oyun dili seç:",
       "find": "Bul",
-      "en": "İngilizce"
+      "en": "İngilizce",
+      "types": { "casual": "rahat", "ranked": "dereceli" }
     },
     "endedModal": {
       "endReason": {
@@ -160,5 +162,10 @@
       "longestLossStreak": "En Uzun Kaybetme Serisi:"
     },
     "pastGames": { "pastGames": "Son 30 Günün Oyunları" }
+  },
+  "ladder": {
+    "username": "Kullanıcı Adı",
+    "rankedPoints": "Dereceli Puanı",
+    "division": "Derece"
   }
 }

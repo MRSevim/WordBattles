@@ -1,4 +1,4 @@
-import { Lang, Season } from "../../../types/gameTypes";
+import { Division, Lang, Season } from "../../../types/gameTypes";
 import { t } from "../../i18n";
 import { prisma } from "../prisma";
 
@@ -34,7 +34,7 @@ export const getDivision = async (
   userId: string,
   options: { season: Season; lang: Lang },
   locale: Lang
-) => {
+): Promise<Division> => {
   const { lang, season } = options;
   try {
     // 1️⃣ Get the user's rankedPoints
@@ -56,7 +56,7 @@ export const getDivision = async (
       select: { rankedPoints: true },
     });
 
-    if (!userRankEntry) return t(locale, "division.unranked");
+    if (!userRankEntry) return getUnrankedDivision(locale);
 
     const userPoints = userRankEntry.rankedPoints;
 
@@ -104,25 +104,51 @@ export const getDivision = async (
     return determineDivision(position, totalPlayers, locale);
   } catch (error) {
     console.error(`❌ [getDivision] Failed for user ${userId}:`, error);
-    return t(locale, "division.unfetched");
+    return getUnfetchedDivision(locale);
   }
 };
+
+export const getUnfetchedDivision = (locale: Lang): Division => ({
+  division: "unfetched",
+  label: t(locale, "division.unfetched"),
+});
+
+const getUnrankedDivision = (locale: Lang): Division => ({
+  division: "unranked",
+  label: t(locale, "division.unfetched"),
+});
 
 export const determineDivision = (
   position: number,
   totalPlayers: number,
   locale: Lang
-) => {
-  if (position === -1) return t(locale, "division.unranked");
+): Division => {
+  if (position === -1) return getUnrankedDivision(locale);
 
-  if (totalPlayers < 10) return t(locale, "division.unranked");
+  if (totalPlayers < 10) return getUnrankedDivision(locale);
 
   const percentile = (position + 1) / totalPlayers;
 
-  if (percentile <= 0.1) return t(locale, "division.diamond");
-  if (percentile <= 0.4) return t(locale, "division.gold");
-  if (percentile <= 0.7) return t(locale, "division.silver");
-  if (percentile <= 1.0) return t(locale, "division.bronze");
+  if (percentile <= 0.1)
+    return {
+      division: "diamond",
+      label: t(locale, "division.diamond"),
+    };
+  if (percentile <= 0.4)
+    return {
+      division: "gold",
+      label: t(locale, "division.gold"),
+    };
+  if (percentile <= 0.7)
+    return {
+      division: "silver",
+      label: t(locale, "division.silver"),
+    };
+  if (percentile <= 1.0)
+    return {
+      division: "bronze",
+      label: t(locale, "division.bronze"),
+    };
 
-  return t(locale, "division.unranked");
+  return getUnrankedDivision(locale);
 };

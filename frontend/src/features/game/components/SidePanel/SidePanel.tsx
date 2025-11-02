@@ -4,7 +4,7 @@ import { GameHistory } from "./GameHistory";
 import { toggleSidePanel } from "../../lib/redux/slices/sidePanelToggleSlice";
 import { _switch, leaveGame } from "../../lib/redux/slices/gameSlice";
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { Player } from "../../utils/types/gameTypes";
+import { Division, Player } from "../../utils/types/gameTypes";
 import {
   selectGameRoomId,
   selectPlayers,
@@ -15,6 +15,7 @@ import { removeCookie } from "@/utils/helpers";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 import { Button } from "../GameBoard/BottomPanel/Button";
+import { DivisionComp } from "../DivisionComp";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -101,6 +102,7 @@ const PlayerContainer = ({ player }: { player: Player }) => {
         username={player.username}
         points={player.points}
         leftTheGame={player.leftTheGame}
+        division={player.division}
       />
       <div className="mt-2 w-20">
         <p
@@ -125,10 +127,12 @@ const UsernameAndPoints = ({
   username,
   points,
   leftTheGame,
+  division,
 }: {
   username: string;
   leftTheGame: boolean;
   points: number;
+  division?: Division;
 }) => {
   const [locale] = useLocaleContext();
   return (
@@ -136,6 +140,7 @@ const UsernameAndPoints = ({
       <p>{username}</p>
       {leftTheGame && <p className="font-bold">{t(locale, "game.left")}</p>}
       {t(locale, "game.points")} {points}
+      <DivisionComp division={division} />
     </>
   );
 };

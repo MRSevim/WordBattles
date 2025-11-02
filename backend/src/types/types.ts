@@ -2,7 +2,7 @@
 import { User } from "@prisma/client";
 import { Request } from "express";
 import { Server, Socket, ExtendedError } from "socket.io";
-import { Lang } from "./gameTypes";
+import { Division, Lang } from "./gameTypes";
 export { User };
 
 //express types
@@ -21,5 +21,7 @@ declare module "socket.io" {
     roomId?: string;
     sessionId: string;
     siteLocale: Lang;
+    rankedPoints?: number;
+    division?: Division;
   }
 }

@@ -29,16 +29,27 @@ import {
   Lang,
   GameOptions,
   GameType,
+  Season,
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
 import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
+import {
+  getDivision,
+  getUnfetchedDivision,
+  getUser,
+} from "../lib/prisma/dbCalls/userCalls";
 
 let waitingPlayers: Record<Lang, Record<GameType, Socket[]>> = {
   tr: { ranked: [], casual: [] },
   en: { ranked: [], casual: [] },
 };
+
+const BASE_TOLERANCE = 100;
+const TOLERANCE_STEP = 50;
+const MAX_TOLERANCE = 600;
+const INTERVAL_MS = 5000;
 
 export const runSocketLogic = (io: Io) => {
   io.on("connection", async (socket: Socket) => {
@@ -72,6 +83,7 @@ export const runSocketLogic = (io: Io) => {
 
     socket.on("Started Looking", async (options: GameOptions) => {
       const { lang, type } = options;
+      const season: Season = "Season1";
       const locale = socket.siteLocale;
 
       // Only allow ranked games for logged-in users
@@ -80,28 +92,91 @@ export const runSocketLogic = (io: Io) => {
         return;
       }
 
-      const startGame = (socket: Socket, _socket: Socket) => {
-        const gameState = generateGameState(socket, _socket, options);
+      //Start game helper
+      const startGame = (p1: Socket, p2: Socket) => {
+        const gameState = generateGameState(p1, p2, options);
         io.to(gameState.roomId).emit("Start Game", gameState);
         sendInitialData(io, gameState);
         saveGame(gameState, io);
-        updateCurrentRoomIdInDB(socket.user?.id, gameState.roomId);
-        updateCurrentRoomIdInDB(_socket.user?.id, gameState.roomId);
+        updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
+        updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
       };
 
       const queue = waitingPlayers[lang][type];
 
-      if (queue.length > 0) {
-        const opponent = queue.shift()!;
-        startGame(socket, opponent);
-      } else {
-        queue.push(socket);
+      //  Get player's rank
+      if (type === "ranked" && socket.user) {
+        try {
+          const [user, division] = await Promise.all([
+            getUser(socket.user.id, lang, season),
+            getDivision(socket.user.id, { lang, season }, socket.siteLocale),
+          ]);
+
+          socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
+          socket.division = division ?? t(locale, "division.unfetched");
+        } catch (err) {
+          console.error("❌ Failed to load user rank/division:", err);
+          socket.rankedPoints = 3000;
+          socket.division = getUnfetchedDivision(locale);
+        }
+        // --- Search loop ---
+        let currentTolerance = BASE_TOLERANCE;
+
+        const searchInterval = setInterval(() => {
+          // If socket disconnected, stop searching
+          if (!io.sockets.sockets.has(socket.id)) {
+            console.log("socket disconnected, interval cleared");
+            clearInterval(searchInterval);
+            return;
+          }
+
+          // Try to find a player within current tolerance
+          const matchedIndex = queue.findIndex((queuedSocket) => {
+            const opponentRank = queuedSocket.rankedPoints ?? 3000;
+            return (
+              Math.abs(opponentRank - (socket.rankedPoints || 3000)) <=
+              currentTolerance
+            );
+          });
+
+          if (matchedIndex !== -1) {
+            const opponent = queue.splice(matchedIndex, 1)[0];
+            clearInterval(searchInterval);
+            startGame(socket, opponent);
+          } else {
+            currentTolerance += TOLERANCE_STEP;
+            console.log("current tolerance of scanning:", currentTolerance);
+
+            if (currentTolerance > MAX_TOLERANCE) {
+              // Add to waiting queue after max expansion
+              const stillConnectedBeforeEnqueue = io.sockets.sockets.has(
+                socket.id
+              );
+              if (stillConnectedBeforeEnqueue && !queue.includes(socket)) {
+                // only add if not already present and still connected
+                queue.push(socket);
+                console.log("pushed to queue and interval cleared");
+              }
+              clearInterval(searchInterval);
+            }
+          }
+        }, INTERVAL_MS);
+      } else if (type === "casual") {
+        // Basic queue matchmaking
+        if (queue.length > 0) {
+          const opponent = queue.shift(); // first waiting player
+          const gameState = generateGameState(socket, opponent!, options);
+          io.to(gameState.roomId).emit("Start Game", gameState);
+          sendInitialData(io, gameState);
+          saveGame(gameState, io);
+        } else {
+          queue.push(socket);
+        }
       }
     });
 
     socket.on("disconnect", () => {
       console.log("A user disconnected");
-
       Object.keys(waitingPlayers).forEach((lang) => {
         Object.keys(waitingPlayers[lang as Lang]).forEach((type) => {
           waitingPlayers[lang as Lang][type as GameType] = waitingPlayers[

@@ -41,6 +41,12 @@ export interface Player {
   highestScoringWord?: { word: string; points: number };
   highestScoringMove?: { words: string[]; points: number };
   avgPerWord: number;
+  division?: Division;
+}
+
+export interface Division {
+  division: "diamond" | "gold" | "silver" | "bronze" | "unranked" | "unfetched";
+  label: string;
 }
 
 export interface Word {

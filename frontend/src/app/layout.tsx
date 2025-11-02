@@ -41,7 +41,11 @@ export default async function RootLayout({
       >
         <LocaleContextProvider initialLocale={initialLocale}>
           <ThemeContextProvider initialTheme={initialTheme}>
-            <ClientWrapper user={user} gameCookies={gameCookies}>
+            <ClientWrapper
+              user={user}
+              gameCookies={gameCookies}
+              initialLocale={initialLocale}
+            >
               <Header />
               {children}
               <Analytics />

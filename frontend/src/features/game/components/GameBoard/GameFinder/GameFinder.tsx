@@ -6,6 +6,7 @@ import {
   selectGameLanguage,
   selectGameRoomId,
   selectGameStatus,
+  selectGameType,
 } from "../../../lib/redux/selectors";
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
@@ -24,6 +25,7 @@ export const GameFinder = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const [locale] = useLocaleContext();
   const lang = useAppSelector(selectGameLanguage);
+  const type = useAppSelector(selectGameType);
   const looking = gameStatus === "looking";
   const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -35,7 +37,7 @@ export const GameFinder = () => {
   }, [roomId, gameStatus]);
 
   useEffect(() => {
-    if (looking) socket.emit("Started Looking", lang);
+    if (looking) socket.emit("Started Looking", { lang, type });
     if (!isClient) setIsClient(true);
   }, []);
 
@@ -44,6 +46,7 @@ export const GameFinder = () => {
     dispatch(setGameStatus("idle"));
     removeCookie("sessionId");
     removeCookie("lang");
+    removeCookie("type");
   };
 
   if (gameStatus === "playing") return null;

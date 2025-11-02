@@ -4,12 +4,17 @@ import Pagination from "../../../components/Paginations";
 import { fetchLadder } from "../utils/apiCalls";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
+import { Division } from "../../../../../types";
+import { DivisionComp } from "@/features/game/components/DivisionComp";
 
-interface User {
-  _id: string;
-  username: string;
-  email: string;
-  image: string;
+interface Ladder {
+  position: number;
+  division: Division;
+  user: {
+    name: string;
+    image: string | null;
+  };
+  userId: string;
   rankedPoints: number;
 }
 
@@ -17,6 +22,7 @@ interface UserRank {
   rank: number;
   username: string;
   rankedPoints: number;
+  division: Division;
 }
 
 export const Ladder = async ({
@@ -28,25 +34,51 @@ export const Ladder = async ({
   const pageQuery = (await searchParams).page;
   const page = Number(pageQuery) || 1;
   const ladder: {
-    ladder: User[];
-    userRank: UserRank;
+    ladder: Ladder[];
+    userRank?: UserRank;
     totalUsers: number;
   } | null = await fetchLadder({ page, limit });
+
   const locale = await getLocaleFromCookie(cookies);
 
   return (
     <Container className="py-10">
       {ladder && ladder.ladder.length > 0 && ladder.totalUsers > 0 ? (
-        <div>
-          {ladder.ladder.map((user, index) => (
-            <div key={user._id} className="flex justify-between p-2 border-b">
-              <span>
-                {index + 1 + (page - 1) * limit}: {user.username}
-              </span>
-              <span className="font-bold"> {user.rankedPoints}</span>
+        <>
+          <div className="grid grid-cols-3 gap-2">
+            {/* Table Header */}
+            <div className="col-span-3 grid grid-cols-subgrid items-center p-2 font-semibold border-b text-sm sm:text-base">
+              <div className="col-span-2 grid grid-cols-subgrid">
+                <span>{t(locale, "ladder.username")}</span>
+                <span>{t(locale, "ladder.rankedPoints")}</span>
+              </div>
+              <span className="text-end">{t(locale, "ladder.division")}</span>
             </div>
-          ))}
 
+            {/* Ladder Items */}
+            {ladder.ladder.map((item, index) => (
+              <div
+                key={item.userId}
+                className="col-span-3 grid grid-cols-subgrid p-2 border-b text-sm sm:text-base"
+              >
+                <div className="col-span-2 grid grid-cols-subgrid items-center">
+                  <div>
+                    <span className="w-6 text-right">
+                      {index + 1 + (page - 1) * limit}.
+                    </span>
+                    <span>{item.user.name}</span>
+                  </div>
+                  <span className="font-semibold text-gray-700">
+                    {item.rankedPoints}
+                  </span>
+                </div>
+
+                <div className="flex justify-end">
+                  <DivisionComp division={item.division} />
+                </div>
+              </div>
+            ))}
+          </div>
           <Pagination
             currentPage={page}
             totalItems={ladder.totalUsers}
@@ -54,8 +86,8 @@ export const Ladder = async ({
           />
 
           {ladder.userRank && (
-            <div className=" mt-5 p-4 bg-gray-100 rounded-lg">
-              <div className="flex justify-between">
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+              <div className="flex justify-between items-center gap-2">
                 <span>
                   {ladder.userRank.rank}: {ladder.userRank.username}
                 </span>
@@ -63,10 +95,11 @@ export const Ladder = async ({
                   {" "}
                   {ladder.userRank.rankedPoints}
                 </span>
+                <DivisionComp division={ladder.userRank.division} />
               </div>
             </div>
           )}
-        </div>
+        </>
       ) : (
         <p className="font-bold text-lg">{t(locale, "noData")}</p>
       )}

@@ -42,6 +42,7 @@ export const generateGameState = (
       email: socket.user?.email,
       turn: playersStatus.startingPlayer === 1,
       id: socket.sessionId,
+      division: socket.division,
       ...getInitialPlayerValues(),
     },
     {
@@ -51,6 +52,7 @@ export const generateGameState = (
       email: _socket.user?.email,
       turn: playersStatus.startingPlayer === 2,
       id: _socket.sessionId,
+      division: _socket.division,
       ...getInitialPlayerValues(),
     },
   ];
@@ -60,7 +62,7 @@ export const generateGameState = (
 
   _socket.join(roomId);
   socket.join(roomId);
-  console.log("Game found in " + lang, roomId);
+  console.log("Game found in " + lang + " " + type, roomId);
   const state: GameState = {
     status: "playing",
     players,

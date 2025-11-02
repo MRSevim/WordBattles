@@ -12,19 +12,24 @@ import {
   setGameLanguage,
   setGameRoomId,
   setGameStatus,
+  setGameType,
 } from "@/features/game/lib/redux/slices/gameSlice";
+import { GameType } from "../../../types";
 
 const ClientWrapper = ({
   children,
   user,
   gameCookies,
+  initialLocale,
 }: {
   children: React.ReactNode;
   user: User;
+  initialLocale: Lang;
   gameCookies: {
     sessionId?: string;
     roomId?: string;
     lang?: Lang;
+    type?: GameType;
   };
 }) => {
   const storeRef = useRef<AppStore | null>(null);
@@ -37,11 +42,17 @@ const ClientWrapper = ({
     const sessionId = gameCookies.sessionId;
     const roomId = gameCookies.roomId;
     const lang = gameCookies.lang;
+    const type = gameCookies.type;
+
+    if (initialLocale && !lang) {
+      dispatch(setGameLanguage(initialLocale));
+    }
 
     //RoomId takes precedence over sessionId
-    if (sessionId && lang && !roomId) {
+    if (sessionId && lang && type && !roomId) {
       socket.sessionId = sessionId;
       dispatch(setGameLanguage(lang));
+      dispatch(setGameType(type));
       dispatch(setGameStatus("looking"));
     }
 

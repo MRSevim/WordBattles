@@ -36,7 +36,16 @@ export const ladderController: RequestHandler = async (
         },
       },
       orderBy: { rankedPoints: "desc" },
-      select: { userId: true, rankedPoints: true },
+      select: {
+        userId: true,
+        rankedPoints: true,
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
       skip: (page - 1) * limit,
       take: limit,
     }),

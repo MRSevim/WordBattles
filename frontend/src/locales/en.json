@@ -112,7 +112,8 @@
     "leave": "Leave",
     "seconds": "seconds",
     "second": "second",
-    "left": "(Left)",
+    "left": "Left",
+    "you": "You",
     "notEnoughLetter": "Not enough letters in the pool!",
     "ongoing": {
       "ongoingGameWarning": "You have an ongoing game right now!",
@@ -122,7 +123,8 @@
     "finder": {
       "selectLanguage": "Select game language:",
       "find": "Find",
-      "en": "English"
+      "en": "English",
+      "types": { "casual": "casual", "ranked": "ranked" }
     },
     "endedModal": {
       "endReason": {
@@ -160,5 +162,10 @@
       "longestLossStreak": "Longest Loss Streak:"
     },
     "pastGames": { "pastGames": "Past Games From Last 30 Days" }
+  },
+  "ladder": {
+    "username": "Username",
+    "rankedPoints": "Ranked Points",
+    "division": "Division"
   }
 }

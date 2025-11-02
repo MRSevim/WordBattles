@@ -50,6 +50,7 @@ const PlayerComp = ({ player }: { player: Player }) => {
   const isWinner = player.id === winnerId;
   const isYou = player.id === socket.sessionId;
   const endReason = useAppSelector(selectEndReason);
+  const [locale] = useLocaleContext();
 
   return (
     <div className="bg-slate-700 rounded-xl p-4 grid-rows-subgrid grid row-span-full">
@@ -75,12 +76,12 @@ const PlayerComp = ({ player }: { player: Player }) => {
         )}
         {player.leftTheGame && (
           <span className="absolute -bottom-2 -right-2 text-sm text-red-400">
-            (Left)
+            ({t(locale, "game.left")})
           </span>
         )}
         {isYou && (
           <span className="absolute -bottom-2 -left-2 text-sm font-bold">
-            (You)
+            ({t(locale, "game.you")})
           </span>
         )}
       </div>

@@ -59,7 +59,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
       </div>
 
       <div className="absolute bottom-0 right-0.5 text-xxxs sm:text-xxs text-white">
-        {letter.point}
+        {letter.points}
       </div>
     </div>
   );
