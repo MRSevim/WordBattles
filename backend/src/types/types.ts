@@ -23,5 +23,6 @@ declare module "socket.io" {
     siteLocale: Lang;
     rankedPoints?: number;
     division?: Division;
+    searchInterval?: NodeJS.Timeout;
   }
 }

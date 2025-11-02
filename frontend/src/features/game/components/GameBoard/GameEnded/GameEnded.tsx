@@ -13,7 +13,6 @@ import { Player } from "../../../utils/types/gameTypes";
 import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import EndingPlayerDisplay from "./EndingPlayerDisplay";
-import PointDiffAppliedDisplay from "./PointDiffAppliedDisplay";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
@@ -30,7 +29,6 @@ export const GameEnded = () => {
         </h2>
         <div className="text-center text-gray-300 italic mb-2 xxs:mb-4">
           <EndingPlayerDisplay />
-          <PointDiffAppliedDisplay />
         </div>
 
         <div className="grid grid-cols-3 grid-rows-[repeat(10,minmax(0,auto))] gap-1 xxs:gap-2">

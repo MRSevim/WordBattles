@@ -55,7 +55,6 @@ export const getDivision = async (
       },
       select: { rankedPoints: true },
     });
-
     if (!userRankEntry) return getUnrankedDivision(locale);
 
     const userPoints = userRankEntry.rankedPoints;
@@ -115,7 +114,7 @@ export const getUnfetchedDivision = (locale: Lang): Division => ({
 
 const getUnrankedDivision = (locale: Lang): Division => ({
   division: "unranked",
-  label: t(locale, "division.unfetched"),
+  label: t(locale, "division.unranked"),
 });
 
 export const determineDivision = (

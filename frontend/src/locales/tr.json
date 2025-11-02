@@ -114,6 +114,8 @@
     "second": "saniye",
     "left": "Ayrıldı",
     "you": "Sen",
+    "casualGame": "Sıralamasız Oyun",
+    "rankedGame": "Dereceli Oyun",
     "notEnoughLetter": "Havuzda yeterli harf yok!",
     "ongoing": {
       "ongoingGameWarning": "Şu anda devam eden oyununuz bulunmaktadır!",
@@ -124,7 +126,7 @@
       "selectLanguage": "Oyun dili seç:",
       "find": "Bul",
       "en": "İngilizce",
-      "types": { "casual": "rahat", "ranked": "dereceli" }
+      "types": { "casual": "sıralamasız", "ranked": "dereceli" }
     },
     "endedModal": {
       "endReason": {
@@ -141,7 +143,6 @@
       "avgPointsPerWord": "Kelime başına ortalama puan",
       "totalPassCount": "Toplam pas sayısı",
       "endBonus": "Oyun sonundaki el bonusu",
-      "pointDiffApplied": "Puan farkları dereceli puanlarına eklendi.",
       "unavailable": "Veri yok."
     }
   },

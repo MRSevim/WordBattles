@@ -7,6 +7,7 @@ import { socket } from "@/features/game/lib/socket.io/socketio";
 import { Division, Player } from "../../utils/types/gameTypes";
 import {
   selectGameRoomId,
+  selectGameType,
   selectPlayers,
   selectSidePanelOpen,
 } from "../../lib/redux/selectors";
@@ -68,6 +69,7 @@ const OngoingGameContainer = () => {
             </div>
           </div>
           <Players />
+          <GameTypeDisplay />
           <GameHistory />
         </>
       )}
@@ -151,3 +153,13 @@ const Loader = () => (
     <div id="hill"></div>
   </div>
 );
+
+const GameTypeDisplay = () => {
+  const type = useAppSelector(selectGameType);
+  const [locale] = useLocaleContext();
+  return (
+    <p className="p-2 text-center font-bold ">
+      {t(locale, `game.${type}Game`)}
+    </p>
+  );
+};

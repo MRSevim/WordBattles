@@ -82,6 +82,9 @@ export const runSocketLogic = (io: Io) => {
     }
 
     socket.on("Started Looking", async (options: GameOptions) => {
+      if (socket.searchInterval) {
+        return;
+      }
       const { lang, type } = options;
       const season: Season = "Season1";
       const locale = socket.siteLocale;
@@ -119,48 +122,43 @@ export const runSocketLogic = (io: Io) => {
           socket.rankedPoints = 3000;
           socket.division = getUnfetchedDivision(locale);
         }
+
+        // 🟩 Add to queue right away
+        if (!queue.includes(socket)) {
+          queue.push(socket);
+        }
+
         // --- Search loop ---
         let currentTolerance = BASE_TOLERANCE;
-
-        const searchInterval = setInterval(() => {
-          // If socket disconnected, stop searching
-          if (!io.sockets.sockets.has(socket.id)) {
-            console.log("socket disconnected, interval cleared");
-            clearInterval(searchInterval);
-            return;
-          }
-
-          // Try to find a player within current tolerance
-          const matchedIndex = queue.findIndex((queuedSocket) => {
-            const opponentRank = queuedSocket.rankedPoints ?? 3000;
-            return (
-              Math.abs(opponentRank - (socket.rankedPoints || 3000)) <=
-              currentTolerance
+        setTimeout(() => {
+          const searchInterval = setInterval(() => {
+            // 🔎 Find a suitable opponent (ignore self)
+            const matchedIndex = queue.findIndex(
+              (queuedSocket) =>
+                queuedSocket !== socket && // 🧠 Ignore self
+                Math.abs(
+                  (queuedSocket.rankedPoints ?? 3000) -
+                    (socket.rankedPoints ?? 3000)
+                ) <= currentTolerance
             );
-          });
 
-          if (matchedIndex !== -1) {
-            const opponent = queue.splice(matchedIndex, 1)[0];
-            clearInterval(searchInterval);
-            startGame(socket, opponent);
-          } else {
-            currentTolerance += TOLERANCE_STEP;
-            console.log("current tolerance of scanning:", currentTolerance);
-
-            if (currentTolerance > MAX_TOLERANCE) {
-              // Add to waiting queue after max expansion
-              const stillConnectedBeforeEnqueue = io.sockets.sockets.has(
-                socket.id
-              );
-              if (stillConnectedBeforeEnqueue && !queue.includes(socket)) {
-                // only add if not already present and still connected
-                queue.push(socket);
-                console.log("pushed to queue and interval cleared");
-              }
-              clearInterval(searchInterval);
+            if (matchedIndex !== -1) {
+              const opponent = queue.splice(matchedIndex, 1)[0];
+              const selfIndex = queue.indexOf(socket);
+              if (selfIndex !== -1) queue.splice(selfIndex, 1); // remove self from queue too
+              clearInterval(socket.searchInterval);
+              socket.searchInterval = undefined;
+              clearInterval(opponent.searchInterval);
+              opponent.searchInterval = undefined;
+              startGame(socket, opponent);
+            } else if (currentTolerance < MAX_TOLERANCE) {
+              currentTolerance += TOLERANCE_STEP;
+              console.log("current tolerance of scanning:", currentTolerance);
             }
-          }
-        }, INTERVAL_MS);
+          }, INTERVAL_MS);
+
+          socket.searchInterval = searchInterval;
+        }, 2000);
       } else if (type === "casual") {
         // Basic queue matchmaking
         if (queue.length > 0) {
@@ -177,6 +175,11 @@ export const runSocketLogic = (io: Io) => {
 
     socket.on("disconnect", () => {
       console.log("A user disconnected");
+      if (socket.searchInterval) {
+        console.log("interval cleared");
+        clearInterval(socket.searchInterval);
+        socket.searchInterval = undefined;
+      }
       Object.keys(waitingPlayers).forEach((lang) => {
         Object.keys(waitingPlayers[lang as Lang]).forEach((type) => {
           waitingPlayers[lang as Lang][type as GameType] = waitingPlayers[

@@ -114,6 +114,8 @@
     "second": "second",
     "left": "Left",
     "you": "You",
+    "casualGame": "Casual Game",
+    "rankedGame": "Ranked Game",
     "notEnoughLetter": "Not enough letters in the pool!",
     "ongoing": {
       "ongoingGameWarning": "You have an ongoing game right now!",
@@ -141,7 +143,6 @@
       "avgPointsPerWord": "Average points per word",
       "totalPassCount": "Total Pass Count",
       "endBonus": "Hand bonus at game end",
-      "pointDiffApplied": "Point differences are applied to ranked points.",
       "unavailable": "Unavailable Data"
     }
   },
