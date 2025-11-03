@@ -83,7 +83,8 @@ export const runSocketLogic = (io: Io) => {
 
     socket.on("Started Looking", async (options: GameOptions) => {
       if (socket.searchInterval) {
-        return;
+        clearInterval(socket.searchInterval);
+        socket.searchInterval = undefined;
       }
       const { lang, type } = options;
       const season: Season = "Season1";
@@ -130,44 +131,55 @@ export const runSocketLogic = (io: Io) => {
 
         // --- Search loop ---
         let currentTolerance = BASE_TOLERANCE;
-        setTimeout(() => {
-          const searchInterval = setInterval(() => {
-            // 🔎 Find a suitable opponent (ignore self)
-            const matchedIndex = queue.findIndex(
-              (queuedSocket) =>
-                queuedSocket !== socket && // 🧠 Ignore self
-                Math.abs(
-                  (queuedSocket.rankedPoints ?? 3000) -
-                    (socket.rankedPoints ?? 3000)
-                ) <= currentTolerance
-            );
 
-            if (matchedIndex !== -1) {
-              const opponent = queue.splice(matchedIndex, 1)[0];
-              const selfIndex = queue.indexOf(socket);
-              if (selfIndex !== -1) queue.splice(selfIndex, 1); // remove self from queue too
-              clearInterval(socket.searchInterval);
-              socket.searchInterval = undefined;
-              clearInterval(opponent.searchInterval);
-              opponent.searchInterval = undefined;
-              startGame(socket, opponent);
-            } else if (currentTolerance < MAX_TOLERANCE) {
-              currentTolerance += TOLERANCE_STEP;
-              console.log("current tolerance of scanning:", currentTolerance);
-            }
-          }, INTERVAL_MS);
+        const searchInterval = setInterval(() => {
+          // 🔎 Find a suitable opponent (ignore self)
+          const matchedIndex = queue.findIndex(
+            (queuedSocket) =>
+              queuedSocket !== socket && // 🧠 Ignore self
+              queuedSocket.searchInterval !== undefined &&
+              Math.abs(
+                (queuedSocket.rankedPoints ?? 3000) -
+                  (socket.rankedPoints ?? 3000)
+              ) <= currentTolerance
+          );
 
-          socket.searchInterval = searchInterval;
-        }, 2000);
+          if (matchedIndex !== -1) {
+            const opponent = queue[matchedIndex];
+
+            // Clear intervals FIRST
+            clearInterval(socket.searchInterval);
+            socket.searchInterval = undefined;
+            clearInterval(opponent.searchInterval);
+            opponent.searchInterval = undefined;
+
+            // THEN remove from queue
+            queue.splice(matchedIndex, 1);
+            const selfIndex = queue.indexOf(socket);
+            if (selfIndex !== -1) queue.splice(selfIndex, 1);
+
+            startGame(socket, opponent);
+          } else if (currentTolerance < MAX_TOLERANCE) {
+            currentTolerance += TOLERANCE_STEP;
+            console.log("current tolerance of scanning:", currentTolerance);
+          }
+        }, INTERVAL_MS);
+
+        socket.searchInterval = searchInterval;
       } else if (type === "casual") {
         // Basic queue matchmaking
         if (queue.length > 0) {
           const opponent = queue.shift(); // first waiting player
+
+          // Remove socket from queue if present (safety check)
+          const selfIndex = queue.indexOf(socket);
+          if (selfIndex !== -1) queue.splice(selfIndex, 1);
+
           const gameState = generateGameState(socket, opponent!, options);
           io.to(gameState.roomId).emit("Start Game", gameState);
           sendInitialData(io, gameState);
           saveGame(gameState, io);
-        } else {
+        } else if (!queue.includes(socket)) {
           queue.push(socket);
         }
       }
