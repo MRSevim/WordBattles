@@ -2,7 +2,6 @@
 import { useRef, useState } from "react";
 import { Lang } from "../helpers/types";
 import { t } from "../lib/i18n";
-import "./LanguageSwitcher.css";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import {

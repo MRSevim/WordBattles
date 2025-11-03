@@ -77,7 +77,7 @@ const UserMenu = ({
           </button>
 
           {open && (
-            <div className="absolute right-0 w-44 bg-primary shadow-lg rounded-lg border border-gray-200 z-50 animate-fadeIn">
+            <div className="absolute right-0 w-44 bg-primary text-white shadow-lg rounded-lg border border-gray-200 z-50 animate-fadeIn">
               <Link
                 href={routeStrings.profile}
                 onClick={() => {

@@ -2,13 +2,13 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #1b48b1;
+  --primary: oklch(27.8% 0.033 256.848);
   --primary-foreground: #ffffff;
 }
 
 /* When dark mode is active */
 body.dark {
-  --primary-foreground: #0a0a0a;
+  --primary-foreground: oklch(14.1% 0.005 285.823);
   color: white;
 }
 
@@ -28,4 +28,19 @@ body {
   --color-brown: oklch(40.8% 0.123 38.172);
   --text-xxs: 0.6rem;
   --text-xxxs: 0.4rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-in-out;
 }

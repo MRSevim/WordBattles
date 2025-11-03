@@ -76,7 +76,7 @@ export const PlayerCompInner = ({
   const isWinner = player.id === winnerId;
 
   return (
-    <div className="bg-slate-700 rounded-xl p-4 grid-rows-subgrid grid row-span-full">
+    <div className="bg-slate-700 rounded-xl p-1 xxs:p-4 grid-rows-subgrid grid row-span-full">
       {/* Avatar */}
       <div className="relative flex justify-center">
         {player.image ? (
@@ -110,7 +110,9 @@ export const PlayerCompInner = ({
       </div>
 
       {/* Username */}
-      <h3 className="font-semibold text-lg text-center">{player.username}</h3>
+      <h3 className="font-semibold  xxs:text-lg text-center">
+        {player.username}
+      </h3>
 
       {/* Stats */}
       <div className="text-sm space-y-1 text-gray-200 grid grid-rows-subgrid row-span-8 w-full">

@@ -34,7 +34,8 @@
       "cantLogout": "You cannot logout right now!",
       "profile": "Profile",
       "logout": "Logout"
-    }
+    },
+    "menu": "Menu"
   },
   "about": {
     "howToPlay": "How to Play?",

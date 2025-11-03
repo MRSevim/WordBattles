@@ -14,8 +14,10 @@ const MobileHeaderLinks = ({ locale }: { locale: Lang }) => {
         ☰
       </button>
       <div
-        className={`fixed top-[48px] md:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-transform duration-300 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-[48px] md:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-all duration-300 ${
+          menuOpen
+            ? "translate-0 opacity-100 "
+            : "translate-x-full opacity-0 translate-y-[-10px]"
         } `}
       >
         <Links
