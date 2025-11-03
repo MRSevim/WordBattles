@@ -2,27 +2,33 @@ import { Division, Lang, Season } from "../../../types/gameTypes";
 import { t } from "../../i18n";
 import { prisma } from "../prisma";
 
-export async function getUser(userId: string, lang: Lang, season: Season) {
+export async function getUser(
+  userId: string,
+  { lang, season, locale }: { lang: Lang; season: Season; locale: Lang }
+) {
   try {
-    const user = prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        image: true,
-        createdAt: true,
-        stats: {
-          where: { lang, season },
-          take: 1,
+    const [user, division] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          createdAt: true,
+          stats: {
+            where: { lang, season },
+            take: 1,
+          },
+          ranks: {
+            where: { lang, season },
+            take: 1,
+          },
         },
-        ranks: {
-          where: { lang, season },
-          take: 1,
-        },
-      },
-    });
+      }),
+      getDivision(userId, { lang, season }, locale),
+    ]);
 
-    return user;
+    return { ...user, division };
   } catch (error) {
     console.error(`❌ [getUser] Failed for user ${userId}:`, error);
     return null;

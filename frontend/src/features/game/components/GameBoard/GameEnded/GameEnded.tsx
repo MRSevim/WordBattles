@@ -9,7 +9,7 @@ import {
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 import Image from "next/image";
-import { Player } from "../../../utils/types/gameTypes";
+import { EndReason, Player } from "../../../utils/types/gameTypes";
 import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import EndingPlayerDisplay from "./EndingPlayerDisplay";
@@ -31,7 +31,7 @@ export const GameEnded = () => {
           <EndingPlayerDisplay />
         </div>
 
-        <div className="grid grid-cols-3 grid-rows-[repeat(10,minmax(0,auto))] gap-1 xxs:gap-2">
+        <div className="grid grid-cols-3 justify-items-center items-center grid-rows-[repeat(10,minmax(0,auto))] gap-1 xxs:gap-2">
           <PlayerComp player={players[0]} />
           <Titles />
           <PlayerComp player={players[1]} />
@@ -44,11 +44,36 @@ export const GameEnded = () => {
 const PlayerComp = ({ player }: { player: Player }) => {
   const winnerId = useAppSelector(selectWinnerId);
   const players = useAppSelector(selectPlayers);
-  const otherPlayer = players.find((p) => p.id !== player.id);
-  const isWinner = player.id === winnerId;
   const isYou = player.id === socket.sessionId;
   const endReason = useAppSelector(selectEndReason);
+
+  return (
+    <PlayerCompInner
+      player={player}
+      winnerId={winnerId}
+      players={players}
+      endReason={endReason}
+      isYou={isYou}
+    />
+  );
+};
+
+export const PlayerCompInner = ({
+  player,
+  winnerId,
+  players,
+  endReason,
+  isYou,
+}: {
+  player: Player;
+  winnerId?: string;
+  isYou?: boolean;
+  endReason: EndReason;
+  players: Player[];
+}) => {
   const [locale] = useLocaleContext();
+  const otherPlayer = players.find((p) => p.id !== player.id);
+  const isWinner = player.id === winnerId;
 
   return (
     <div className="bg-slate-700 rounded-xl p-4 grid-rows-subgrid grid row-span-full">

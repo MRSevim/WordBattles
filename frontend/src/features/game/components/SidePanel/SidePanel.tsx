@@ -82,9 +82,26 @@ const Players = () => {
 
   return (
     <div className="flex align-center justify-around mb-0 xs:mb-2 sm:mb-6">
-      {players.map((player) => (
-        <PlayerContainer key={player.id} player={player} />
-      ))}
+      {players.length === 0 ? (
+        <>
+          <PlayerSkeleton />
+          <PlayerSkeleton />
+        </>
+      ) : (
+        players.map((player) => (
+          <PlayerContainer key={player.id} player={player} />
+        ))
+      )}
+    </div>
+  );
+};
+
+const PlayerSkeleton = () => {
+  return (
+    <div className="flex flex-col items-center gap-2 justify-center bg-white text-center rounded p-2 xxs:p-4 w-26 xxs:w-36 animate-pulse">
+      <div className="h-4 w-20 bg-gray-300 rounded mb-2"></div>
+      <div className="h-4 w-12 bg-gray-300 rounded mb-3"></div>
+      <div className="h-6 w-16 bg-gray-300 rounded"></div>
     </div>
   );
 };

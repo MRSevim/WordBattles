@@ -61,14 +61,7 @@ export const GameFinder = () => {
     );
   }
   if (looking) {
-    return (
-      <Modal>
-        <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
-          {t(locale, "game.lookingForAGame")}
-          <FindButton onClick={stopLooking} text={t(locale, "game.stop")} />
-        </div>
-      </Modal>
-    );
+    return <LookingModal stopLooking={stopLooking} />;
   }
 
   return (
@@ -126,5 +119,46 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
         </>
       )}
     </>
+  );
+};
+
+export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
+  const [locale] = useLocaleContext();
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Format to mm:ss
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60)
+      .toString()
+      .padStart(2, "0");
+    const sec = (s % 60).toString().padStart(2, "0");
+    return `${m}:${sec}`;
+  };
+
+  return (
+    <Modal>
+      <div className="bg-primary text-white flex flex-col items-center justify-center gap-3 font-medium rounded-xl p-6 shadow-lg">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <i className="bi bi-search animate-pulse text-2xl" />
+            {t(locale, "game.lookingForAGame")}
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-200">
+            <i className="bi bi-clock-history text-lg" />
+            <span className="font-mono text-lg tracking-wider">
+              {formatTime(seconds)}
+            </span>
+          </div>
+        </div>
+
+        <FindButton onClick={stopLooking} text={t(locale, "game.stop")} />
+      </div>
+    </Modal>
   );
 };

@@ -10,6 +10,7 @@
   "continueWithGoogle": "Continue with Google",
   "signIn": "Sign in",
   "noData": "No data",
+  "closeModal": "Close Modal",
   "errorBoundary": {
     "somethingWentWrong": "Something went wrong!",
     "tryAgain": "Try again...",
@@ -73,7 +74,7 @@
       "deleteP3": "All your personal data will be deleted. If the deletion is successful, you will be redirected to the homepage!",
       "confirmDelete": "Confirm Deletion",
       "deleting": "Deleting...",
-      "seePublicPage": "See Public Profile page "
+      "seePublicPage": "See Public Profile page"
     }
   },
   "game": {
@@ -130,6 +131,7 @@
     },
     "endedModal": {
       "endReason": {
+        "label": "Game ended because ",
         "consecutivePasses": "{{player}} passed 2 consecutive times.",
         "allTilesUsed": "{{player}} used all the their remaining tiles while pool is empty.",
         "playerLeft": "{{player}} has left the game.",
@@ -162,7 +164,20 @@
       "longestWinStreak": "Longest Win Streak:",
       "longestLossStreak": "Longest Loss Streak:"
     },
-    "pastGames": { "pastGames": "Past Games From Last 30 Days" }
+    "selectors": {
+      "language": { "label": "Language", "en": "English", "tr": "Turkish" },
+      "season": { "label": "Season", "Season1": "Season 1" }
+    },
+    "pastGames": {
+      "pastGames": "Past Games From Last 30 Days",
+      "noGames": "No games...",
+      "winner": "Winner",
+      "noWinner": "No winner",
+      "viewStats": "View Stats",
+      "viewHistory": "View History",
+      "type": { "ranked": "Ranked", "casual": "Casual" },
+      "gameStats": "Game Stats"
+    }
   },
   "ladder": {
     "username": "Username",

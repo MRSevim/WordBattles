@@ -39,38 +39,35 @@ const Profile = () => {
 
   if (!user) return null;
 
-  const rankedPoints = user.rankedPoints;
-
   return (
-    <Container className="py-10 flex justify-center items-center gap-6">
+    <Container className="py-10 flex flex-col justify-center items-center gap-6">
+      {/* User Image */}
       {userImage && (
-        <Image
-          src={userImage}
-          alt={t(locale, "avatar")}
-          width={96}
-          height={96}
-          className="rounded-full object-cover"
-        />
+        <div className="relative">
+          <Image
+            src={userImage}
+            alt={t(locale, "avatar")}
+            width={96}
+            height={96}
+            className="rounded-full object-cover ring-4 ring-gray-200 dark:ring-gray-700 shadow-md hover:scale-105 transition-transform duration-300"
+          />
+        </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <p>
-          <span className="font-bold">
-            {t(locale, "publicUserPage.stats.rankedPoints")}
-          </span>{" "}
-          {rankedPoints}
-        </p>
-        <Link href={routeStrings.userPage(user.id)} className="underline">
-          {t(locale, "auth.profile.seePublicPage")}
-        </Link>
-      </div>
+      {/* Public Profile Link */}
+      <Link
+        href={routeStrings.userPage(user.id)}
+        className="text-blue-600 dark:text-blue-400 font-medium underline-offset-4 hover:underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+      >
+        {t(locale, "auth.profile.seePublicPage")}
+      </Link>
 
-      {/* Delete button */}
+      {/* Delete Button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition cursor-pointer"
+        className="cursor-pointer flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
       >
-        <i className="bi bi-trash"></i>
+        <i className="bi bi-trash text-lg"></i>
         {t(locale, "auth.profile.confirmButton")}
       </button>
 

@@ -35,11 +35,7 @@ import { Io, Socket } from "../types/types";
 import { getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
-import {
-  getDivision,
-  getUnfetchedDivision,
-  getUser,
-} from "../lib/prisma/dbCalls/userCalls";
+import { getUnfetchedDivision, getUser } from "../lib/prisma/dbCalls/userCalls";
 
 let waitingPlayers: Record<Lang, Record<GameType, Socket[]>> = {
   tr: { ranked: [], casual: [] },
@@ -111,13 +107,10 @@ export const runSocketLogic = (io: Io) => {
       //  Get player's rank
       if (type === "ranked" && socket.user) {
         try {
-          const [user, division] = await Promise.all([
-            getUser(socket.user.id, lang, season),
-            getDivision(socket.user.id, { lang, season }, socket.siteLocale),
-          ]);
+          const user = await getUser(socket.user.id, { lang, season, locale });
 
           socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
-          socket.division = division ?? t(locale, "division.unfetched");
+          socket.division = user?.division ?? getUnfetchedDivision(locale);
         } catch (err) {
           console.error("❌ Failed to load user rank/division:", err);
           socket.rankedPoints = 3000;

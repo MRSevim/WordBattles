@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { t } from "../lib/i18n";
 import { Lang, Season } from "../types/gameTypes";
 import { prisma } from "../lib/prisma/prisma";
-import { getDivision, getUser } from "../lib/prisma/dbCalls/userCalls";
+import { getUser } from "../lib/prisma/dbCalls/userCalls";
 
 export const getUserController: RequestHandler = async (req, res) => {
   const userId = req.params.id;
@@ -17,24 +17,15 @@ export const getUserController: RequestHandler = async (req, res) => {
   const lang = (req.query.lang as Lang) || "en";
   const season = (req.query.season as Season) || "Season1";
 
-  const user = await getUser(userId, lang, season);
+  const user = await getUser(userId, { lang, season, locale });
 
   if (!user) {
     res.status(404);
     throw new Error(t(locale, "userNotFound"));
   }
 
-  const stats = user.stats[0] || null;
-  const rank = user.ranks[0] || null;
-
-  const eligible = !!(stats && stats.totalGames >= 5);
-
   res.json({
-    data: {
-      ...user,
-      stats,
-      rank: eligible ? rank : null,
-    },
+    data: user,
   });
 };
 
@@ -54,6 +45,19 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  const totalGames = await prisma.game.count({
+    where: {
+      status: "ended", // only finished games
+      type: "ranked", // only ranked games
+      lang,
+      season,
+      gamePlayers: {
+        some: { userId }, // user participated
+      },
+      createdAt: { gte: thirtyDaysAgo },
+    },
+  });
+
   const games = await prisma.game.findMany({
     where: {
       status: "ended", // only finished games
@@ -72,37 +76,9 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
 
   res.json({
     data: {
-      page,
+      totalGames,
       pageSize,
       games,
-    },
-  });
-};
-
-export const getUserRankController: RequestHandler = async (req, res) => {
-  const userId = req.params.id;
-  const locale = req.cookies.locale;
-  if (!userId) {
-    res.status(400);
-    throw new Error(t(locale, "userIdRequired"));
-  }
-  const lang = (req.query.lang as Lang) || "en";
-  const season = (req.query.season as Season) || "Season1";
-
-  const user = await getUser(userId, lang, season);
-
-  if (!user) {
-    res.status(404);
-    throw new Error(t(locale, "userNotFound"));
-  }
-
-  const userRank = user.ranks[0];
-  const division = await getDivision(user.id, { lang, season }, locale);
-
-  res.json({
-    data: {
-      division,
-      points: userRank?.rankedPoints ?? 3000,
     },
   });
 };

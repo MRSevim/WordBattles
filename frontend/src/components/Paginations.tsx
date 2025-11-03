@@ -1,13 +1,12 @@
 "use client";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
   currentPage: number;
   totalItems: number;
   pageSize: number;
-  onPageChange?: "ChangeSearchParams";
 }
 
 const buttonClasses = "px-3 py-1 rounded-md text-sm font-medium transition";
@@ -18,11 +17,11 @@ export default function Pagination({
   currentPage,
   totalItems,
   pageSize,
-  onPageChange = "ChangeSearchParams",
 }: PaginationProps) {
   const pathname = usePathname();
   const { replace } = useRouter();
   const [locale] = useLocaleContext();
+  const searchParams = useSearchParams();
 
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -31,9 +30,10 @@ export default function Pagination({
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const handlePageChange = (page: number) => {
-    if (onPageChange === "ChangeSearchParams") {
-      replace(`${pathname}?page=${page.toString()}`);
-    }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+
+    replace(pathname + "?" + params.toString());
   };
 
   return (
