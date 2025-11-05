@@ -1,5 +1,10 @@
 //misc
-import { GameState, InitialLetters, Lang } from "../types/gameTypes";
+import {
+  GameState,
+  InitialLetters,
+  Lang,
+  LettersArray,
+} from "../types/gameTypes";
 import { Io } from "../types/types";
 
 export function generateGuestId(prefix = "guest") {
@@ -91,3 +96,11 @@ export const getValidLetters = (lang: Lang): string[] =>
   letters[lang].filter((l) => l.letter !== "").map((l) => l.letter);
 
 export const HAND_SIZE = 7;
+
+export const filterHand = (hand: LettersArray) => {
+  return hand.map((item) => ({
+    points: item.points,
+    letter: item.letter,
+    id: item.id,
+  }));
+};

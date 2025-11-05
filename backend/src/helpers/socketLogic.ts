@@ -32,7 +32,7 @@ import {
   Season,
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
-import { getValidLetters, sendInitialData } from "./misc";
+import { filterHand, getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
 import { getUnfetchedDivision, getUser } from "../lib/prisma/dbCalls/userCalls";
@@ -206,15 +206,18 @@ export const runSocketLogic = (io: Io) => {
         const { players, roomId } = state;
         const currentPlayer = players.find((player) => player.turn);
         if (state.status !== "playing" || !currentPlayer) return;
+
+        switchLetters(switchedIndices, state, currentPlayer.hand);
+
         // Append to history
         state.history.push({
           playerId: currentPlayer.id,
           words: [],
           type: "switch",
           playerPoints: 0,
+          placedTiles: [],
+          playerHandAfterMove: filterHand(currentPlayer.hand),
         });
-
-        switchLetters(switchedIndices, state, currentPlayer.hand);
 
         currentPlayer.consecutivePassCount = 0;
 
@@ -235,6 +238,8 @@ export const runSocketLogic = (io: Io) => {
         playerId: currentPlayer.id,
         words: [],
         playerPoints: 0,
+        placedTiles: [],
+        playerHandAfterMove: filterHand(currentPlayer.hand),
       });
 
       currentPlayer.consecutivePassCount += 1;
@@ -387,11 +392,29 @@ export const runSocketLogic = (io: Io) => {
       //fix the letters
       fixBoard(board);
 
+      const placedTiles = board.flatMap((row, rowIndex) =>
+        row.flatMap((cell, colIndex) =>
+          cell && cell.newlyPlaced
+            ? [
+                {
+                  row: rowIndex,
+                  col: colIndex,
+                  id: cell.id,
+                  letter: cell.letter,
+                  points: cell.points,
+                },
+              ]
+            : []
+        )
+      );
+
       // Append to history
       state.history.push({
         playerId: currentPlayer.id,
         words: checkedWords.validWords,
         playerPoints,
+        placedTiles,
+        playerHandAfterMove: filterHand(currentPlayer.hand),
       });
 
       // Switch turns

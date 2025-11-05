@@ -58,12 +58,27 @@ export interface CheckedWords {
   invalidWords: string[];
 }
 
+export interface PlacedTile extends LetterAndPoints {
+  row: number;
+  col: number;
+}
+
+interface LetterAndPoints {
+  id: string;
+  letter: string;
+  points: number;
+}
+
 export interface History {
   playerId: string;
   words: Word[];
+  placedTiles: PlacedTile[];
+  playerHandAfterMove: LetterAndPoints[];
   playerPoints: number;
-  type?: string;
+  type?: HistoryType;
 }
+
+export type HistoryType = "switch";
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 

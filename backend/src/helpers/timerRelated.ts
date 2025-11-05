@@ -2,6 +2,7 @@ import { GameState } from "../types/gameTypes";
 import { Io } from "../types/types";
 import { returnToHand, switchTurns } from "./gameHelpers";
 import { getGameFromMemory } from "./memoryGameHelpers";
+import { filterHand } from "./misc";
 
 export const clearTimerIfExist = (roomId: string) => {
   const game = getGameFromMemory(roomId);
@@ -32,6 +33,8 @@ export const setUpTimerInterval = (state: GameState, io: Io) => {
         playerId: currentPlayer.id,
         words: [],
         playerPoints: 0,
+        placedTiles: [],
+        playerHandAfterMove: filterHand(currentPlayer.hand),
       });
       currentPlayer.consecutivePassCount += 1;
       currentPlayer.totalPassCount += 1;
