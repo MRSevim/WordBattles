@@ -170,19 +170,28 @@
       "season": { "label": "Sezon", "Season1": "Sezon 1" }
     },
     "pastGames": {
-      "pastGames": "Son 30 Günün Oyunları",
+      "pastGames": "Son 30 Günün Dereceli Oyunları",
       "noGames": "Oyun yok...",
       "winner": "Kazanan",
       "noWinner": "Kazanan yok",
       "viewStats": "İstatistikler",
       "viewHistory": "Geçmiş",
       "type": { "ranked": "Dereceli", "casual": "Derecesiz" },
-      "gameStats": "Oyun İstatistikleri"
+      "statsLabel": "Oyun İstatistikleri",
+      "historyLabel": "Oyun Geçmişi"
     }
   },
   "ladder": {
     "username": "Kullanıcı Adı",
     "rankedPoints": "Dereceli Puanı",
     "division": "Derece"
+  },
+  "division": {
+    "unranked": "ranksız",
+    "diamond": "elmas",
+    "gold": "altın",
+    "silver": "gümüş",
+    "bronze": "bronz",
+    "unfetched": "bulunamadı"
   }
 }

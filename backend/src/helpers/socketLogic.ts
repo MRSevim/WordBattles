@@ -32,7 +32,7 @@ import {
   Season,
 } from "../types/gameTypes";
 import { Io, Socket } from "../types/types";
-import { filterHand, getValidLetters, sendInitialData } from "./misc";
+import { filterLetter, getValidLetters, sendInitialData } from "./misc";
 import { t } from "../lib/i18n";
 import { applyPlayerStats } from "../lib/prisma/dbCalls/playerStatsCalls";
 import { getUnfetchedDivision, getUser } from "../lib/prisma/dbCalls/userCalls";
@@ -108,7 +108,6 @@ export const runSocketLogic = (io: Io) => {
       if (type === "ranked" && socket.user) {
         try {
           const user = await getUser(socket.user.id, { lang, season, locale });
-
           socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
           socket.division = user?.division ?? getUnfetchedDivision(locale);
         } catch (err) {
@@ -207,8 +206,6 @@ export const runSocketLogic = (io: Io) => {
         const currentPlayer = players.find((player) => player.turn);
         if (state.status !== "playing" || !currentPlayer) return;
 
-        switchLetters(switchedIndices, state, currentPlayer.hand);
-
         // Append to history
         state.history.push({
           playerId: currentPlayer.id,
@@ -216,8 +213,11 @@ export const runSocketLogic = (io: Io) => {
           type: "switch",
           playerPoints: 0,
           placedTiles: [],
-          playerHandAfterMove: filterHand(currentPlayer.hand),
+          playerHandAfterMove: filterLetter(currentPlayer.hand),
+          undrawnLetterPool: filterLetter(state.undrawnLetterPool),
         });
+
+        switchLetters(switchedIndices, state, currentPlayer.hand);
 
         currentPlayer.consecutivePassCount = 0;
 
@@ -239,7 +239,8 @@ export const runSocketLogic = (io: Io) => {
         words: [],
         playerPoints: 0,
         placedTiles: [],
-        playerHandAfterMove: filterHand(currentPlayer.hand),
+        playerHandAfterMove: filterLetter(currentPlayer.hand),
+        undrawnLetterPool: filterLetter(state.undrawnLetterPool),
       });
 
       currentPlayer.consecutivePassCount += 1;
@@ -414,7 +415,8 @@ export const runSocketLogic = (io: Io) => {
         words: checkedWords.validWords,
         playerPoints,
         placedTiles,
-        playerHandAfterMove: filterHand(currentPlayer.hand),
+        playerHandAfterMove: filterLetter(currentPlayer.hand),
+        undrawnLetterPool: filterLetter(state.undrawnLetterPool),
       });
 
       // Switch turns

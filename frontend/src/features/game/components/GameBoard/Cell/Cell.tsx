@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import { LetterOnCell } from "./LetterOnCell";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { useDroppable } from "@dnd-kit/core";
@@ -9,13 +8,9 @@ import {
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 import { computeClass } from "@/features/game/utils/helpers";
+import { Coordinates } from "@/features/game/utils/types/gameTypes";
 
-interface CellProps {
-  row: number;
-  col: number;
-}
-
-export const Cell = ({ row, col }: CellProps) => {
+export const Cell = ({ row, col }: Coordinates) => {
   const cls = computeClass(row, col);
 
   const [locale] = useLocaleContext();

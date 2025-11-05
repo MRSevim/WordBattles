@@ -170,19 +170,28 @@
       "season": { "label": "Season", "Season1": "Season 1" }
     },
     "pastGames": {
-      "pastGames": "Past Games From Last 30 Days",
+      "pastGames": "Past Ranked Games From Last 30 Days",
       "noGames": "No games...",
       "winner": "Winner",
       "noWinner": "No winner",
       "viewStats": "View Stats",
       "viewHistory": "View History",
       "type": { "ranked": "Ranked", "casual": "Casual" },
-      "gameStats": "Game Stats"
+      "statsLabel": "Game Stats",
+      "historyLabel": "Game History"
     }
   },
   "ladder": {
     "username": "Username",
     "rankedPoints": "Ranked Points",
     "division": "Division"
+  },
+  "division": {
+    "unranked": "unranked",
+    "diamond": "diamond",
+    "gold": "gold",
+    "silver": "silver",
+    "bronze": "bronze",
+    "unfetched": "unavailable"
   }
 }

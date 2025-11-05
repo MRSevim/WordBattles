@@ -1,4 +1,7 @@
+"use client";
+import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { Division } from "../utils/types/gameTypes";
+import { t } from "@/features/language/lib/i18n";
 
 interface DivisionEmojiProps {
   division?: Division;
@@ -24,22 +27,22 @@ const colorMap: Record<string, string> = {
 };
 
 export const DivisionComp = ({ division, className }: DivisionEmojiProps) => {
+  const [locale] = useLocaleContext();
   if (!division) return null;
 
-  const key = division.division.toLowerCase();
-  const emoji = emojiMap[key] ?? "❔";
+  const emoji = emojiMap[division] ?? "❔";
   const colorClass =
-    colorMap[key] ?? "text-gray-700 border-gray-400 bg-gray-100";
+    colorMap[division] ?? "text-gray-700 border-gray-400 bg-gray-100";
 
   return (
     <span
-      title={division.label}
+      title={t(locale, "division." + division)}
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-xl border text-sm font-medium ${colorClass} ${
         className ?? ""
       }`}
     >
       <span className="text-base">{emoji}</span>
-      <span className="capitalize">{division.label}</span>
+      <span className="capitalize">{t(locale, "division." + division)}</span>
     </span>
   );
 };

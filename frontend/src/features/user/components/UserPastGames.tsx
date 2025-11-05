@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import React from "react";
 import { fetchPastGames } from "../utils/apiCalls";
 import { UserSearchParams } from "../utils/types";
-import { GameState } from "../../../../../types";
 import Pagination from "@/components/Paginations";
 import Games from "./Games";
+import { GameState } from "../../../../../types";
 
 const UserPastGames = async ({
   searchParams,
@@ -18,12 +18,17 @@ const UserPastGames = async ({
   const currentPage = Number(searchParams.page) || 1;
   const {
     data,
-  }: { data: { games: GameState[]; pageSize: number; totalGames: number } } =
-    await fetchPastGames(
-      id,
-      searchParams.lang || "en",
-      searchParams.season || "Season1"
-    );
+  }: {
+    data: {
+      games: GameState[];
+      pageSize: number;
+      totalGames: number;
+    };
+  } = await fetchPastGames(
+    id,
+    searchParams.lang || "en",
+    searchParams.season || "Season1"
+  );
   const games = data.games;
   return (
     <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">

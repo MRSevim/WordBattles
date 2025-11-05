@@ -4,7 +4,7 @@ import { GameFinder } from "./GameFinder/GameFinder";
 import { LetterPool } from "./LetterPool";
 import { GameEnded } from "./GameEnded/GameEnded";
 import useGameSockets from "../../utils/hooks/useGameSockets";
-import { Board } from "./Cells";
+import { Board } from "./Board";
 import { SidePanel } from "../SidePanel/SidePanel";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import {

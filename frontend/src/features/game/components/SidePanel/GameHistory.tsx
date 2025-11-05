@@ -47,7 +47,6 @@ const HistoryInner = () => {
   );
 };
 
-//Need manual memo here since react compiler does not memoize it for some reason
 const HistoryItem = ({
   item,
   players,
@@ -64,15 +63,11 @@ const HistoryItem = ({
 
   if (player) {
     return (
-      <div className={i % 2 === 0 ? "bg-slate-300	" : ""} key={i}>
+      <div className={i % 2 === 0 ? "bg-slate-300	" : ""}>
         <div className="ms-4 p-2">
-          <div
-            className={
-              "inline " + (player?.id === socket.sessionId ? "font-bold" : "")
-            }
-          >
+          <span className={player?.id === socket.sessionId ? "font-bold" : ""}>
             {player.username}
-          </div>
+          </span>
           {wordsLength === 0 &&
             item.type !== "switch" &&
             t(locale, "game.passed")}

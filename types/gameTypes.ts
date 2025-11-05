@@ -9,7 +9,7 @@ export interface InitialLetters {
 export interface Letter {
   letter: string;
   points: number;
-  amount: number;
+  amount?: number;
   drawn?: boolean;
   fixed?: boolean;
   class?: string;
@@ -44,10 +44,13 @@ export interface Player {
   division?: Division;
 }
 
-export interface Division {
-  division: "diamond" | "gold" | "silver" | "bronze" | "unranked" | "unfetched";
-  label: string;
-}
+export type Division =
+  | "diamond"
+  | "gold"
+  | "silver"
+  | "bronze"
+  | "unranked"
+  | "unfetched";
 
 export interface Word {
   word: string;
@@ -63,7 +66,7 @@ export interface PlacedTile extends LetterAndPoints {
   col: number;
 }
 
-interface LetterAndPoints {
+export interface LetterAndPoints {
   id: string;
   letter: string;
   points: number;
@@ -75,6 +78,7 @@ export interface History {
   placedTiles: PlacedTile[];
   playerHandAfterMove: LetterAndPoints[];
   playerPoints: number;
+  undrawnLetterPool: LetterAndPoints[];
   type?: HistoryType;
 }
 

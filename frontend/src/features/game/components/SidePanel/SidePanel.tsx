@@ -17,6 +17,8 @@ import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 import { Button } from "../GameBoard/BottomPanel/Button";
 import { DivisionComp } from "../DivisionComp";
+import Link from "next/link";
+import { routeStrings } from "@/utils/routeStrings";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -113,11 +115,12 @@ const PlayerContainer = ({ player }: { player: Player }) => {
   return (
     <div
       className={
-        "flex flex-col items-center justify-center bg-white text-center rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
+        "flex flex-col items-center justify-around bg-white text-center rounded p-2 xxs:p-4 w-26 xxs:w-36	" +
         (player.id === socket.sessionId ? "border-solid border-2" : "")
       }
     >
       <UsernameAndPoints
+        id={player.id}
         username={player.username}
         points={player.points}
         leftTheGame={player.leftTheGame}
@@ -142,12 +145,14 @@ const PlayerContainer = ({ player }: { player: Player }) => {
   );
 };
 
-const UsernameAndPoints = ({
+export const UsernameAndPoints = ({
+  id,
   username,
   points,
   leftTheGame,
   division,
 }: {
+  id: string;
   username: string;
   leftTheGame: boolean;
   points: number;
@@ -156,7 +161,13 @@ const UsernameAndPoints = ({
   const [locale] = useLocaleContext();
   return (
     <>
-      <p>{username}</p>
+      <Link
+        href={routeStrings.userPage(id)}
+        target="_blank"
+        className="hover:underline"
+      >
+        {username}
+      </Link>
       {leftTheGame && <p className="font-bold">{t(locale, "game.left")}</p>}
       {t(locale, "game.points")} {points}
       <DivisionComp division={division} />
@@ -171,7 +182,7 @@ const Loader = () => (
   </div>
 );
 
-const GameTypeDisplay = () => {
+export const GameTypeDisplay = () => {
   const type = useAppSelector(selectGameType);
   const [locale] = useLocaleContext();
   return (

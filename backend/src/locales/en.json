@@ -10,13 +10,5 @@
   "guest": "guest",
   "userIdRequired": "User Id is required.",
   "userNotFound": "User not found.",
-  "logInForRanked": "You must be logged in to play ranked!",
-  "division": {
-    "unranked": "unranked",
-    "diamond": "diamond",
-    "gold": "gold",
-    "silver": "silver",
-    "bronze": "bronze",
-    "unfetched": "unavailable"
-  }
+  "logInForRanked": "You must be logged in to play ranked!"
 }

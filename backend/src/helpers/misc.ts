@@ -97,7 +97,7 @@ export const getValidLetters = (lang: Lang): string[] =>
 
 export const HAND_SIZE = 7;
 
-export const filterHand = (hand: LettersArray) => {
+export const filterLetter = (hand: LettersArray) => {
   return hand.map((item) => ({
     points: item.points,
     letter: item.letter,

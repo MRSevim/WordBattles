@@ -5,7 +5,6 @@ import {
   selectGameStatus,
   selectPlayerTurnState,
 } from "../../lib/redux/selectors";
-import "./Cells.css";
 import { initialBoard } from "../../utils/helpers";
 import { Cell } from "./Cell/Cell";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";

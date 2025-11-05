@@ -10,13 +10,5 @@
   "guest": "konuk",
   "userIdRequired": "Kullanıcı Id gerekli.",
   "userNotFound": "Kullanıcı bulunamadı.",
-  "logInForRanked": "Dereceli oynamak için giriş yapmalısın!",
-  "division": {
-    "unranked": "ranksız",
-    "diamond": "elmas",
-    "gold": "altın",
-    "silver": "gümüş",
-    "bronze": "bronz",
-    "unfetched": "bulunamadı"
-  }
+  "logInForRanked": "Dereceli oynamak için giriş yapmalısın!"
 }

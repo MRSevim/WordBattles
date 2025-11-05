@@ -3,15 +3,35 @@ import {
   selectEndReason,
   selectPlayers,
 } from "@/features/game/lib/redux/selectors";
+import { EndReason, Player } from "@/features/game/utils/types/gameTypes";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { tReact } from "@/features/language/lib/i18n";
+import { t, tReact } from "@/features/language/lib/i18n";
 import { useAppSelector } from "@/lib/redux/hooks";
 
 const EndingPlayerDisplay = () => {
   const players = useAppSelector(selectPlayers);
   const endingPlayerId = useAppSelector(selectEndingPlayerId);
-  const endingPlayer = players.find((player) => player.id === endingPlayerId);
   const endReason = useAppSelector(selectEndReason);
+
+  return (
+    <EndingPlayerDisplayInner
+      players={players}
+      endingPlayerId={endingPlayerId}
+      endReason={endReason}
+    />
+  );
+};
+
+export const EndingPlayerDisplayInner = ({
+  players,
+  endingPlayerId,
+  endReason,
+}: {
+  endReason: EndReason;
+  players: Player[];
+  endingPlayerId?: string;
+}) => {
+  const endingPlayer = players.find((player) => player.id === endingPlayerId);
   const [locale] = useLocaleContext();
 
   // 🗣️ Localized reason text
@@ -31,6 +51,7 @@ const EndingPlayerDisplay = () => {
   }
   return (
     <p>
+      {t(locale, "game.endedModal.endReason.label")}
       {tReact(locale, "game.endedModal.endReason." + localeText, {
         player: <span className="font-bold">{endingPlayer?.username}</span>,
       })}

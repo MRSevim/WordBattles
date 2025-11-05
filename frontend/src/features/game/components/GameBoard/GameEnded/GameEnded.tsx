@@ -13,6 +13,8 @@ import { EndReason, Player } from "../../../utils/types/gameTypes";
 import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import EndingPlayerDisplay from "./EndingPlayerDisplay";
+import { routeStrings } from "@/utils/routeStrings";
+import Link from "next/link";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
@@ -110,9 +112,13 @@ export const PlayerCompInner = ({
       </div>
 
       {/* Username */}
-      <h3 className="font-semibold  xxs:text-lg text-center">
+      <Link
+        href={routeStrings.userPage(player.id)}
+        target="_bal"
+        className="hover:underline font-semibold  xxs:text-lg text-center"
+      >
         {player.username}
-      </h3>
+      </Link>
 
       {/* Stats */}
       <div className="text-sm space-y-1 text-gray-200 grid grid-rows-subgrid row-span-8 w-full">

@@ -113,15 +113,9 @@ export const getDivision = async (
   }
 };
 
-export const getUnfetchedDivision = (locale: Lang): Division => ({
-  division: "unfetched",
-  label: t(locale, "division.unfetched"),
-});
+export const getUnfetchedDivision = (locale: Lang): Division => "unfetched";
 
-const getUnrankedDivision = (locale: Lang): Division => ({
-  division: "unranked",
-  label: t(locale, "division.unranked"),
-});
+const getUnrankedDivision = (locale: Lang): Division => "unranked";
 
 export const determineDivision = (
   position: number,
@@ -134,26 +128,10 @@ export const determineDivision = (
 
   const percentile = (position + 1) / totalPlayers;
 
-  if (percentile <= 0.1)
-    return {
-      division: "diamond",
-      label: t(locale, "division.diamond"),
-    };
-  if (percentile <= 0.4)
-    return {
-      division: "gold",
-      label: t(locale, "division.gold"),
-    };
-  if (percentile <= 0.7)
-    return {
-      division: "silver",
-      label: t(locale, "division.silver"),
-    };
-  if (percentile <= 1.0)
-    return {
-      division: "bronze",
-      label: t(locale, "division.bronze"),
-    };
+  if (percentile <= 0.1) return "diamond";
+  if (percentile <= 0.4) return "gold";
+  if (percentile <= 0.7) return "silver";
+  if (percentile <= 1.0) return "bronze";
 
   return getUnrankedDivision(locale);
 };
