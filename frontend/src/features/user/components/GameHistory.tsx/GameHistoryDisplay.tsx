@@ -7,14 +7,10 @@ import { LetterPool } from "./LetterPool";
 import { BottomPanel } from "./BottomPanel";
 import { SidePanel } from "./SidePanel";
 import { BoardComp } from "./Board";
-import { GameWithInitialLettersPool } from "../../utils/types";
 import { getReplaySnapshot } from "../../utils/helpers";
+import { GameState } from "@/features/game/utils/types/gameTypes";
 
-export const GameHistoryDisplayWrapper = ({
-  game,
-}: {
-  game: GameWithInitialLettersPool;
-}) => (
+export const GameHistoryDisplayWrapper = ({ game }: { game: GameState }) => (
   <div className="flex flex-col lg:flex-row">
     <ReplayIndexProvider initialValue={game.history.length - 1}>
       <GameHistoryDisplay game={game} />
@@ -22,7 +18,7 @@ export const GameHistoryDisplayWrapper = ({
   </div>
 );
 
-const GameHistoryDisplay = ({ game }: { game: GameWithInitialLettersPool }) => {
+const GameHistoryDisplay = ({ game }: { game: GameState }) => {
   const [replayIndex] = useReplayIndexContext();
   const { board, currentHand, players } = getReplaySnapshot(game, replayIndex);
 

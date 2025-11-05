@@ -1,5 +1,4 @@
 import { Division, Lang, Season } from "../../../types/gameTypes";
-import { t } from "../../i18n";
 import { prisma } from "../prisma";
 
 export async function getUser(

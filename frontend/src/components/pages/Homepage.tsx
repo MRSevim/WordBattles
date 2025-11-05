@@ -1,5 +1,4 @@
 import { GameContainer } from "@/features/game/components/GameBoard/GameBoard";
-import { getGameCookies } from "@/features/game/utils/serverHelpers";
 
 export const Homepage = async () => {
   return (

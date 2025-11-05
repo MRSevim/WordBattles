@@ -7,14 +7,13 @@ import { PlayerCompInner } from "@/features/game/components/GameBoard/GameEnded/
 import Titles from "@/features/game/components/GameBoard/GameEnded/Titles";
 import { EndingPlayerDisplayInner } from "@/features/game/components/GameBoard/GameEnded/EndingPlayerDisplay";
 import { GameHistoryDisplayWrapper } from "./GameHistory.tsx/GameHistoryDisplay";
-import { GameWithInitialLettersPool } from "../utils/types";
+import { GameState } from "@/features/game/utils/types/gameTypes";
 
 export type ModalType = "history" | "stats" | "";
 
-const Games = ({ games }: { games: GameWithInitialLettersPool[] }) => {
+const Games = ({ games }: { games: GameState[] }) => {
   const [locale] = useLocaleContext();
-  const [selectedGame, setSelectedGame] =
-    useState<GameWithInitialLettersPool | null>(null);
+  const [selectedGame, setSelectedGame] = useState<GameState | null>(null);
   const [modalType, setModalType] = useState<ModalType>("");
 
   return (
@@ -71,7 +70,7 @@ const Games = ({ games }: { games: GameWithInitialLettersPool[] }) => {
   );
 };
 
-const GameInfo = ({ game }: { game: GameWithInitialLettersPool }) => {
+const GameInfo = ({ game }: { game: GameState }) => {
   const [locale] = useLocaleContext();
   const winner = game.players.find((p) => p.id === game.winnerId);
   return (
@@ -98,7 +97,7 @@ const GameModal = ({
   onClose,
 }: {
   type: ModalType;
-  game: GameWithInitialLettersPool;
+  game: GameState;
   onClose: () => void;
 }) => {
   const [locale] = useLocaleContext();
@@ -135,7 +134,7 @@ const GameModal = ({
   );
 };
 
-const GameStatsDisplay = ({ game }: { game: GameWithInitialLettersPool }) => {
+const GameStatsDisplay = ({ game }: { game: GameState }) => {
   const players = game.players;
   const winnerId = game.winnerId;
   const endReason = game.endReason;

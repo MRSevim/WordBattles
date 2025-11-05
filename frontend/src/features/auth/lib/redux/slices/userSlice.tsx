@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { socket } from "@/features/game/lib/socket.io/socketio";
 import { User } from "@/features/auth/utils/types";
 
 type InitialState = { value: User };

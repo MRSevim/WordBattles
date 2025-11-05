@@ -5,7 +5,7 @@ import { fetchPastGames } from "../utils/apiCalls";
 import { UserSearchParams } from "../utils/types";
 import Pagination from "@/components/Paginations";
 import Games from "./Games";
-import { GameState } from "../../../../../types";
+import { GameState } from "@/features/game/utils/types/gameTypes";
 
 const UserPastGames = async ({
   searchParams,

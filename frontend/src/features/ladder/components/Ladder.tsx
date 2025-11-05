@@ -4,7 +4,7 @@ import Pagination from "../../../components/Paginations";
 import { fetchLadder } from "../utils/apiCalls";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
-import { Division } from "../../../../../types";
+import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
 
 interface Ladder {
