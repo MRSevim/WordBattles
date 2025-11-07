@@ -38,6 +38,7 @@ export default function ContactForm() {
             <input
               type="text"
               name="name"
+              id="name"
               placeholder={t(locale, "contactForm.placeholders.name")}
               required
               className="w-full p-3 border bg-white text-black rounded-md focus:outline"
@@ -50,6 +51,7 @@ export default function ContactForm() {
             <input
               type="email"
               name="email"
+              id="email"
               placeholder={t(locale, "contactForm.placeholders.email")}
               required
               className="w-full p-3 border bg-white text-black rounded-md focus:outline"
