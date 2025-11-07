@@ -207,10 +207,28 @@ export const validateWords = async (
   words: string[],
   lang: Lang
 ): Promise<CheckedWords> => {
+  const fetchWithTimeout = async (
+    url: string,
+    ms: number = 5000
+  ): Promise<Response> => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), ms);
+
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
+      return res;
+    } catch (err) {
+      clearTimeout(timeout);
+      throw new Error("Fetch timeout or network error");
+    }
+  };
   const fetcher =
     lang === "tr"
       ? (word: string) =>
-          fetch(`https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`)
+          fetchWithTimeout(
+            `https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`
+          )
             .then((res) => res.json())
             .then((data) => {
               if (data.error) {
@@ -222,7 +240,7 @@ export const validateWords = async (
               return { word, valid: true, meanings }; // Valid word with meanings
             })
       : (word: string) =>
-          fetch(
+          fetchWithTimeout(
             `https://freedictionaryapi.com/api/v1/entries/en/${word.toLocaleLowerCase(
               "en"
             )}`
