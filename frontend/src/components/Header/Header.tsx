@@ -13,7 +13,7 @@ export const Header = async () => {
   return (
     <header className="bg-primary text-white">
       <Container className="py-3 flex justify-between items-center">
-        <Link href={routeStrings.home} className="font-bold text-2xl">
+        <Link href={routeStrings.home} className="font-bold text-2xl me-2">
           WordBattles
         </Link>
 

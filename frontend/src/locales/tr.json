@@ -42,6 +42,10 @@
     "notFound": {
       "title": "Sayfa bulunamadı",
       "description": "Aradığınız sayfa bulunamadı"
+    },
+    "contact": {
+      "title": "İletişim Sayfası",
+      "description": "Herhangi bir konu hakkında WordBattles ile iletişim kur"
     }
   },
   "errorBoundary": {
@@ -63,6 +67,7 @@
   "header": {
     "about": "Oyun Hakkında",
     "leaderboard": "Skor Tablosu",
+    "contact": "İletişim",
     "userMenu": {
       "cantLogout": "Şu anda çıkış yapamazsınız!",
       "profile": "Profil",
@@ -226,5 +231,20 @@
     "silver": "gümüş",
     "bronze": "bronz",
     "unfetched": "bulunamadı"
+  },
+  "contactForm": {
+    "label": "İletişim",
+    "fields": {
+      "name": "Ad",
+      "email": "E-posta",
+      "message": "Mesaj"
+    },
+    "placeholders": {
+      "name": "Adınız",
+      "email": "E-posta adresiniz",
+      "message": "Mesajınız"
+    },
+    "send": "Gönder",
+    "thanks": "Mesajınız için teşekkürler..."
   }
 }

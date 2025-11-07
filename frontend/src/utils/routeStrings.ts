@@ -4,5 +4,6 @@ export const routeStrings = {
   ladder: "/ladder",
   signin: "/signin",
   profile: "/profile",
+  contact: "contact",
   userPage: (id: string) => `user/${id}`,
 };

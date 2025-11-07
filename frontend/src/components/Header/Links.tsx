@@ -57,6 +57,14 @@ export const Links = ({
         {t(locale, "header.leaderboard")}
       </Link>
 
+      <Link
+        href={routeStrings.contact}
+        onClick={closeMenu}
+        className={`${linkBase} ${mobile ? mobileLinks : ""}`}
+      >
+        {t(locale, "header.contact")}
+      </Link>
+
       {mobile && mobileLine}
 
       {/* Language & Theme */}

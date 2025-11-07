@@ -40,7 +40,7 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
 
   const lang = (req.query.lang as Lang) || "en";
   const season = (req.query.season as Season) || "Season1";
-  const pageSize = 10;
+  const pageSize = 6;
 
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
