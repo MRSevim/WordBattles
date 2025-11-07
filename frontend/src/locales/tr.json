@@ -11,6 +11,39 @@
   "notInActiveGame": "Devam eden bir oyunda değilsiniz!",
   "noData": "Veri mevcut değil",
   "closeModal": "Pencereyi kapat",
+  "metadata": {
+    "description": "Gerçek zamanlı kelime savaşlarında rakiplerinle yarış! İngilizce ve Türkçe dillerinde oynanabilen rekabetçi Scrabble deneyimiyle kelime gücünü kanıtla ve sıralamada zirveye tırman!",
+    "keywords": {
+      "onlineScrabble": "Çevrimiçi scrabble",
+      "competitiveScrabble": "Rekabetçi scrabble",
+      "multiplayerWordGame": "Çok oyunculu kelime oyunu",
+      "englishScrabble": "İngilizce scrabble",
+      "turkishScrabble": "Türkçe scrabble",
+      "wordBattles": "Kelime savaşları",
+      "rankedScrabbleOnline": "Sıralamalı çevrimiçi scrabble",
+      "vocabularyChallenge": "Kelime bilgisi mücadelesi"
+    },
+    "about": {
+      "title": "Oyun Hakkında",
+      "description": "WordBattles oyunu hakkında"
+    },
+    "ladder": {
+      "title": "Skor Tablosu",
+      "description": "Dil ve sezon ile ayrılmış WordBattles skor tablosu"
+    },
+    "signIn": {
+      "title": "Giriş yap",
+      "description": "WordBattles hesabına giriş yap"
+    },
+    "userPage": {
+      "title": "{{username}} Adlı Oyuncunun Dereceli Sayfası",
+      "description": "{{username}} adlı oyuncunun WordBattles'daki dereceli istatistikleri ve geçmiş oyunları"
+    },
+    "notFound": {
+      "title": "Sayfa bulunamadı",
+      "description": "Aradığınız sayfa bulunamadı"
+    }
+  },
   "errorBoundary": {
     "somethingWentWrong": "Bir şeyler yanlış gitti!",
     "tryAgain": "Tekrar dene...",

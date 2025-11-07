@@ -11,6 +11,39 @@
   "signIn": "Sign in",
   "noData": "No data",
   "closeModal": "Close Modal",
+  "metadata": {
+    "description": "Play the ultimate competitive Scrabble experience — real-time word battles in English and Turkish. Climb the ranks and prove your vocabulary power!",
+    "keywords": {
+      "onlineScrabble": "Online scrabble",
+      "competitiveScrabble": "Competitive scrabble",
+      "multiplayerWordGame": "Multiplayer word game",
+      "englishScrabble": "English scrabble",
+      "turkishScrabble": "Turkish scrabble",
+      "wordBattles": "Word battles",
+      "rankedScrabbleOnline": "Ranked scrabble online",
+      "vocabularyChallenge": "Vocabulary challenge"
+    },
+    "about": {
+      "title": "About The Game",
+      "description": "Learn about the WordBattles"
+    },
+    "ladder": {
+      "title": "Leaderboards",
+      "description": "Leaderboards on WordBattles separated by season and language"
+    },
+    "signIn": {
+      "title": "Sign in",
+      "description": "Sign in to your account on WordBattles"
+    },
+    "userPage": {
+      "title": "Ranked Page of {{username}}",
+      "description": "See the stats and past games of {{username}} on WordBattles"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "Page you are looking for cannot be found"
+    }
+  },
   "errorBoundary": {
     "somethingWentWrong": "Something went wrong!",
     "tryAgain": "Try again...",

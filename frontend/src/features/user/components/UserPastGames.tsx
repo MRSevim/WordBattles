@@ -1,11 +1,18 @@
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
-import React from "react";
+import React, { ReactNode } from "react";
 import { fetchPastGames } from "../utils/apiCalls";
 import { UserSearchParams } from "../utils/types";
 import Pagination from "@/components/Paginations";
 import Games from "./Games";
 import { GameState } from "@/features/game/utils/types/gameTypes";
+import ErrorMessage from "@/components/ErrorMessage";
+
+const PastGamesWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
+    {children}
+  </div>
+);
 
 const UserPastGames = async ({
   searchParams,
@@ -16,22 +23,41 @@ const UserPastGames = async ({
 }) => {
   const locale = await getLocaleFromCookie(cookies);
   const currentPage = Number(searchParams.page) || 1;
-  const {
-    data,
-  }: {
-    data: {
-      games: GameState[];
-      pageSize: number;
-      totalGames: number;
-    };
-  } = await fetchPastGames(
-    id,
-    searchParams.lang || "en",
-    searchParams.season || "Season1"
-  );
+  let data;
+  try {
+    const {
+      data: dataInner,
+    }: {
+      data: {
+        games: GameState[];
+        pageSize: number;
+        totalGames: number;
+      };
+    } = await fetchPastGames(
+      id,
+      searchParams.lang || "en",
+      searchParams.season || "Season1"
+    );
+    data = dataInner;
+  } catch (error) {
+    if (error instanceof Error) {
+      return (
+        <PastGamesWrapper>
+          <ErrorMessage error={error.message} />
+        </PastGamesWrapper>
+      );
+    }
+    // fallback for non-Error cases
+    return (
+      <PastGamesWrapper>
+        <ErrorMessage error="An unexpected error occurred." />
+      </PastGamesWrapper>
+    );
+  }
   const games = data.games;
   return (
-    <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
+    <PastGamesWrapper>
+      {" "}
       <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
         {t(locale, "publicUserPage.pastGames.pastGames")}
       </h3>
@@ -49,7 +75,7 @@ const UserPastGames = async ({
           </>
         )}
       </div>
-    </div>
+    </PastGamesWrapper>
   );
 };
 

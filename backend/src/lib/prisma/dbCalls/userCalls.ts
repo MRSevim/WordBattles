@@ -26,6 +26,7 @@ export async function getUser(
       }),
       getDivision(userId, { lang, season }, locale),
     ]);
+    if (!user) return null;
 
     return { ...user, division };
   } catch (error) {

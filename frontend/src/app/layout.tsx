@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
@@ -7,7 +6,7 @@ import { Header } from "@/components/Header/Header";
 import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
 import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
 import { cookies } from "next/headers";
-import { getLocaleFromCookie } from "@/features/language/lib/i18n";
+import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
 
@@ -16,11 +15,42 @@ const geistSans = Open_Sans({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "WordBattles",
-  description:
-    "Test your vocabulary skills, Online scrabble game with English and Turkish options",
-};
+const title = "WordBattles";
+
+export async function generateMetadata() {
+  const locale = await getLocaleFromCookie(cookies);
+
+  const description = t(locale, "metadata.description");
+
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
+    title: {
+      template: "%s | WordBattles",
+      default: title,
+    },
+    alternates: {
+      canonical: "/",
+    },
+    description,
+    keywords: [
+      t(locale, "metadata.keywords.onlineScrabble"),
+      t(locale, "metadata.keywords.competitiveScrabble"),
+      t(locale, "metadata.keywords.multiplayerWordGame"),
+      t(locale, "metadata.keywords.englishScrabble"),
+      t(locale, "metadata.keywords.turkishScrabble"),
+      t(locale, "metadata.keywords.wordBattles"),
+      t(locale, "metadata.keywords.rankedScrabbleOnline"),
+      t(locale, "metadata.keywords.vocabularyChallenge"),
+    ],
+    openGraph: {
+      title,
+      description,
+      url: "/",
+      siteName: title,
+      type: "website",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

@@ -1,4 +1,4 @@
-import { getLocaleFromCookie, t, tReact } from "@/features/language/lib/i18n";
+import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import { UserSearchParams } from "../../utils/types";
@@ -93,8 +93,10 @@ const UserPage = async ({
               </div>
               <div>
                 <Span>{t(locale, "publicUserPage.stats.winrate")}</Span>{" "}
-                {tReact(locale, "publicUserPage.stats.winrateNumber", {
-                  number: (stats.wins / stats.totalGames) * 100,
+                {t(locale, "publicUserPage.stats.winrateNumber", {
+                  number: roundTo2Decimals(
+                    (stats.wins / stats.totalGames) * 100
+                  ),
                 })}
               </div>
               <div>
@@ -151,6 +153,7 @@ const UserPage = async ({
       </div>
 
       {/* Right side: Past games */}
+
       <Suspense fallback={<UserPastGamesSkeleton />}>
         <UserPastGames id={user.id} searchParams={searchParams} />
       </Suspense>

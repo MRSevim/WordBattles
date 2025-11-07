@@ -8,7 +8,7 @@ export const fetchUser = async (id: string, lang: Lang, season: Season) => {
   const json = await response.json();
 
   if (!response.ok) {
-    throw new Error(json.message);
+    return { data: null };
   }
   return json;
 };
@@ -26,5 +26,6 @@ export const fetchPastGames = async (
   if (!response.ok) {
     throw new Error(json.message);
   }
+
   return json;
 };

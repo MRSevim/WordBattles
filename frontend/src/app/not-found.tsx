@@ -2,6 +2,21 @@ import Container from "@/components/Container";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 
+export async function generateMetadata() {
+  const locale = await getLocaleFromCookie(cookies);
+  const title = t(locale, "metadata.notFound.title");
+  const description = t(locale, "metadata.notFound.description");
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
+
 export default async function NotFound() {
   const locale = await getLocaleFromCookie(cookies);
   return (

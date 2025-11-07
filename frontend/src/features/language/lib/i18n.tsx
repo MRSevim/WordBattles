@@ -8,11 +8,17 @@ import { getCookie } from "@/utils/helpers";
 
 const translations: Record<string, any> = { en, tr };
 
-export const t = (lang: Lang, key: string) => {
+export const t = (lang: Lang, key: string, vars?: Record<string, string>) => {
   // Navigate through nested keys like "game.signIn"
   const text = key.split(".").reduce((obj, k) => obj?.[k], translations[lang]);
 
   if (typeof text !== "string") return key; // fallback if translation missing
+
+  if (vars) {
+    // Replace all {{var}} placeholders with actual values
+    return text.replace(/{{\s*(\w+)\s*}}/g, (_, name) => vars[name] ?? "");
+  }
+
   return text;
 };
 
