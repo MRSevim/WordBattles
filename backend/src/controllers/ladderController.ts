@@ -3,13 +3,18 @@ import { ExtendedRequest } from "../types/types";
 import { Lang, Season } from "../types/gameTypes";
 import { prisma } from "../lib/prisma/prisma";
 import { determineDivision } from "../lib/prisma/dbCalls/userCalls";
+import { auth } from "../lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 
 export const ladderController: RequestHandler = async (
   req: ExtendedRequest,
   res,
   next
 ) => {
-  const user = req.user; // ✅ from protect middleware
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  const user = session?.user;
   const locale = req.cookies.locale;
 
   const lang = (req.query.lang as Lang) || "en";
@@ -63,6 +68,7 @@ export const ladderController: RequestHandler = async (
 
   // ✅ Determine current user's rank & division if logged in
   let userRank;
+
   if (user) {
     const userRankEntry = await prisma.playerRank.findFirst({
       where: {
@@ -118,8 +124,10 @@ export const ladderController: RequestHandler = async (
   }
 
   return res.status(200).json({
-    ladder,
-    totalPlayers,
-    userRank,
+    data: {
+      ladder,
+      totalPlayers,
+      userRank,
+    },
   });
 };

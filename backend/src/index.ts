@@ -16,15 +16,20 @@ import { parseCookies } from "./middlewares/parseCookieMiddleware";
 import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
 
 dotenv.config();
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [process.env.FRONTEND_URL!],
   },
-  /*   cookie: true, */
-  connectionStateRecovery: {},
+  cookie: true,
+  transports: ["websocket", "polling"],
+  connectionStateRecovery: {
+    // the backup duration of the sessions and the packets
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    // whether to skip middlewares upon successful recovery
+    skipMiddlewares: false,
+  },
 });
 
 const port = process.env.PORT || 3000;

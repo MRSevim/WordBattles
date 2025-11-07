@@ -82,7 +82,7 @@ model Game {
   season          String
   type            String // ranked or casual
   players         Json
-  undrawnLetters  Json
+  undrawnLetterPool  Json
   emptyLetterIds  Json
   board           Json
   history         Json

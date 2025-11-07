@@ -106,7 +106,7 @@ const GameModal = ({
     <Modal>
       <div
         className={
-          "h-[90%] overflow-y-auto bg-white dark:bg-gray-800 p-2 xxs:p-4 rounded-lg shadow-lg mx-auto relative  " +
+          "max-h-[90%] overflow-y-auto bg-white dark:bg-gray-800 p-2 xxs:p-4 rounded-lg shadow-lg mx-auto relative  " +
           (type === "stats" ? "max-w-lg" : "")
         }
       >

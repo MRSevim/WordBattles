@@ -13,6 +13,7 @@ export const protect: RequestHandler = async (
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
+
     const user = session?.user as User | undefined;
 
     const locale = req.cookies.locale;

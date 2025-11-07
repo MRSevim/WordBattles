@@ -37,18 +37,22 @@ export const Ladder = async ({
   const season = params.season || "Season1";
   const page = params.page ?? 1;
 
-  const ladder: {
-    ladder: Ladder[];
-    userRank?: UserRank;
-    totalUsers: number;
-  } | null = await fetchLadder({ page, limit, lang, season });
+  const {
+    data: ladder,
+  }: {
+    data: {
+      ladder: Ladder[];
+      userRank?: UserRank;
+      totalPlayers: number;
+    } | null;
+  } = await fetchLadder({ page, limit, lang, season });
 
   const locale = await getLocaleFromCookie(cookies);
 
   return (
     <Container className="py-10">
       <LangAndSeasonSelectors searchParams={{ lang, season }} />
-      {ladder && ladder.ladder.length > 0 && ladder.totalUsers > 0 ? (
+      {ladder && ladder.ladder.length > 0 && ladder.totalPlayers > 0 ? (
         <>
           <div className="grid grid-cols-3 gap-2">
             {/* Table Header */}
@@ -73,7 +77,7 @@ export const Ladder = async ({
                     </span>
                     <span>{item.user.name}</span>
                   </div>
-                  <span className="font-semibold text-gray-700">
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">
                     {item.rankedPoints}
                   </span>
                 </div>
@@ -86,12 +90,12 @@ export const Ladder = async ({
           </div>
           <Pagination
             currentPage={page}
-            totalItems={ladder.totalUsers}
+            totalItems={ladder.totalPlayers}
             pageSize={limit}
           />
 
           {ladder.userRank && (
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <div className="flex justify-between items-center gap-2">
                 <span>
                   {ladder.userRank.rank}: {ladder.userRank.username}

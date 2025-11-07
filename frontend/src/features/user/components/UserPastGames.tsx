@@ -2,7 +2,7 @@ import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import React, { ReactNode } from "react";
 import { fetchPastGames } from "../utils/apiCalls";
-import { UserSearchParams } from "../utils/types";
+import { UserSearchParams } from "@/utils/types";
 import Pagination from "@/components/Paginations";
 import Games from "./Games";
 import { GameState } from "@/features/game/utils/types/gameTypes";
@@ -55,6 +55,7 @@ const UserPastGames = async ({
     );
   }
   const games = data.games;
+
   return (
     <PastGamesWrapper>
       {" "}

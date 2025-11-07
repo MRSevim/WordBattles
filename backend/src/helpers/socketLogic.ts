@@ -20,6 +20,7 @@ import {
 } from "./memoryGameHelpers";
 import {
   loadGameFromDB,
+  removeGameFromDB,
   updateCurrentRoomIdInDB,
 } from "../lib/prisma/dbCalls/gameCalls";
 import {
@@ -53,6 +54,15 @@ export const runSocketLogic = (io: Io) => {
 
     socket.emit("session", {
       sessionId: socket.sessionId,
+    });
+
+    socket.onAny((eventName, ...args) => {
+      console.log(eventName, "acknowledged");
+
+      const lastArg = args[args.length - 1];
+      if (typeof lastArg === "function") {
+        lastArg("ack");
+      }
     });
 
     if (socket.roomId) {
@@ -160,7 +170,8 @@ export const runSocketLogic = (io: Io) => {
         socket.searchInterval = searchInterval;
       } else if (type === "casual") {
         // Basic queue matchmaking
-        if (queue.length > 0) {
+
+        if (queue.length > 0 && !queue.includes(socket)) {
           const opponent = queue.shift(); // first waiting player
 
           // Remove socket from queue if present (safety check)
@@ -180,9 +191,11 @@ export const runSocketLogic = (io: Io) => {
     socket.on("disconnect", () => {
       console.log("A user disconnected");
       if (socket.searchInterval) {
-        console.log("interval cleared");
         clearInterval(socket.searchInterval);
         socket.searchInterval = undefined;
+      }
+      if (socket.roomId) {
+        socket.leave(socket.roomId);
       }
       Object.keys(waitingPlayers).forEach((lang) => {
         Object.keys(waitingPlayers[lang as Lang]).forEach((type) => {
@@ -287,7 +300,11 @@ export const runSocketLogic = (io: Io) => {
       if (everybodyLeft) {
         // If no sockets are left, remove the game from memory
         removeGameFromMemory(roomId);
-        /* removeGameFromDB(roomId); */
+        //if everybody is guest, remove the game from db
+        const everyoneIsGuest = state.players.every((player) => !player.email);
+        if (everyoneIsGuest) {
+          removeGameFromDB(roomId);
+        }
       } else {
         saveGame(state, io);
         // Otherwise, notify remaining players

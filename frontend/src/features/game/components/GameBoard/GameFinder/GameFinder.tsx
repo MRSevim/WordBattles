@@ -37,7 +37,9 @@ export const GameFinder = () => {
   }, [roomId, gameStatus]);
 
   useEffect(() => {
-    if (looking) socket.emit("Started Looking", { lang, type });
+    if (looking) {
+      socket.emit("Started Looking", { lang, type });
+    }
     if (!isClient) setIsClient(true);
   }, []);
 

@@ -14,8 +14,10 @@ export const socket =
   globalForSocket.socket ||
   (io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
     autoConnect: false,
-    transports: ["websocket"],
     withCredentials: true,
+    retries: 3,
+    transports: ["websocket", "polling"],
+    ackTimeout: 5000,
   }) as ISocket);
 
 // Only assign to global in development to avoid leaks in production
