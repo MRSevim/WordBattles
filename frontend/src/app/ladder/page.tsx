@@ -1,6 +1,6 @@
 import { Ladder } from "@/features/ladder/components/Ladder";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
-import { LadderSearchParams } from "@/utils/types";
+import { UserSearchParams } from "@/utils/types";
 import { cookies } from "next/headers";
 
 export async function generateMetadata() {
@@ -18,7 +18,11 @@ export async function generateMetadata() {
   };
 }
 
-const page = ({ searchParams }: { searchParams: LadderSearchParams }) => {
+const page = ({
+  searchParams,
+}: {
+  searchParams: Promise<UserSearchParams>;
+}) => {
   return <Ladder searchParams={searchParams} />;
 };
 

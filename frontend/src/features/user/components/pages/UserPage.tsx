@@ -1,12 +1,12 @@
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import Image from "next/image";
-import { UserSearchParams } from "../../utils/types";
-import SearchParamSelectors from "../SearchParamSelectors";
+import { UserSearchParams } from "@/utils/types";
 import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
 import UserPastGames, { UserPastGamesSkeleton } from "../UserPastGames";
 import { Suspense } from "react";
+import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
 
 interface User {
   id: string;
@@ -71,7 +71,7 @@ const UserPage = async ({
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           {user.name}
         </h2>
-        <SearchParamSelectors searchParams={searchParams} />
+        <LangAndSeasonSelectors searchParams={searchParams} />
         {ranks && (
           <p className="text-gray-700 dark:text-gray-300">
             <Span>{t(locale, "publicUserPage.stats.rankedPoints")}</Span>{" "}

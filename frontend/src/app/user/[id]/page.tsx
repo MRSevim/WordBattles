@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import UserPage from "@/features/user/components/pages/UserPage";
 import { fetchUser } from "@/features/user/utils/apiCalls";
-import { UserSearchParams } from "@/features/user/utils/types";
+import { UserSearchParams } from "@/utils/types";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 

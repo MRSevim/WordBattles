@@ -1,4 +1,3 @@
-import { LadderSearchParams } from "@/utils/types";
 import Container from "../../../components/Container";
 import Pagination from "../../../components/Paginations";
 import { fetchLadder } from "../utils/apiCalls";
@@ -6,6 +5,8 @@ import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { cookies } from "next/headers";
 import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
+import { UserSearchParams } from "@/utils/types";
+import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
 
 interface Ladder {
   position: number;
@@ -28,21 +29,25 @@ interface UserRank {
 export const Ladder = async ({
   searchParams,
 }: {
-  searchParams: LadderSearchParams;
+  searchParams: Promise<UserSearchParams>;
 }) => {
   const limit = 20; // Define the limit per page
-  const pageQuery = (await searchParams).page;
-  const page = Number(pageQuery) || 1;
+  const params = await searchParams;
+  const lang = params.lang || "en";
+  const season = params.season || "Season1";
+  const page = params.page ?? 1;
+
   const ladder: {
     ladder: Ladder[];
     userRank?: UserRank;
     totalUsers: number;
-  } | null = await fetchLadder({ page, limit });
+  } | null = await fetchLadder({ page, limit, lang, season });
 
   const locale = await getLocaleFromCookie(cookies);
 
   return (
     <Container className="py-10">
+      <LangAndSeasonSelectors searchParams={{ lang, season }} />
       {ladder && ladder.ladder.length > 0 && ladder.totalUsers > 0 ? (
         <>
           <div className="grid grid-cols-3 gap-2">
@@ -101,7 +106,7 @@ export const Ladder = async ({
           )}
         </>
       ) : (
-        <p className="font-bold text-lg">{t(locale, "noData")}</p>
+        <p className="font-bold text-lg mx-4">{t(locale, "noData")}</p>
       )}
     </Container>
   );
