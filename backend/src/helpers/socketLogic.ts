@@ -228,7 +228,7 @@ export const runSocketLogic = (io: Io) => {
           otherPlayer.pointsDiff = pointsDifference;
           applyPointDifference(state);
         }
-        leavingPlayer.leftTheGame = true;
+
         // Append to history
         state.history.push({
           playerId: leavingPlayer.id,
@@ -246,6 +246,7 @@ export const runSocketLogic = (io: Io) => {
         applyPlayerStats(state);
       }
       updateCurrentRoomIdInDB(socket.user?.id, undefined);
+      if (leavingPlayer) leavingPlayer.leftTheGame = true;
 
       const everybodyLeft = state.players.every((player) => player.leftTheGame);
 
@@ -254,7 +255,8 @@ export const runSocketLogic = (io: Io) => {
         removeGameFromMemory(roomId);
         //if everybody is guest, remove the game from db
         const everyoneIsGuest = state.players.every((player) => !player.email);
-        if (everyoneIsGuest) {
+
+        if (everyoneIsGuest || state.type === "casual") {
           removeGameFromDB(roomId);
         }
       } else {

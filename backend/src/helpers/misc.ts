@@ -26,7 +26,7 @@ export const sendInitialData = (io: Io, gameState: GameState) => {
   });
 };
 
-export const gameTime = 100000;
+export const gameTime = 120;
 
 export const letters: Record<Lang, InitialLetters[]> = {
   tr: [

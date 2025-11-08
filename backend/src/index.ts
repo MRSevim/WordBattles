@@ -14,6 +14,7 @@ import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
 import { parseCookies } from "./middlewares/parseCookieMiddleware";
 import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
+import { applyRankDecay, clearOldGames } from "./cron/jobs";
 
 const port = process.env.PORT || 5000;
 
@@ -80,6 +81,9 @@ prisma
   .then(async () => {
     // Recover any ongoing games into memory
     await recoverGamesToMemory(io);
+
+    applyRankDecay();
+    clearOldGames();
 
     server.listen(port, () => {
       console.log("connected to db & listening on port", port);
