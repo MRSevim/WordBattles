@@ -16,7 +16,7 @@ export const socket =
     autoConnect: false,
     withCredentials: true,
     retries: 3,
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
     ackTimeout: 5000,
   }) as ISocket);
 

@@ -6,6 +6,7 @@ import { setUpTimerInterval } from "./timerRelated";
 type gameWithTimerInterval = {
   gameState: GameState;
   timerInterval?: NodeJS.Timeout;
+  moveIds: string[];
 };
 let ongoingGames: gameWithTimerInterval[] = [];
 
@@ -15,17 +16,20 @@ export const saveGameToMemory = (game: GameState, io: Io) => {
   );
 
   if (foundGameIndex !== -1) {
+    const foundGame = ongoingGames[foundGameIndex];
+
     ongoingGames[foundGameIndex] = {
       gameState: game,
-      timerInterval:
-        setUpTimerInterval(game, io) ||
-        ongoingGames[foundGameIndex].timerInterval, // Keep timer running
+      moveIds: foundGame.moveIds,
+      timerInterval: setUpTimerInterval(game, io) || foundGame.timerInterval, // Keep timer running
     };
   } else {
-    // Create new game with fresh timer
+    // Create new game with fresh timer and moveIds capped to last 10
+
     ongoingGames.push({
       gameState: game,
       timerInterval: setUpTimerInterval(game, io),
+      moveIds: [],
     });
   }
 };

@@ -15,15 +15,15 @@ import { toNodeHandler } from "better-auth/node";
 import { parseCookies } from "./middlewares/parseCookieMiddleware";
 import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
 
+const port = process.env.PORT || 5000;
+
 dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
-  cors: {
-    origin: [process.env.FRONTEND_URL!],
-  },
-  cookie: true,
-  transports: ["websocket", "polling"],
+  transports: ["websocket"],
   connectionStateRecovery: {
     // the backup duration of the sessions and the packets
     maxDisconnectionDuration: 2 * 60 * 1000,
@@ -31,8 +31,6 @@ const io = new Server(server, {
     skipMiddlewares: false,
   },
 });
-
-const port = process.env.PORT || 3000;
 
 // Configure CORS middleware
 app.use(

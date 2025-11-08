@@ -27,6 +27,7 @@ import {
 } from "@/features/game/utils/reduxSliceHelpers";
 import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
 import { Lang } from "@/features/language/helpers/types";
+import { v4 as uuidv4 } from "uuid";
 
 const initialDraggingValues = {
   active: null,
@@ -185,9 +186,12 @@ export const gameSlice = createSlice({
         state.switching = false;
         state.switchIndices = [];
 
+        const moveId = uuidv4();
+
         socket.emit("Switch", {
           switchedIndices,
           state: getStrippedState(state),
+          moveId,
         });
       }
     },
@@ -198,8 +202,11 @@ export const gameSlice = createSlice({
       const isPlaying = checkPlaying(state.status);
       if (!playersTurn || !isPlaying) return;
 
+      const moveId = uuidv4();
+
       socket.emit("Pass", {
         state: getStrippedState(state),
+        moveId,
       });
     },
     returnEverythingToHand: (state) => {
@@ -217,9 +224,11 @@ export const gameSlice = createSlice({
       const isPlaying = checkPlaying(state.status);
       const playersTurn = checkPlayersTurn(player);
       if (!playersTurn || !isPlaying) return;
+      const moveId = uuidv4();
 
       socket.emit("Play", {
         state: getStrippedState(state),
+        moveId,
       });
     },
 

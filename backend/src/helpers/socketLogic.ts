@@ -206,63 +206,6 @@ export const runSocketLogic = (io: Io) => {
       });
     });
 
-    socket.on(
-      "Switch",
-      ({
-        switchedIndices,
-        state,
-      }: {
-        switchedIndices: number[];
-        state: GameState;
-      }) => {
-        const { players, roomId } = state;
-        const currentPlayer = players.find((player) => player.turn);
-        if (state.status !== "playing" || !currentPlayer) return;
-
-        // Append to history
-        state.history.push({
-          playerId: currentPlayer.id,
-          words: [],
-          type: "switch",
-          playerPoints: 0,
-          placedTiles: [],
-          playerHandAfterMove: filterLetter(currentPlayer.hand),
-          undrawnLetterPool: filterLetter(state.undrawnLetterPool),
-        });
-
-        switchLetters(switchedIndices, state, currentPlayer.hand);
-
-        currentPlayer.consecutivePassCount = 0;
-
-        switchTurns(state, io);
-
-        io.to(roomId).emit("Play Made", state);
-      }
-    );
-
-    socket.on("Pass", ({ state }: { state: GameState }) => {
-      const { board, players, roomId } = state;
-      const currentPlayer = players.find((player) => player.turn);
-      if (!currentPlayer || state.status !== "playing") return;
-      returnToHand(currentPlayer.hand, board);
-
-      // Append to history
-      state.history.push({
-        playerId: currentPlayer.id,
-        words: [],
-        playerPoints: 0,
-        placedTiles: [],
-        playerHandAfterMove: filterLetter(currentPlayer.hand),
-        undrawnLetterPool: filterLetter(state.undrawnLetterPool),
-      });
-
-      currentPlayer.consecutivePassCount += 1;
-      currentPlayer.totalPassCount += 1;
-      switchTurns(state, io);
-
-      io.to(roomId).emit("Play Made", state);
-    });
-
     socket.on("Leave Game", ({ state }: { state: GameState }) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
@@ -290,158 +233,274 @@ export const runSocketLogic = (io: Io) => {
           state.endReason = "playerLeft";
           state.endingPlayerId = leavingPlayer.id;
           applyPlayerStats(state);
+
+          updateCurrentRoomIdInDB(socket.user?.id, undefined);
+
+          const everybodyLeft = state.players.every(
+            (player) => player.leftTheGame
+          );
+
+          if (everybodyLeft) {
+            // If no sockets are left, remove the game from memory
+            removeGameFromMemory(roomId);
+            //if everybody is guest, remove the game from db
+            const everyoneIsGuest = state.players.every(
+              (player) => !player.email
+            );
+            if (everyoneIsGuest) {
+              removeGameFromDB(roomId);
+            }
+          } else {
+            saveGame(state, io);
+            // Otherwise, notify remaining players
+            io.to(roomId).emit("Play Made", state);
+          }
         }
       }
       socket.leave(roomId);
-      updateCurrentRoomIdInDB(socket.user?.id, undefined);
-
-      const everybodyLeft = state.players.every((player) => player.leftTheGame);
-
-      if (everybodyLeft) {
-        // If no sockets are left, remove the game from memory
-        removeGameFromMemory(roomId);
-        //if everybody is guest, remove the game from db
-        const everyoneIsGuest = state.players.every((player) => !player.email);
-        if (everyoneIsGuest) {
-          removeGameFromDB(roomId);
-        }
-      } else {
-        saveGame(state, io);
-        // Otherwise, notify remaining players
-        io.to(roomId).emit("Play Made", state);
-      }
     });
 
-    socket.on("Play", async ({ state }: { state: GameState }) => {
-      const { board, players, roomId, undrawnLetterPool, lang } = state;
-      const id = socket.id;
-      const locale = socket.siteLocale;
+    const preventDublicateMove = (
+      roomId: string,
+      cb: () => void,
+      moveId?: string
+    ) => {
+      if (!moveId)
+        return console.error("Pass a moveId to preventDuplicateMove");
+      const game = getGameFromMemory(roomId);
+      if (!game) return;
 
-      // Find the player who made the play
-      const currentPlayer = players.find((player) => player.turn);
-
-      if (state.status !== "playing" || !currentPlayer) return;
-
-      if (state.board[7][7] === null) {
-        io.to(id).emit("Game Error", {
-          error: t(locale, "useCenterCell"),
-        });
-        return;
-      }
-      const invalidLetter = state.board.some((row) =>
-        row.some(
-          (letter) => letter && !getValidLetters(lang).includes(letter.letter)
-        )
-      );
-      if (invalidLetter) {
-        io.to(id).emit("Game Error", {
-          error: t(locale, "emptyLettersInvalid"),
-        });
+      // Check duplicate
+      if (game.moveIds.includes(moveId)) {
+        console.log("duplicate");
         return;
       }
 
-      // Check if the new words are connected to old ones (if any)
-      const existingWordOnBoard = board.some((row) =>
-        row.some((cell) => cell && cell.fixed)
-      );
+      // Record immediately
+      game.moveIds.push(moveId);
+      if (game.moveIds.length > 10) game.moveIds = game.moveIds.slice(-10);
 
-      if (existingWordOnBoard) {
-        const newWordsCorrectlyPlaced = areNewWordsCorrectlyPlaced(board);
+      // Proceed safely
+      cb();
+    };
 
-        if (!newWordsCorrectlyPlaced) {
-          io.to(id).emit("Game Error", {
-            error: t(locale, "oneLine"),
-          });
-          return;
-        }
+    socket.on(
+      "Switch",
+      ({
+        switchedIndices,
+        state,
+        moveId,
+      }: {
+        switchedIndices: number[];
+        state: GameState;
+        moveId?: string;
+      }) => {
+        preventDublicateMove(
+          state.roomId,
+          () => {
+            const { players, roomId } = state;
+            const currentPlayer = players.find((player) => player.turn);
+            if (state.status !== "playing" || !currentPlayer) return;
+
+            // Append to history
+            state.history.push({
+              playerId: currentPlayer.id,
+              words: [],
+              type: "switch",
+              playerPoints: 0,
+              placedTiles: [],
+              playerHandAfterMove: filterLetter(currentPlayer.hand),
+              undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+            });
+
+            switchLetters(switchedIndices, state, currentPlayer.hand);
+
+            currentPlayer.consecutivePassCount = 0;
+
+            switchTurns(state, io);
+
+            io.to(roomId).emit("Play Made", state);
+          },
+          moveId
+        );
       }
+    );
 
-      const wordsWithCoordinates: WordWithCoordinates[] =
-        findWordsOnBoard(board);
+    socket.on(
+      "Pass",
+      ({ state, moveId }: { state: GameState; moveId: string }) => {
+        preventDublicateMove(
+          state.roomId,
+          () => {
+            const { board, players, roomId } = state;
+            const currentPlayer = players.find((player) => player.turn);
+            if (!currentPlayer || state.status !== "playing") return;
+            returnToHand(currentPlayer.hand, board);
 
-      const words = wordsWithCoordinates.map((word) => word.word);
+            // Append to history
+            state.history.push({
+              playerId: currentPlayer.id,
+              words: [],
+              playerPoints: 0,
+              placedTiles: [],
+              playerHandAfterMove: filterLetter(currentPlayer.hand),
+              undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+            });
 
-      if (words.length === 0) {
-        io.to(id).emit("Game Error", {
-          error: t(locale, "moreThanOneLetter"),
-        });
-        return;
+            currentPlayer.consecutivePassCount += 1;
+            currentPlayer.totalPassCount += 1;
+            switchTurns(state, io);
+
+            io.to(roomId).emit("Play Made", state);
+          },
+          moveId
+        );
       }
-      let checkedWords: CheckedWords = { validWords: [], invalidWords: [] };
+    );
 
-      // Validate words using the API
-      try {
-        checkedWords = await validateWords(words, lang);
+    socket.on(
+      "Play",
+      ({ state, moveId }: { state: GameState; moveId: string }) => {
+        preventDublicateMove(
+          state.roomId,
+          async () => {
+            const { board, players, roomId, undrawnLetterPool, lang } = state;
+            const id = socket.id;
+            const locale = socket.siteLocale;
 
-        if (checkedWords.invalidWords.length > 0) {
-          io.to(id).emit("Game Error", {
-            error: `${t(
-              locale,
-              "invalidWords"
-            )} ${checkedWords.invalidWords.join(", ")}`,
-          });
-          return;
-        }
-      } catch (error) {
-        io.to(id).emit("Game Error", {
-          error: t(locale, "errorDuringWordVal"),
-        });
-        return;
+            // Find the player who made the play
+            const currentPlayer = players.find((player) => player.turn);
+
+            if (state.status !== "playing" || !currentPlayer) return;
+
+            if (state.board[7][7] === null) {
+              io.to(id).emit("Game Error", {
+                error: t(locale, "useCenterCell"),
+              });
+              return;
+            }
+            const invalidLetter = state.board.some((row) =>
+              row.some(
+                (letter) =>
+                  letter && !getValidLetters(lang).includes(letter.letter)
+              )
+            );
+            if (invalidLetter) {
+              io.to(id).emit("Game Error", {
+                error: t(locale, "emptyLettersInvalid"),
+              });
+              return;
+            }
+
+            // Check if the new words are connected to old ones (if any)
+            const existingWordOnBoard = board.some((row) =>
+              row.some((cell) => cell && cell.fixed)
+            );
+
+            if (existingWordOnBoard) {
+              const newWordsCorrectlyPlaced = areNewWordsCorrectlyPlaced(board);
+
+              if (!newWordsCorrectlyPlaced) {
+                io.to(id).emit("Game Error", {
+                  error: t(locale, "oneLine"),
+                });
+                return;
+              }
+            }
+
+            const wordsWithCoordinates: WordWithCoordinates[] =
+              findWordsOnBoard(board);
+
+            const words = wordsWithCoordinates.map((word) => word.word);
+
+            if (words.length === 0) {
+              io.to(id).emit("Game Error", {
+                error: t(locale, "moreThanOneLetter"),
+              });
+              return;
+            }
+            let checkedWords: CheckedWords = {
+              validWords: [],
+              invalidWords: [],
+            };
+
+            // Validate words using the API
+            try {
+              checkedWords = await validateWords(words, lang);
+
+              if (checkedWords.invalidWords.length > 0) {
+                io.to(id).emit("Game Error", {
+                  error: `${t(
+                    locale,
+                    "invalidWords"
+                  )} ${checkedWords.invalidWords.join(", ")}`,
+                });
+                return;
+              }
+            } catch (error) {
+              io.to(id).emit("Game Error", {
+                error: t(locale, "errorDuringWordVal"),
+              });
+              return;
+            }
+
+            //detect and mark newlyPlaced tiles and new Words
+            markNewlyPlacedAndNewWords(board);
+
+            // Calculate points for the current player
+            const playerPoints = calculatePoints(
+              board,
+              wordsWithCoordinates,
+              io,
+              id,
+              currentPlayer
+            );
+
+            currentPlayer.points += playerPoints;
+            currentPlayer.totalWords += checkedWords.validWords.length;
+            currentPlayer.avgPerWord = Number(
+              (currentPlayer.points / currentPlayer.totalWords).toFixed(2)
+            );
+
+            //fix the letters
+            fixBoard(board);
+
+            const placedTiles = board.flatMap((row, rowIndex) =>
+              row.flatMap((cell, colIndex) =>
+                cell && cell.newlyPlaced
+                  ? [
+                      {
+                        row: rowIndex,
+                        col: colIndex,
+                        id: cell.id,
+                        letter: cell.letter,
+                        points: cell.points,
+                      },
+                    ]
+                  : []
+              )
+            );
+
+            // Append to history
+            state.history.push({
+              playerId: currentPlayer.id,
+              words: checkedWords.validWords,
+              playerPoints,
+              placedTiles,
+              playerHandAfterMove: filterLetter(currentPlayer.hand),
+              undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+            });
+
+            // Switch turns
+            currentPlayer.consecutivePassCount = 0;
+            completePlayerHand(currentPlayer, undrawnLetterPool);
+            switchTurns(state, io);
+
+            io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
+          },
+          moveId
+        );
       }
-
-      //detect and mark newlyPlaced tiles and new Words
-      markNewlyPlacedAndNewWords(board);
-
-      // Calculate points for the current player
-      const playerPoints = calculatePoints(
-        board,
-        wordsWithCoordinates,
-        io,
-        id,
-        currentPlayer
-      );
-
-      currentPlayer.points += playerPoints;
-      currentPlayer.totalWords += checkedWords.validWords.length;
-      currentPlayer.avgPerWord = Number(
-        (currentPlayer.points / currentPlayer.totalWords).toFixed(2)
-      );
-
-      //fix the letters
-      fixBoard(board);
-
-      const placedTiles = board.flatMap((row, rowIndex) =>
-        row.flatMap((cell, colIndex) =>
-          cell && cell.newlyPlaced
-            ? [
-                {
-                  row: rowIndex,
-                  col: colIndex,
-                  id: cell.id,
-                  letter: cell.letter,
-                  points: cell.points,
-                },
-              ]
-            : []
-        )
-      );
-
-      // Append to history
-      state.history.push({
-        playerId: currentPlayer.id,
-        words: checkedWords.validWords,
-        playerPoints,
-        placedTiles,
-        playerHandAfterMove: filterLetter(currentPlayer.hand),
-        undrawnLetterPool: filterLetter(state.undrawnLetterPool),
-      });
-
-      // Switch turns
-      currentPlayer.consecutivePassCount = 0;
-      completePlayerHand(currentPlayer, undrawnLetterPool);
-      switchTurns(state, io);
-
-      io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
-    });
+    );
   });
 };
