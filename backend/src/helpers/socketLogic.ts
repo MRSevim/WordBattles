@@ -85,109 +85,112 @@ export const runSocketLogic = (io: Io) => {
         io.to(roomId).emit("No Game In Memory");
         socket.leave(roomId);
       }
-    }
+    } else {
+      socket.on("Started Looking", async (options: GameOptions) => {
+        if (socket.searchInterval) {
+          clearInterval(socket.searchInterval);
+          socket.searchInterval = undefined;
+        }
+        const { lang, type } = options;
+        const season: Season = "Season1";
+        const locale = socket.siteLocale;
 
-    socket.on("Started Looking", async (options: GameOptions) => {
-      if (socket.searchInterval) {
-        clearInterval(socket.searchInterval);
-        socket.searchInterval = undefined;
-      }
-      const { lang, type } = options;
-      const season: Season = "Season1";
-      const locale = socket.siteLocale;
-
-      // Only allow ranked games for logged-in users
-      if (type === "ranked" && !socket.user) {
-        socket.emit("Game Error", t(locale, "logInForRanked"));
-        return;
-      }
-
-      //Start game helper
-      const startGame = (p1: Socket, p2: Socket) => {
-        const gameState = generateGameState(p1, p2, options);
-        io.to(gameState.roomId).emit("Start Game", gameState);
-        sendInitialData(io, gameState);
-        saveGame(gameState, io);
-        updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
-        updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
-      };
-
-      const queue = waitingPlayers[lang][type];
-
-      //  Get player's rank
-      if (type === "ranked" && socket.user) {
-        try {
-          const user = await getUser(socket.user.id, { lang, season, locale });
-          socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
-          socket.division = user?.division ?? getUnfetchedDivision(locale);
-        } catch (err) {
-          console.error("❌ Failed to load user rank/division:", err);
-          socket.rankedPoints = 3000;
-          socket.division = getUnfetchedDivision(locale);
+        // Only allow ranked games for logged-in users
+        if (type === "ranked" && !socket.user) {
+          socket.emit("Game Error", t(locale, "logInForRanked"));
+          return;
         }
 
-        // 🟩 Add to queue right away
-        if (!queue.includes(socket)) {
-          queue.push(socket);
-        }
-
-        // --- Search loop ---
-        let currentTolerance = BASE_TOLERANCE;
-
-        const searchInterval = setInterval(() => {
-          // 🔎 Find a suitable opponent (ignore self)
-          const matchedIndex = queue.findIndex(
-            (queuedSocket) =>
-              queuedSocket !== socket && // 🧠 Ignore self
-              queuedSocket.searchInterval !== undefined &&
-              Math.abs(
-                (queuedSocket.rankedPoints ?? 3000) -
-                  (socket.rankedPoints ?? 3000)
-              ) <= currentTolerance
-          );
-
-          if (matchedIndex !== -1) {
-            const opponent = queue[matchedIndex];
-
-            // Clear intervals FIRST
-            clearInterval(socket.searchInterval);
-            socket.searchInterval = undefined;
-            clearInterval(opponent.searchInterval);
-            opponent.searchInterval = undefined;
-
-            // THEN remove from queue
-            queue.splice(matchedIndex, 1);
-            const selfIndex = queue.indexOf(socket);
-            if (selfIndex !== -1) queue.splice(selfIndex, 1);
-
-            startGame(socket, opponent);
-          } else if (currentTolerance < MAX_TOLERANCE) {
-            currentTolerance += TOLERANCE_STEP;
-            console.log("current tolerance of scanning:", currentTolerance);
-          }
-        }, INTERVAL_MS);
-
-        socket.searchInterval = searchInterval;
-      } else if (type === "casual") {
-        // Basic queue matchmaking
-
-        if (queue.length > 0 && !queue.includes(socket)) {
-          const opponent = queue.shift(); // first waiting player
-
-          // Remove socket from queue if present (safety check)
-          const selfIndex = queue.indexOf(socket);
-          if (selfIndex !== -1) queue.splice(selfIndex, 1);
-
-          const gameState = generateGameState(socket, opponent!, options);
+        //Start game helper
+        const startGame = (p1: Socket, p2: Socket) => {
+          const gameState = generateGameState(p1, p2, options);
           io.to(gameState.roomId).emit("Start Game", gameState);
           sendInitialData(io, gameState);
           saveGame(gameState, io);
-        } else if (!queue.includes(socket)) {
-          queue.push(socket);
-        }
-      }
-    });
+          updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
+          updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
+        };
 
+        const queue = waitingPlayers[lang][type];
+
+        //  Get player's rank
+        if (type === "ranked" && socket.user) {
+          try {
+            const user = await getUser(socket.user.id, {
+              lang,
+              season,
+              locale,
+            });
+            socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
+            socket.division = user?.division ?? getUnfetchedDivision(locale);
+          } catch (err) {
+            console.error("❌ Failed to load user rank/division:", err);
+            socket.rankedPoints = 3000;
+            socket.division = getUnfetchedDivision(locale);
+          }
+
+          // 🟩 Add to queue right away
+          if (!queue.includes(socket)) {
+            queue.push(socket);
+          }
+
+          // --- Search loop ---
+          let currentTolerance = BASE_TOLERANCE;
+
+          const searchInterval = setInterval(() => {
+            // 🔎 Find a suitable opponent (ignore self)
+            const matchedIndex = queue.findIndex(
+              (queuedSocket) =>
+                queuedSocket !== socket && // 🧠 Ignore self
+                queuedSocket.searchInterval !== undefined &&
+                Math.abs(
+                  (queuedSocket.rankedPoints ?? 3000) -
+                    (socket.rankedPoints ?? 3000)
+                ) <= currentTolerance
+            );
+
+            if (matchedIndex !== -1) {
+              const opponent = queue[matchedIndex];
+
+              // Clear intervals FIRST
+              clearInterval(socket.searchInterval);
+              socket.searchInterval = undefined;
+              clearInterval(opponent.searchInterval);
+              opponent.searchInterval = undefined;
+
+              // THEN remove from queue
+              queue.splice(matchedIndex, 1);
+              const selfIndex = queue.indexOf(socket);
+              if (selfIndex !== -1) queue.splice(selfIndex, 1);
+
+              startGame(socket, opponent);
+            } else if (currentTolerance < MAX_TOLERANCE) {
+              currentTolerance += TOLERANCE_STEP;
+              console.log("current tolerance of scanning:", currentTolerance);
+            }
+          }, INTERVAL_MS);
+
+          socket.searchInterval = searchInterval;
+        } else if (type === "casual") {
+          // Basic queue matchmaking
+
+          if (queue.length > 0 && !queue.includes(socket)) {
+            const opponent = queue.shift(); // first waiting player
+
+            // Remove socket from queue if present (safety check)
+            const selfIndex = queue.indexOf(socket);
+            if (selfIndex !== -1) queue.splice(selfIndex, 1);
+
+            const gameState = generateGameState(socket, opponent!, options);
+            io.to(gameState.roomId).emit("Start Game", gameState);
+            sendInitialData(io, gameState);
+            saveGame(gameState, io);
+          } else if (!queue.includes(socket)) {
+            queue.push(socket);
+          }
+        }
+      });
+    }
     socket.on("disconnect", () => {
       console.log("A user disconnected");
       if (socket.searchInterval) {
@@ -225,41 +228,42 @@ export const runSocketLogic = (io: Io) => {
           otherPlayer.pointsDiff = pointsDifference;
           applyPointDifference(state);
         }
-      }
-      if (leavingPlayer) {
         leavingPlayer.leftTheGame = true;
-        if (state.status !== "ended") {
-          state.status = "ended";
-          state.endReason = "playerLeft";
-          state.endingPlayerId = leavingPlayer.id;
-          applyPlayerStats(state);
+        // Append to history
+        state.history.push({
+          playerId: leavingPlayer.id,
+          words: [],
+          playerPoints: 0,
+          placedTiles: [],
+          playerHandAfterMove: filterLetter(leavingPlayer.hand),
+          undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+          type: "leave",
+        });
 
-          updateCurrentRoomIdInDB(socket.user?.id, undefined);
+        state.status = "ended";
+        state.endReason = "playerLeft";
+        state.endingPlayerId = leavingPlayer.id;
+        applyPlayerStats(state);
+      }
+      updateCurrentRoomIdInDB(socket.user?.id, undefined);
 
-          const everybodyLeft = state.players.every(
-            (player) => player.leftTheGame
-          );
+      const everybodyLeft = state.players.every((player) => player.leftTheGame);
 
-          if (everybodyLeft) {
-            // If no sockets are left, remove the game from memory
-            removeGameFromMemory(roomId);
-            //if everybody is guest, remove the game from db
-            const everyoneIsGuest = state.players.every(
-              (player) => !player.email
-            );
-            if (everyoneIsGuest) {
-              removeGameFromDB(roomId);
-            }
-          } else {
-            saveGame(state, io);
-            // Otherwise, notify remaining players
-            io.to(roomId).emit("Play Made", state);
-          }
+      if (everybodyLeft) {
+        // If no sockets are left, remove the game from memory
+        removeGameFromMemory(roomId);
+        //if everybody is guest, remove the game from db
+        const everyoneIsGuest = state.players.every((player) => !player.email);
+        if (everyoneIsGuest) {
+          removeGameFromDB(roomId);
         }
+      } else {
+        saveGame(state, io);
+        // Otherwise, notify remaining players
+        io.to(roomId).emit("Play Made", state);
       }
       socket.leave(roomId);
     });
-
     const preventDublicateMove = (
       roomId: string,
       cb: () => void,
@@ -345,6 +349,7 @@ export const runSocketLogic = (io: Io) => {
               placedTiles: [],
               playerHandAfterMove: filterLetter(currentPlayer.hand),
               undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+              type: "pass",
             });
 
             currentPlayer.consecutivePassCount += 1;

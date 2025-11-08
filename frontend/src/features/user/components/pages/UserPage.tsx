@@ -83,7 +83,7 @@ const UserPage = async ({
         {/* Stats */}
         <div className="w-full mt-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex flex-col gap-2">
           <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-            {t(locale, "publicUserPage.stats.stats")}
+            {t(locale, "publicUserPage.stats.label")}
           </h3>
           {stats && stats.totalGames > 0 ? (
             <div className="flex flex-col gap-2 text-gray-700 dark:text-gray-300">

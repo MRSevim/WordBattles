@@ -82,7 +82,7 @@ export interface History {
   type?: HistoryType;
 }
 
-export type HistoryType = "switch";
+export type HistoryType = "switch" | "pass" | "leave";
 
 export type GameStatus = "looking" | "idle" | "playing" | "ended";
 

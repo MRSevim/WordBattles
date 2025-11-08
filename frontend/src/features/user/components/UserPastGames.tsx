@@ -50,7 +50,7 @@ const UserPastGames = async ({
     // fallback for non-Error cases
     return (
       <PastGamesWrapper>
-        <ErrorMessage error="An unexpected error occurred." />
+        <ErrorMessage error={t(locale, "unexpectedError")} />
       </PastGamesWrapper>
     );
   }

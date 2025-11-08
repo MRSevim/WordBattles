@@ -115,6 +115,7 @@ export const ladderController: RequestHandler = async (
 
       const position = higherCount; // zero-based
       userRank = {
+        userId: user.id,
         rank: position + 1,
         username: user.name,
         rankedPoints: userRankEntry.rankedPoints,

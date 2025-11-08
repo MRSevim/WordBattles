@@ -63,7 +63,7 @@ export default function LanguageSwitcher() {
         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-all text-sm font-medium text-gray-700"
       >
         <i className="bi bi-translate text-lg"></i>
-        <span>{t(locale, "langSwitcher.language")}</span>
+        <span>{t(locale, "langSwitcher.label")}</span>
         <i
           className={`bi bi-chevron-down text-xs transition-transform duration-200 ${
             open ? "rotate-180" : ""

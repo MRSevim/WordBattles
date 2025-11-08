@@ -54,12 +54,13 @@ const HistoryItem = ({
       <div className="ms-4 p-2">
         <span>{i + 1}.</span>
         <span>{player?.username}</span>
-        {wordsLength === 0 &&
-          item.type !== "switch" &&
-          t(locale, "game.passed")}
+        {wordsLength === 0 && item.type === "pass" && t(locale, "game.passed")}
         {wordsLength === 0 &&
           item.type === "switch" &&
           t(locale, "game.switched")}
+        {wordsLength === 0 &&
+          item.type === "leave" &&
+          t(locale, "game.leftGame")}
         {wordsLength > 0 && (
           <>
             {" "}
@@ -73,7 +74,7 @@ const HistoryItem = ({
               })}
           </>
         )}
-        {" (" + points + t(locale, "game.pointsPr")}
+        {" (" + points + " " + t(locale, "points") + ")"}
       </div>
     </div>
   );
@@ -104,7 +105,7 @@ const WordComp = ({
   return (
     <div className="inline">
       <div className="group relative inline">
-        {wordsLength > 1 && i === wordsLength - 1 && t(locale, "game.and")}
+        {wordsLength > 1 && i === wordsLength - 1 && t(locale, "and")}
         <span className="cursor-pointer" ref={ref}>
           {word.word}
         </span>

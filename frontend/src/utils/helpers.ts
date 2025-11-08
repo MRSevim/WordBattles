@@ -1,8 +1,15 @@
+import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
+
 //Helper funt to return error messages compitable with ts
 export const returnErrorFromUnknown = (error: unknown) => {
+  const locale = getLocaleFromClientCookie();
   if (error instanceof Error) return { error: error.message };
-  return { error: "" };
+  return { error: t(locale, "unexpectedError") };
 };
+
+export function capitalizeFirstLetter(val: string) {
+  return val.charAt(0).toUpperCase() + val.slice(1);
+}
 
 export const setCookie = (name: string, value: string, days: number = 7) => {
   const maxAge = days * 24 * 60 * 60;

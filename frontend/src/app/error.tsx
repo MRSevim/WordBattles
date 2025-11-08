@@ -30,7 +30,7 @@ export default function ErrorBoundary({
             {t(locale, "errorBoundary.somethingWentWrong")}
           </h1>
           <p className="text-gray-500 text-sm">
-            {error.message || t(locale, "errorBoundary.unexpected")}
+            {error.message || t(locale, "unexpectedError")}
           </p>
 
           <button

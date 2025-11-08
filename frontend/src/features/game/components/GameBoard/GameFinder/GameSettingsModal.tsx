@@ -46,8 +46,8 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
         onChange={(e) => dispatch(setGameLanguage(e.target.value as Lang))}
         className={selectClasses}
       >
-        <option value="en">{t(locale, "game.finder.en")}</option>
-        <option value="tr">{t(locale, "langSwitcher.langTurkish")}</option>
+        <option value="en">{t(locale, "lang.en")}</option>
+        <option value="tr">{t(locale, "lang.tr")}</option>
       </select>
 
       <select
@@ -55,11 +55,9 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
         onChange={(e) => dispatch(setGameType(e.target.value as GameType))}
         className={selectClasses}
       >
-        <option value="casual">{t(locale, "game.finder.types.casual")}</option>
+        <option value="casual">{t(locale, "types.casual")}</option>
         {userLoggedIn && (
-          <option value="ranked">
-            {t(locale, "game.finder.types.ranked")}
-          </option>
+          <option value="ranked">{t(locale, "types.ranked")}</option>
         )}
       </select>
 

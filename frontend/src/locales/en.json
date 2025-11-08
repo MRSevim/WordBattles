@@ -11,6 +11,15 @@
   "signIn": "Sign in",
   "noData": "No data",
   "closeModal": "Close Modal",
+  "unexpectedError": "An unexpected error occurred. Please try again...",
+  "lang": { "en": "English", "tr": "Turkish" },
+  "types": { "casual": "Casual", "ranked": "Ranked" },
+  "or": "or",
+  "and": "and",
+  "left": "Left",
+  "you": "You",
+  "points": "points",
+  "winner": "Winner",
   "metadata": {
     "description": "Play the ultimate competitive Scrabble experience — real-time word battles in English and Turkish. Climb the ranks and prove your vocabulary power!",
     "keywords": {
@@ -50,16 +59,15 @@
   },
   "errorBoundary": {
     "somethingWentWrong": "Something went wrong!",
-    "tryAgain": "Try again...",
-    "unexpected": "An unexpected error occurred. Please try again..."
+    "tryAgain": "Try again..."
   },
   "notFound": {
     "notFound": "Page not found",
-    "explanation": "The page you are looking for doesn’t exist or may have been moved.",
+    "explanation": "The page you are looking for doesn't exist or may have been moved.",
     "home": "Go to homepage"
   },
   "langSwitcher": {
-    "language": "Language",
+    "label": "Language",
     "cantSwitch": "You cannot switch languages right now!",
     "langTurkish": "Turkish",
     "langEnglish": "English (US)"
@@ -133,29 +141,22 @@
     "bingo": "You did bingo. Congratulations!",
     "gameEnded": "Game ended.",
     "tie": "Tie! Everyone has equal points:",
-    "winner": "Winner:",
-    "points": "Points:",
     "connectingToExisting": "Connecting to existing game...",
     "lookingForAGame": "Looking for a game...",
     "stop": "Stop",
     "findGameWithAccount": "Find game as {{name}}",
     "signInToAccount": "Sign in to your account",
-    "or": "or",
     "findAsGuest": "Find game as guest",
     "gameHistory": "Game History",
     "generatedWords-one": " generated {{words}} word.",
     "generatedWords-multiple": " generated {{words}} words.",
-    "switched": " switched letters. ",
-    "passed": " passed their turn. ",
-    "and": "and ",
-    "pointsPr": " points)",
+    "switched": " switched letters.",
+    "passed": " passed their turn.",
+    "leftGame": " has left the game.",
     "leave": "Leave",
     "seconds": "seconds",
     "second": "second",
-    "left": "Left",
-    "you": "You",
-    "casualGame": "Casual Game",
-    "rankedGame": "Ranked Game",
+    "label": "Game",
     "notEnoughLetter": "Not enough letters in the pool!",
     "ongoing": {
       "ongoingGameWarning": "You have an ongoing game right now!",
@@ -164,9 +165,7 @@
     },
     "finder": {
       "selectLanguage": "Select game language:",
-      "find": "Find",
-      "en": "English",
-      "types": { "casual": "casual", "ranked": "ranked" }
+      "find": "Find"
     },
     "endedModal": {
       "endReason": {
@@ -176,7 +175,6 @@
         "playerLeft": "{{player}} has left the game.",
         "default": "Game ended for unknown reasons."
       },
-      "points": "Points",
       "pointsDiff": "Points difference",
       "totalWordsPlayed": "Total words generated",
       "highestScoreWord": "Highest scoring word",
@@ -190,7 +188,7 @@
   "publicUserPage": {
     "stats": {
       "rankedPoints": "Ranked Points:",
-      "stats": "Stats",
+      "label": "Stats",
       "totalGames": "Total Games:",
       "winrateNumber": "{{number}}%",
       "winrate": "Winrate:",
@@ -204,13 +202,12 @@
       "longestLossStreak": "Longest Loss Streak:"
     },
     "selectors": {
-      "language": { "label": "Language", "en": "English", "tr": "Turkish" },
+      "language": { "label": "Language" },
       "season": { "label": "Season", "Season1": "Season 1" }
     },
     "pastGames": {
       "pastGames": "Past Ranked Games From Last 30 Days",
       "noGames": "No games...",
-      "winner": "Winner",
       "noWinner": "No winner",
       "viewStats": "View Stats",
       "viewHistory": "View History",

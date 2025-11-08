@@ -113,7 +113,7 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
           <Link href={routeStrings.signin} className={buttonClasses}>
             {t(locale, "game.signInToAccount")}{" "}
           </Link>
-          {t(locale, "game.or")}
+          {t(locale, "or")}
           <FindButton
             onClick={openGameSettings}
             text={t(locale, "game.findAsGuest")}

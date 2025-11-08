@@ -7,6 +7,8 @@ import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
 import { UserSearchParams } from "@/utils/types";
 import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
+import Link from "next/link";
+import { routeStrings } from "@/utils/routeStrings";
 
 interface Ladder {
   position: number;
@@ -20,6 +22,7 @@ interface Ladder {
 }
 
 interface UserRank {
+  userId: string;
   rank: number;
   username: string;
   rankedPoints: number;
@@ -48,7 +51,7 @@ export const Ladder = async ({
   } = await fetchLadder({ page, limit, lang, season });
 
   const locale = await getLocaleFromCookie(cookies);
-
+  const userRank = ladder?.userRank;
   return (
     <Container className="py-10">
       <LangAndSeasonSelectors searchParams={{ lang, season }} />
@@ -75,7 +78,15 @@ export const Ladder = async ({
                     <span className="w-6 text-right">
                       {index + 1 + (page - 1) * limit}.
                     </span>
-                    <span>{item.user.name}</span>
+                    <span>
+                      <Link
+                        target="_blank"
+                        className="hover:underline"
+                        href={routeStrings.userPage(item.userId)}
+                      >
+                        {item.user.name}
+                      </Link>
+                    </span>
                   </div>
                   <span className="font-semibold text-gray-700 dark:text-gray-200">
                     {item.rankedPoints}
@@ -94,17 +105,21 @@ export const Ladder = async ({
             pageSize={limit}
           />
 
-          {ladder.userRank && (
+          {userRank && (
             <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <div className="flex justify-between items-center gap-2">
                 <span>
-                  {ladder.userRank.rank}: {ladder.userRank.username}
+                  {userRank.rank}:{" "}
+                  <Link
+                    href={routeStrings.userPage(userRank.userId)}
+                    target="_blank"
+                    className="hover:underline"
+                  >
+                    {userRank.username}
+                  </Link>
                 </span>
-                <span className="font-bold">
-                  {" "}
-                  {ladder.userRank.rankedPoints}
-                </span>
-                <DivisionComp division={ladder.userRank.division} />
+                <span className="font-bold"> {userRank.rankedPoints}</span>
+                <DivisionComp division={userRank.division} />
               </div>
             </div>
           )}

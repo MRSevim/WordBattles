@@ -82,9 +82,7 @@ const GameInfo = ({ game }: { game: GameState }) => {
       </div>
       <div className="text-sm text-gray-500 dark:text-gray-400">
         {winner
-          ? `${t(locale, "publicUserPage.pastGames.winner")}: ${
-              winner.username
-            }`
+          ? `${t(locale, "winner")}: ${winner.username}`
           : t(locale, "publicUserPage.pastGames.noWinner")}
       </div>
     </div>

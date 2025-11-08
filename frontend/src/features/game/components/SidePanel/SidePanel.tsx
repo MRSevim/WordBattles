@@ -4,8 +4,9 @@ import { GameHistory } from "./GameHistory";
 import { toggleSidePanel } from "../../lib/redux/slices/sidePanelToggleSlice";
 import { _switch, leaveGame } from "../../lib/redux/slices/gameSlice";
 import { socket } from "@/features/game/lib/socket.io/socketio";
-import { Division, Player } from "../../utils/types/gameTypes";
+import { Division, GameType, Lang, Player } from "../../utils/types/gameTypes";
 import {
+  selectGameLanguage,
   selectGameRoomId,
   selectGameType,
   selectPlayers,
@@ -71,7 +72,7 @@ const OngoingGameContainer = () => {
             </div>
           </div>
           <Players />
-          <GameTypeDisplay />
+          <GameBanner />
           <GameHistory />
         </>
       )}
@@ -168,8 +169,8 @@ export const UsernameAndPoints = ({
       >
         {username}
       </Link>
-      {leftTheGame && <p className="font-bold">{t(locale, "game.left")}</p>}
-      {t(locale, "game.points")} {points}
+      {leftTheGame && <p className="font-bold">{t(locale, "left")}</p>}
+      {t(locale, "points")}: {points}
       <DivisionComp division={division} />
     </>
   );
@@ -182,12 +183,24 @@ const Loader = () => (
   </div>
 );
 
-export const GameTypeDisplay = () => {
+const GameBanner = () => {
   const type = useAppSelector(selectGameType);
+  const lang = useAppSelector(selectGameLanguage);
+  return <GameBannerInner type={type} lang={lang} />;
+};
+
+export const GameBannerInner = ({
+  type,
+  lang,
+}: {
+  type: GameType;
+  lang: Lang;
+}) => {
   const [locale] = useLocaleContext();
   return (
     <p className="p-2 text-center font-bold ">
-      {t(locale, `game.${type}Game`)}
+      {t(locale, `types.${type}`)} {t(locale, `lang.${lang}`)}{" "}
+      {t(locale, `game.label`)}
     </p>
   );
 };

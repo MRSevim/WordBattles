@@ -1,5 +1,5 @@
 import {
-  GameTypeDisplay,
+  GameBannerInner,
   UsernameAndPoints,
 } from "@/features/game/components/SidePanel/SidePanel";
 import { GameState, Player } from "@/features/game/utils/types/gameTypes";
@@ -15,7 +15,7 @@ export const SidePanel = ({
   return (
     <div className="flex flex-col m-2 xxs:m-3">
       <Players players={players} />
-      <GameTypeDisplay />
+      <GameBannerInner type={game.type} lang={game.lang} />
       <GameMoves game={game} />
     </div>
   );

@@ -101,12 +101,12 @@ export const PlayerCompInner = ({
         )}
         {player.leftTheGame && (
           <span className="absolute -bottom-2 -right-2 text-sm text-red-400">
-            ({t(locale, "game.left")})
+            ({t(locale, "left")})
           </span>
         )}
         {isYou && (
           <span className="absolute -bottom-2 -left-2 text-sm font-bold">
-            ({t(locale, "game.you")})
+            ({t(locale, "you")})
           </span>
         )}
       </div>
