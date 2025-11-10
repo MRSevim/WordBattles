@@ -12,7 +12,7 @@ import { setUser } from "../lib/redux/slices/userSlice";
 import { routeStrings } from "@/utils/routeStrings";
 import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
-import Link from "next/link";
+import UserLink from "@/components/UserLink";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -55,12 +55,13 @@ const Profile = () => {
       )}
 
       {/* Public Profile Link */}
-      <Link
-        href={routeStrings.userPage(user.id)}
+      <UserLink
+        locale={locale}
+        id={user.id}
         className="text-blue-600 dark:text-blue-400 font-medium underline-offset-4 hover:underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
       >
         {t(locale, "auth.profile.seePublicPage")}
-      </Link>
+      </UserLink>
 
       {/* Delete Button */}
       <button

@@ -7,8 +7,7 @@ import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
 import { UserSearchParams } from "@/utils/types";
 import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
-import Link from "next/link";
-import { routeStrings } from "@/utils/routeStrings";
+import UserLink from "@/components/UserLink";
 
 interface Ladder {
   position: number;
@@ -79,13 +78,14 @@ export const Ladder = async ({
                       {index + 1 + (page - 1) * limit}.
                     </span>
                     <span>
-                      <Link
+                      <UserLink
+                        id={item.userId}
+                        locale={locale}
                         target="_blank"
                         className="hover:underline"
-                        href={routeStrings.userPage(item.userId)}
                       >
                         {item.user.name}
-                      </Link>
+                      </UserLink>
                     </span>
                   </div>
                   <span className="font-semibold text-gray-700 dark:text-gray-200">
@@ -110,13 +110,14 @@ export const Ladder = async ({
               <div className="flex justify-between items-center gap-2">
                 <span>
                   {userRank.rank}:{" "}
-                  <Link
-                    href={routeStrings.userPage(userRank.userId)}
+                  <UserLink
+                    id={userRank.userId}
+                    locale={locale}
                     target="_blank"
                     className="hover:underline"
                   >
                     {userRank.username}
-                  </Link>
+                  </UserLink>
                 </span>
                 <span className="font-bold"> {userRank.rankedPoints}</span>
                 <DivisionComp division={userRank.division} />

@@ -50,7 +50,7 @@ export const Links = ({
       {mobile && mobileLine}
 
       <Link
-        href={routeStrings.ladder}
+        href={routeStrings.ladder + `?lang=${locale}`}
         onClick={closeMenu}
         className={`${linkBase} ${mobile ? mobileLinks : ""}`}
       >

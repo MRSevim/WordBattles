@@ -36,6 +36,7 @@ export const setUpTimerInterval = (state: GameState, io: Io) => {
         placedTiles: [],
         playerHandAfterMove: filterLetter(currentPlayer.hand),
         undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+        type: "pass",
       });
       currentPlayer.consecutivePassCount += 1;
       currentPlayer.totalPassCount += 1;

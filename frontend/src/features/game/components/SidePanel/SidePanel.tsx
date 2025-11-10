@@ -18,8 +18,7 @@ import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { t } from "@/features/language/lib/i18n";
 import { Button } from "../GameBoard/BottomPanel/Button";
 import { DivisionComp } from "../DivisionComp";
-import Link from "next/link";
-import { routeStrings } from "@/utils/routeStrings";
+import UserLink from "@/components/UserLink";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -162,13 +161,14 @@ export const UsernameAndPoints = ({
   const [locale] = useLocaleContext();
   return (
     <>
-      <Link
-        href={routeStrings.userPage(id)}
+      <UserLink
+        id={id}
+        locale={locale}
         target="_blank"
         className="hover:underline"
       >
         {username}
-      </Link>
+      </UserLink>
       {leftTheGame && <p className="font-bold">{t(locale, "left")}</p>}
       {t(locale, "points")}: {points}
       <DivisionComp division={division} />
