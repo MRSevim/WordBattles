@@ -30,9 +30,10 @@ export default function useGameSockets() {
 
     socket.on("No Game In Memory", () => {
       dispatch(leaveGame());
-      socket.disconnect();
       removeCookie("sessionId");
       removeCookie("roomId");
+      removeCookie("lang");
+      removeCookie("type");
     });
 
     socket.on("Timer Runs", (players: Player[]) => {

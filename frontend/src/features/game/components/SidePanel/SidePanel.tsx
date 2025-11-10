@@ -43,10 +43,10 @@ const OngoingGameContainer = () => {
   const leave = () => {
     dispatch(leaveGame());
     dispatch(toggleSidePanel());
-    socket.disconnect();
     removeCookie("sessionId");
     removeCookie("roomId");
     removeCookie("lang");
+    removeCookie("type");
   };
 
   return (
