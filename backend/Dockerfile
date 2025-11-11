@@ -7,6 +7,9 @@ COPY package*.json ./
 
 RUN npm ci --only=production
 
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
 COPY prisma ./prisma
 
 RUN npx prisma generate
