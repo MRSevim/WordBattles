@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd wordbattles-backend/backend
+            cd wordbattles/backend
             git pull origin main
             docker-compose up -d --build
       - name: revoke runner ip address

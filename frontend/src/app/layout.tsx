@@ -1,6 +1,5 @@
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
 import ClientWrapper from "@/utils/ClientWrapper";
 import { Header } from "@/components/Header/Header";
 import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
@@ -78,7 +77,6 @@ export default async function RootLayout({
             >
               <Header />
               {children}
-              <Analytics />
             </ClientWrapper>
           </ThemeContextProvider>
         </LocaleContextProvider>
