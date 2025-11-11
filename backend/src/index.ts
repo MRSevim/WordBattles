@@ -74,7 +74,7 @@ instrument(io, {
 app.use(notFound);
 app.use(errorHandler);
 
-//  listen for requests
+// listen for requests
 prisma
   .$connect()
   .then(async () => {
