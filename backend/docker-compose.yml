@@ -1,0 +1,12 @@
+name: wordbattles-backend
+
+services:
+  server:
+    container_name: wordbattles-backend
+    build:
+      context: .
+      target: production
+    env_file: ./.env
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}"

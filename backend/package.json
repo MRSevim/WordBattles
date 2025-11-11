@@ -8,7 +8,8 @@
     "build": "tsc -b",
     "serve": "node dist/index.js",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "docker": "npm run build && docker compose up --build -d"
   },
   "keywords": [],
   "author": "",
