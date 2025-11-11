@@ -8,7 +8,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Install OpenSSL for Prisma
-RUN apk add --no-cache openssl
+RUN apt-get update
+RUN apt-get install -y openssl
 
 COPY prisma ./prisma
 
