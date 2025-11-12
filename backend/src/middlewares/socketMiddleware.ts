@@ -15,6 +15,7 @@ export const useSocketMiddleware = (io: Io) => {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(socket.handshake.headers),
       });
+      console.log("session user:", session?.user?.name);
       const user = session?.user as User | undefined;
 
       let sessionId: string | undefined,
