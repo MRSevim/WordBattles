@@ -33,5 +33,7 @@ export const getCookie = (name: string): string | null => {
 
 export const removeCookie = (name: string) => {
   // Set cookie with past max-age to delete it
-  document.cookie = `${encodeURIComponent(name)}=;path=/;max-age=0`;
+  document.cookie = `${encodeURIComponent(name)}=;path=/;max-age=0;domain=${
+    process.env.NEXT_PUBLIC_BASE_DOMAIN
+  }`;
 };
