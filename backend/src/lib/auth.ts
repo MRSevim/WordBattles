@@ -2,7 +2,6 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma/prisma";
 
-console.log(process.env.BASE_DOMAIN!);
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
