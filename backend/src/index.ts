@@ -24,6 +24,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   transports: ["websocket"],
+  cookie: true,
   connectionStateRecovery: {
     // the backup duration of the sessions and the packets
     maxDisconnectionDuration: 2 * 60 * 1000,
