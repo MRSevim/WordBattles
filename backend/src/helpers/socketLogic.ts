@@ -216,13 +216,7 @@ export const runSocketLogic = (io: Io) => {
       });
     });
 
-    socket.on("Leave Game", (payload: { state: GameState }) => {
-      console.log("Leave Game raw payload:", payload);
-      if (!payload?.state) {
-        console.error("Missing state in Leave Game payload");
-        return;
-      }
-      const state = payload.state;
+    socket.on("Leave Game", ({ state }: { state: GameState }) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
