@@ -11,6 +11,7 @@ import {
 import { toast } from "react-toastify";
 import useHandleClickOutside from "@/utils/hooks/useHandleClickOutside";
 import { useLocaleContext } from "../helpers/LocaleContext";
+import { setCookie } from "@/utils/helpers";
 
 type LangItem = {
   lang: Lang;
@@ -46,7 +47,7 @@ export default function LanguageSwitcher() {
       return toast.error(t(locale, "langSwitcher.cantSwitch"));
     }
     // set cookie for persistence
-    document.cookie = `locale=${lang}; path=/; max-age=31536000`; // 1 year
+    setCookie("locale", lang, 365); // 1 year
     // update context
     setLocale(lang);
     // refresh page

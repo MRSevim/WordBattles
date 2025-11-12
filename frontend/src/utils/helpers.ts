@@ -15,7 +15,7 @@ export const setCookie = (name: string, value: string, days: number = 7) => {
   const maxAge = days * 24 * 60 * 60;
   document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(
     value
-  )};path=/;max-age=${maxAge}`;
+  )};path=/;max-age=${maxAge};domain=${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
 };
 
 export const getCookie = (name: string): string | null => {
