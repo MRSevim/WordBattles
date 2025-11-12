@@ -21,6 +21,7 @@ declare module "socket.io" {
     roomId?: string;
     sessionId: string;
     siteLocale: Lang;
+    rankedPoints?: number;
     division?: Division;
     searchInterval?: NodeJS.Timeout;
   }
