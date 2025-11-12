@@ -22,7 +22,6 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       currentRoomId: { type: "string", optional: true, input: false },
-      rankedPoints: { type: "number", optional: false, input: false },
     },
     deleteUser: {
       enabled: true,
