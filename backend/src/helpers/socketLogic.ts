@@ -217,13 +217,14 @@ export const runSocketLogic = (io: Io) => {
     });
 
     socket.on("Leave Game", ({ state }: { state: GameState }) => {
+      console.log("room:", state.roomId);
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
         (player) => player.id === socket.sessionId
       );
-      const otherPlayer = leavingPlayer === player1 ? player2 : player1;
       console.log("leaving player: ", leavingPlayer?.username);
+      const otherPlayer = leavingPlayer === player1 ? player2 : player1;
       if (leavingPlayer && state.status === "playing") {
         const pointsDifference = Math.abs(player1.points - player2.points);
         const isBehind = leavingPlayer.points < otherPlayer.points;
