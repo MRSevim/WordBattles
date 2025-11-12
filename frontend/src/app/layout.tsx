@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
+import Script from "next/script";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -63,6 +64,28 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        {process.env.NODE_ENV === "production" && (
+          <>
+            <Script
+              async
+              src={
+                "https://www.googletagmanager.com/gtag/js?id=" +
+                process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
+              }
+            />
+            <Script id="google-analytics">
+              {` window.dataLayer = window.dataLayer || [];
+            function gtag() {
+            dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            
+            gtag("config", "${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}");`}
+            </Script>
+          </>
+        )}
+      </head>
       <body
         className={`${geistSans.className} antialiased ${
           initialTheme === "dark" ? "dark" : ""
