@@ -29,10 +29,10 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
   const dispatch = useAppDispatch();
 
   const findGame = () => {
-    socket.connect();
-    socket.emit("Started Looking", { lang, type });
     setCookie("lang", lang);
     setCookie("type", type);
+    socket.connect();
+    socket.emit("Started Looking", { lang, type });
     dispatch(setGameStatus("looking"));
   };
   return (
