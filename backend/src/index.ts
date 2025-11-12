@@ -14,6 +14,7 @@ import { prisma } from "./lib/prisma/prisma";
 import { toNodeHandler } from "better-auth/node";
 import { parseCookies } from "./middlewares/parseCookieMiddleware";
 import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
+import { protect } from "./middlewares/authMiddleware";
 
 const port = process.env.PORT || 5000;
 
@@ -56,7 +57,7 @@ app.use(parseCookies);
 
 useSocketMiddleware(io);
 
-app.use("/api/ladder", ladderRoutes);
+app.use("/api/ladder", protect, ladderRoutes);
 app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
