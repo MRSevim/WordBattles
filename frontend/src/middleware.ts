@@ -9,7 +9,6 @@ export default function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
   const sessionCookie = getSessionCookie(request);
-
   if (!sessionCookie && requiresAuth) {
     return NextResponse.redirect(new URL(routeStrings.signin, request.url));
   }
