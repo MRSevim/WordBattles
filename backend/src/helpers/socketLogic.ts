@@ -121,8 +121,12 @@ export const runSocketLogic = (io: Io) => {
               season,
               locale,
             });
-            socket.rankedPoints = user?.ranks?.[0]?.rankedPoints ?? 3000;
-            socket.division = user?.division ?? getUnfetchedDivision(locale);
+            const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
+            const division = user?.division ?? getUnfetchedDivision(locale);
+            console.log("user rank:", rank);
+            console.log("user division:", division);
+            socket.rankedPoints = rank;
+            socket.division = division;
           } catch (err) {
             console.error("❌ Failed to load user rank/division:", err);
             socket.rankedPoints = 3000;
@@ -131,6 +135,7 @@ export const runSocketLogic = (io: Io) => {
 
           // 🟩 Add to queue right away
           if (!queue.includes(socket)) {
+            console.log("ranked player pushed to queue");
             queue.push(socket);
           }
 
@@ -138,6 +143,8 @@ export const runSocketLogic = (io: Io) => {
           let currentTolerance = BASE_TOLERANCE;
 
           const searchInterval = setInterval(() => {
+            console.log("current tolerance of scanning:", currentTolerance);
+
             // 🔎 Find a suitable opponent (ignore self)
             const matchedIndex = queue.findIndex(
               (queuedSocket) =>
@@ -166,7 +173,6 @@ export const runSocketLogic = (io: Io) => {
               startGame(socket, opponent);
             } else if (currentTolerance < MAX_TOLERANCE) {
               currentTolerance += TOLERANCE_STEP;
-              console.log("current tolerance of scanning:", currentTolerance);
             }
           }, INTERVAL_MS);
 
@@ -186,6 +192,7 @@ export const runSocketLogic = (io: Io) => {
             sendInitialData(io, gameState);
             saveGame(gameState, io);
           } else if (!queue.includes(socket)) {
+            console.log("casual player pushed to queue");
             queue.push(socket);
           }
         }
