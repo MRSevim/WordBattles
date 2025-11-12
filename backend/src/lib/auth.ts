@@ -6,15 +6,15 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  advanced: {
-    /*     crossSubDomainCookies: {
+  /*   advanced: {
+        crossSubDomainCookies: {
       enabled: process.env.ENV === "production",
       domain: process.env.BASE_DOMAIN!,
-    }, */
-    /*     defaultCookieAttributes: {
+    },
+        defaultCookieAttributes: {
       domain: process.env.BASE_DOMAIN!,
-    }, */
-  },
+    },
+  }, */
   trustedOrigins: [process.env.FRONTEND_URL!],
   socialProviders: {
     google: {
