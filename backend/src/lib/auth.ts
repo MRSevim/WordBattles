@@ -8,7 +8,7 @@ export const auth = betterAuth({
   }),
   advanced: {
     crossSubDomainCookies: {
-      enabled: true,
+      enabled: process.env.ENV === "production",
       domain: process.env.BASE_DOMAIN!,
     },
   },

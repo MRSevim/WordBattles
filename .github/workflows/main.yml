@@ -39,7 +39,7 @@ jobs:
           script: |
             cd wordbattles/backend
             git pull origin main
-            docker-compose up -d --build
+            npm run docker
       - name: revoke runner ip address
         run: |
           aws ec2 revoke-security-group-ingress \

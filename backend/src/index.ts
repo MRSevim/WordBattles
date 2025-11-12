@@ -80,7 +80,6 @@ prisma
   .then(async () => {
     // Recover any ongoing games into memory
     await recoverGamesToMemory(io);
-    console.log("xpp", process.env.BASE_DOMAIN!);
     server.listen(port, () => {
       console.log("connected to db & listening on port", port);
     });
