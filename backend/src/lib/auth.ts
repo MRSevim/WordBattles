@@ -11,9 +11,9 @@ export const auth = betterAuth({
       enabled: process.env.ENV === "production",
       domain: process.env.BASE_DOMAIN!,
     }, */
-    defaultCookieAttributes: {
+    /*     defaultCookieAttributes: {
       domain: process.env.BASE_DOMAIN!,
-    },
+    }, */
   },
   trustedOrigins: [process.env.FRONTEND_URL!],
   socialProviders: {
