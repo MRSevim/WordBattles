@@ -29,11 +29,11 @@ export default function useGameSockets() {
     });
 
     socket.on("No Game In Memory", () => {
+      dispatch(leaveGame());
       removeCookie("sessionId");
       removeCookie("roomId");
       removeCookie("lang");
       removeCookie("type");
-      dispatch(leaveGame());
     });
 
     socket.on("Timer Runs", (players: Player[]) => {

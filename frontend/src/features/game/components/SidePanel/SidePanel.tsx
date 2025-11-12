@@ -41,12 +41,12 @@ const OngoingGameContainer = () => {
   const [locale] = useLocaleContext();
 
   const leave = () => {
+    dispatch(leaveGame());
+    dispatch(toggleSidePanel());
     removeCookie("sessionId");
     removeCookie("roomId");
     removeCookie("lang");
     removeCookie("type");
-    dispatch(leaveGame());
-    dispatch(toggleSidePanel());
   };
 
   return (
