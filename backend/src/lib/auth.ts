@@ -7,11 +7,8 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   advanced: {
-    /*  crossSubDomainCookies: {
+    crossSubDomainCookies: {
       enabled: process.env.ENV === "production",
-      domain: process.env.BASE_DOMAIN!,
-    }, */
-    defaultCookieAttributes: {
       domain: process.env.BASE_DOMAIN!,
     },
   },
