@@ -70,7 +70,7 @@ instrument(io, {
   mode: process.env.ENV as "development" | "production",
 });
 
-//error middlewares
+// error middlewares
 app.use(notFound);
 app.use(errorHandler);
 
