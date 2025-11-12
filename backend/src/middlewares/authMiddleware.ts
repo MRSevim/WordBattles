@@ -10,7 +10,6 @@ export const protect: RequestHandler = async (
   next
 ) => {
   try {
-    console.log(req.headers.cookie);
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
