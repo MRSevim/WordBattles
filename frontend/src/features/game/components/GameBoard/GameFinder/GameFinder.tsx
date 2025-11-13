@@ -34,9 +34,6 @@ export const GameFinder = () => {
     if (roomId || looking) {
       socket.connect();
     }
-  }, [roomId, gameStatus]);
-
-  useEffect(() => {
     if (looking && !roomId) {
       socket.emit("Started Looking", { lang, type });
     }

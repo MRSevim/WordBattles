@@ -51,15 +51,13 @@ const INTERVAL_MS = 5000;
 export const runSocketLogic = (io: Io) => {
   io.on("connection", async (socket: Socket) => {
     console.log("a user connected");
-    console.log("Server sees connection:", socket.id);
+
     socket.emit("session", {
       sessionId: socket.sessionId,
     });
 
     socket.onAny((eventName, ...args) => {
       console.log(eventName, "acknowledged");
-
-      console.log(JSON.stringify(eventName));
 
       const lastArg = args[args.length - 1];
       if (typeof lastArg === "function") {
