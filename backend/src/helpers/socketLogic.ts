@@ -65,6 +65,19 @@ export const runSocketLogic = (io: Io) => {
       }
     });
 
+    socket.onAny((eventName, data) => {
+      console.log(
+        "Event:",
+        eventName,
+        "Payload keys:",
+        data && Object.keys(data)
+      );
+    });
+
+    socket.on("Leave Game", (payload) => {
+      console.log("🎯 Leave Game RECEIVED!", payload?.state?.roomId);
+    });
+
     if (socket.roomId) {
       const roomId = socket.roomId;
       let game = getGameFromMemory(socket.roomId);
