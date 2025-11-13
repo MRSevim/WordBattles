@@ -132,7 +132,6 @@ const Meanings = ({
 
     const updatePosition = () => {
       const wordRect = spanRef.current!.getBoundingClientRect();
-      console.log(wordRect);
       setTop(wordRect.bottom);
     };
 
