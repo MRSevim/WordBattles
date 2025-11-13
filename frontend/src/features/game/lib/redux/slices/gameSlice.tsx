@@ -66,9 +66,11 @@ export const gameSlice = createSlice({
       state.type = action.payload;
     },
     leaveGame: (state) => {
-      socket.emit("Leave Game", { state: getStrippedState(state) });
-      console.log("Socket id emitting Leave Game:", socket.id);
-      socket.disconnect();
+      socket.emit("Leave Game", { state: getStrippedState(state) }, () => {
+        console.log("Leave Game acknowledged by server, now disconnecting");
+        socket.disconnect();
+      });
+
       return initialState;
     },
     setGameState: (state, action: PayloadAction<GameState>) => {
