@@ -85,119 +85,120 @@ export const runSocketLogic = (io: Io) => {
         io.to(roomId).emit("No Game In Memory");
         socket.leave(roomId);
       }
-    } else {
-      socket.on("Started Looking", async (options: GameOptions) => {
-        if (socket.searchInterval) {
-          clearInterval(socket.searchInterval);
-          socket.searchInterval = undefined;
+    }
+
+    socket.on("Started Looking", async (options: GameOptions) => {
+      if (socket.searchInterval) {
+        clearInterval(socket.searchInterval);
+        socket.searchInterval = undefined;
+      }
+      const { lang, type } = options;
+      const season: Season = "Season1";
+      const locale = socket.siteLocale;
+
+      // Only allow ranked games for logged-in users
+      if (type === "ranked" && !socket.user) {
+        socket.emit("Game Error", t(locale, "logInForRanked"));
+        return;
+      }
+
+      //Start game helper
+      const startGame = (p1: Socket, p2: Socket) => {
+        const gameState = generateGameState(p1, p2, options);
+        io.to(gameState.roomId).emit("Start Game", gameState);
+        sendInitialData(io, gameState);
+        saveGame(gameState, io);
+        updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
+        updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
+      };
+
+      const queue = waitingPlayers[lang][type];
+
+      //  Get player's rank
+      if (type === "ranked" && socket.user) {
+        try {
+          const user = await getUser(socket.user.id, {
+            lang,
+            season,
+            locale,
+          });
+          const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
+          const division = user?.division ?? getUnfetchedDivision(locale);
+          console.log("user rank:", rank);
+          console.log("user division:", division);
+          socket.rankedPoints = rank;
+          socket.division = division;
+        } catch (err) {
+          console.error("❌ Failed to load user rank/division:", err);
+          socket.rankedPoints = 3000;
+          socket.division = getUnfetchedDivision(locale);
         }
-        const { lang, type } = options;
-        const season: Season = "Season1";
-        const locale = socket.siteLocale;
 
-        // Only allow ranked games for logged-in users
-        if (type === "ranked" && !socket.user) {
-          socket.emit("Game Error", t(locale, "logInForRanked"));
-          return;
+        // 🟩 Add to queue right away
+        if (!queue.includes(socket)) {
+          console.log("ranked player pushed to queue");
+          queue.push(socket);
         }
 
-        //Start game helper
-        const startGame = (p1: Socket, p2: Socket) => {
-          const gameState = generateGameState(p1, p2, options);
-          io.to(gameState.roomId).emit("Start Game", gameState);
-          sendInitialData(io, gameState);
-          saveGame(gameState, io);
-          updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
-          updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
-        };
+        // --- Search loop ---
+        let currentTolerance = BASE_TOLERANCE;
 
-        const queue = waitingPlayers[lang][type];
+        const searchInterval = setInterval(() => {
+          console.log("current tolerance of scanning:", currentTolerance);
 
-        //  Get player's rank
-        if (type === "ranked" && socket.user) {
-          try {
-            const user = await getUser(socket.user.id, {
-              lang,
-              season,
-              locale,
-            });
-            const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
-            const division = user?.division ?? getUnfetchedDivision(locale);
-            console.log("user rank:", rank);
-            console.log("user division:", division);
-            socket.rankedPoints = rank;
-            socket.division = division;
-          } catch (err) {
-            console.error("❌ Failed to load user rank/division:", err);
-            socket.rankedPoints = 3000;
-            socket.division = getUnfetchedDivision(locale);
-          }
+          // 🔎 Find a suitable opponent (ignore self)
+          const matchedIndex = queue.findIndex(
+            (queuedSocket) =>
+              queuedSocket !== socket && // 🧠 Ignore self
+              queuedSocket.searchInterval !== undefined &&
+              Math.abs(
+                (queuedSocket.rankedPoints ?? 3000) -
+                  (socket.rankedPoints ?? 3000)
+              ) <= currentTolerance
+          );
 
-          // 🟩 Add to queue right away
-          if (!queue.includes(socket)) {
-            console.log("ranked player pushed to queue");
-            queue.push(socket);
-          }
+          if (matchedIndex !== -1) {
+            const opponent = queue[matchedIndex];
 
-          // --- Search loop ---
-          let currentTolerance = BASE_TOLERANCE;
+            // Clear intervals FIRST
+            clearInterval(socket.searchInterval);
+            socket.searchInterval = undefined;
+            clearInterval(opponent.searchInterval);
+            opponent.searchInterval = undefined;
 
-          const searchInterval = setInterval(() => {
-            console.log("current tolerance of scanning:", currentTolerance);
-
-            // 🔎 Find a suitable opponent (ignore self)
-            const matchedIndex = queue.findIndex(
-              (queuedSocket) =>
-                queuedSocket !== socket && // 🧠 Ignore self
-                queuedSocket.searchInterval !== undefined &&
-                Math.abs(
-                  (queuedSocket.rankedPoints ?? 3000) -
-                    (socket.rankedPoints ?? 3000)
-                ) <= currentTolerance
-            );
-
-            if (matchedIndex !== -1) {
-              const opponent = queue[matchedIndex];
-
-              // Clear intervals FIRST
-              clearInterval(socket.searchInterval);
-              socket.searchInterval = undefined;
-              clearInterval(opponent.searchInterval);
-              opponent.searchInterval = undefined;
-
-              // THEN remove from queue
-              queue.splice(matchedIndex, 1);
-              const selfIndex = queue.indexOf(socket);
-              if (selfIndex !== -1) queue.splice(selfIndex, 1);
-
-              startGame(socket, opponent);
-            } else if (currentTolerance < MAX_TOLERANCE) {
-              currentTolerance += TOLERANCE_STEP;
-            }
-          }, INTERVAL_MS);
-
-          socket.searchInterval = searchInterval;
-        } else if (type === "casual") {
-          // Basic queue matchmaking
-
-          if (queue.length > 0 && !queue.includes(socket)) {
-            const opponent = queue.shift(); // first waiting player
-
-            // Remove socket from queue if present (safety check)
+            // THEN remove from queue
+            queue.splice(matchedIndex, 1);
             const selfIndex = queue.indexOf(socket);
             if (selfIndex !== -1) queue.splice(selfIndex, 1);
 
-            const gameState = generateGameState(socket, opponent!, options);
-            io.to(gameState.roomId).emit("Start Game", gameState);
-            sendInitialData(io, gameState);
-            saveGame(gameState, io);
-          } else if (!queue.includes(socket)) {
-            console.log("casual player pushed to queue");
-            queue.push(socket);
+            startGame(socket, opponent);
+          } else if (currentTolerance < MAX_TOLERANCE) {
+            currentTolerance += TOLERANCE_STEP;
           }
+        }, INTERVAL_MS);
+
+        socket.searchInterval = searchInterval;
+      } else if (type === "casual") {
+        // Basic queue matchmaking
+
+        if (queue.length > 0 && !queue.includes(socket)) {
+          const opponent = queue.shift(); // first waiting player
+
+          // Remove socket from queue if present (safety check)
+          const selfIndex = queue.indexOf(socket);
+          if (selfIndex !== -1) queue.splice(selfIndex, 1);
+
+          const gameState = generateGameState(socket, opponent!, options);
+          io.to(gameState.roomId).emit("Start Game", gameState);
+          sendInitialData(io, gameState);
+          saveGame(gameState, io);
+        } else if (!queue.includes(socket)) {
+          console.log("casual player pushed to queue");
+          queue.push(socket);
         }
-      });
-    }
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log("A user disconnected");
       if (socket.searchInterval) {

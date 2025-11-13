@@ -10,10 +10,6 @@ export const auth = betterAuth({
   }),
   ...(isProd && {
     advanced: {
-      cookies: {
-        session_token: { attributes: { sameSite: "none" } },
-        session_data: { attributes: { sameSite: "none" } },
-      },
       crossSubDomainCookies: {
         enabled: true,
         domain: process.env.BASE_DOMAIN!,
