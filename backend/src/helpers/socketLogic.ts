@@ -59,14 +59,12 @@ export const runSocketLogic = (io: Io) => {
     socket.onAny((eventName, ...args) => {
       console.log(eventName, "acknowledged");
 
+      console.log(JSON.stringify(eventName));
+
       const lastArg = args[args.length - 1];
       if (typeof lastArg === "function") {
         lastArg("ack");
       }
-    });
-
-    socket.on("Leave Game", (payload) => {
-      console.log("🎯 Leave Game RECEIVED!", payload?.state?.roomId);
     });
 
     if (socket.roomId) {
@@ -222,69 +220,61 @@ export const runSocketLogic = (io: Io) => {
     });
 
     socket.on("Leave Game", ({ state }: { state: GameState }) => {
-      try {
-        const roomId = state.roomId;
-        const [player1, player2] = state.players;
-        const leavingPlayer = state.players.find(
-          (player) => player.id === socket.sessionId
-        );
-        console.log("leaving player: ", leavingPlayer?.username);
-        const otherPlayer = leavingPlayer === player1 ? player2 : player1;
-        if (leavingPlayer && state.status === "playing") {
-          const pointsDifference = Math.abs(player1.points - player2.points);
-          const isBehind = leavingPlayer.points < otherPlayer.points;
-          if (isBehind || pointsDifference === 0) {
-            // penalize on tie too
+      const roomId = state.roomId;
+      const [player1, player2] = state.players;
+      const leavingPlayer = state.players.find(
+        (player) => player.id === socket.sessionId
+      );
+      console.log("leaving player: ", leavingPlayer?.username);
+      const otherPlayer = leavingPlayer === player1 ? player2 : player1;
+      if (leavingPlayer && state.status === "playing") {
+        const pointsDifference = Math.abs(player1.points - player2.points);
+        const isBehind = leavingPlayer.points < otherPlayer.points;
+        if (isBehind || pointsDifference === 0) {
+          // penalize on tie too
 
-            state.winnerId = otherPlayer.id;
-            leavingPlayer.pointsDiff = -pointsDifference;
-            otherPlayer.pointsDiff = pointsDifference;
-            applyPointDifference(state);
-          }
-
-          // Append to history
-          state.history.push({
-            playerId: leavingPlayer.id,
-            words: [],
-            playerPoints: 0,
-            placedTiles: [],
-            playerHandAfterMove: filterLetter(leavingPlayer.hand),
-            undrawnLetterPool: filterLetter(state.undrawnLetterPool),
-            type: "leave",
-          });
-
-          state.status = "ended";
-          state.endReason = "playerLeft";
-          state.endingPlayerId = leavingPlayer.id;
-          applyPlayerStats(state);
+          state.winnerId = otherPlayer.id;
+          leavingPlayer.pointsDiff = -pointsDifference;
+          otherPlayer.pointsDiff = pointsDifference;
+          applyPointDifference(state);
         }
-        updateCurrentRoomIdInDB(socket.user?.id, undefined);
-        if (leavingPlayer) leavingPlayer.leftTheGame = true;
 
-        const everybodyLeft = state.players.every(
-          (player) => player.leftTheGame
-        );
+        // Append to history
+        state.history.push({
+          playerId: leavingPlayer.id,
+          words: [],
+          playerPoints: 0,
+          placedTiles: [],
+          playerHandAfterMove: filterLetter(leavingPlayer.hand),
+          undrawnLetterPool: filterLetter(state.undrawnLetterPool),
+          type: "leave",
+        });
 
-        if (everybodyLeft) {
-          // If no sockets are left, remove the game from memory
-          removeGameFromMemory(roomId);
-          //if everybody is guest, remove the game from db
-          const everyoneIsGuest = state.players.every(
-            (player) => !player.email
-          );
-
-          if (everyoneIsGuest || state.type === "casual") {
-            removeGameFromDB(roomId);
-          }
-        } else {
-          saveGame(state, io);
-          // Otherwise, notify remaining players
-          io.to(roomId).emit("Play Made", state);
-        }
-        socket.leave(roomId);
-      } catch (err) {
-        console.error("Leave Game handler ERROR:", err);
+        state.status = "ended";
+        state.endReason = "playerLeft";
+        state.endingPlayerId = leavingPlayer.id;
+        applyPlayerStats(state);
       }
+      updateCurrentRoomIdInDB(socket.user?.id, undefined);
+      if (leavingPlayer) leavingPlayer.leftTheGame = true;
+
+      const everybodyLeft = state.players.every((player) => player.leftTheGame);
+
+      if (everybodyLeft) {
+        // If no sockets are left, remove the game from memory
+        removeGameFromMemory(roomId);
+        //if everybody is guest, remove the game from db
+        const everyoneIsGuest = state.players.every((player) => !player.email);
+
+        if (everyoneIsGuest || state.type === "casual") {
+          removeGameFromDB(roomId);
+        }
+      } else {
+        saveGame(state, io);
+        // Otherwise, notify remaining players
+        io.to(roomId).emit("Play Made", state);
+      }
+      socket.leave(roomId);
     });
     const preventDublicateMove = (
       roomId: string,
