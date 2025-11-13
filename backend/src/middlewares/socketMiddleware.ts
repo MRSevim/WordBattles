@@ -10,7 +10,7 @@ export const useSocketMiddleware = (io: Io) => {
     try {
       // 1️⃣ Parse cookies manually from handshake headers
       const cookies = parse(socket.handshake.headers.cookie || "");
-      console.log(cookies);
+      console.log(socket.handshake.headers.cookie);
       // 🔑 Use the headers from the socket handshake
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(socket.handshake.headers),

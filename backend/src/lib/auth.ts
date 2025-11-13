@@ -2,16 +2,24 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma/prisma";
 
+const isProd = process.env.ENV === "production";
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  advanced: {
-    crossSubDomainCookies: {
-      enabled: process.env.ENV === "production",
-      domain: process.env.BASE_DOMAIN!,
+  ...(isProd && {
+    advanced: {
+      cookies: {
+        session_token: { attributes: { sameSite: "none" } },
+        session_data: { attributes: { sameSite: "none" } },
+      },
+      crossSubDomainCookies: {
+        enabled: true,
+        domain: process.env.BASE_DOMAIN!,
+      },
     },
-  },
+  }),
   trustedOrigins: [process.env.FRONTEND_URL!],
   socialProviders: {
     google: {
