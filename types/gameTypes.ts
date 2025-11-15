@@ -49,7 +49,7 @@ export type Division =
   | "gold"
   | "silver"
   | "bronze"
-  | "unranked"
+  | "undetermined"
   | "unfetched";
 
 export interface Word {

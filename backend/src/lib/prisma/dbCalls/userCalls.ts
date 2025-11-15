@@ -61,7 +61,7 @@ export const getDivision = async (
       },
       select: { rankedPoints: true },
     });
-    if (!userRankEntry) return getUnrankedDivision(locale);
+    if (!userRankEntry) return getUnDeterminedDivision();
 
     const userPoints = userRankEntry.rankedPoints;
 
@@ -109,22 +109,22 @@ export const getDivision = async (
     return determineDivision(position, totalPlayers, locale);
   } catch (error) {
     console.error(`❌ [getDivision] Failed for user ${userId}:`, error);
-    return getUnfetchedDivision(locale);
+    return getUnfetchedDivision();
   }
 };
 
-export const getUnfetchedDivision = (locale: Lang): Division => "unfetched";
+export const getUnfetchedDivision = (): Division => "unfetched";
 
-const getUnrankedDivision = (locale: Lang): Division => "unranked";
+const getUnDeterminedDivision = (): Division => "undetermined";
 
 export const determineDivision = (
   position: number,
   totalPlayers: number,
   locale: Lang
 ): Division => {
-  if (position === -1) return getUnrankedDivision(locale);
+  if (position === -1) return getUnDeterminedDivision();
 
-  if (totalPlayers < 10) return getUnrankedDivision(locale);
+  if (totalPlayers < 10) return getUnDeterminedDivision();
 
   const percentile = (position + 1) / totalPlayers;
 
@@ -133,5 +133,5 @@ export const determineDivision = (
   if (percentile <= 0.7) return "silver";
   if (percentile <= 1.0) return "bronze";
 
-  return getUnrankedDivision(locale);
+  return getUnDeterminedDivision();
 };
