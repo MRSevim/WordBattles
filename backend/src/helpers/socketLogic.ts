@@ -123,7 +123,7 @@ export const runSocketLogic = (io: Io) => {
             locale,
           });
           const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
-          const division = user?.division ?? getUnfetchedDivision(locale);
+          const division = user?.division ?? getUnfetchedDivision();
           console.log("user rank:", rank);
           console.log("user division:", division);
           socket.rankedPoints = rank;
@@ -131,7 +131,7 @@ export const runSocketLogic = (io: Io) => {
         } catch (err) {
           console.error("❌ Failed to load user rank/division:", err);
           socket.rankedPoints = 3000;
-          socket.division = getUnfetchedDivision(locale);
+          socket.division = getUnfetchedDivision();
         }
 
         // 🟩 Add to queue right away
