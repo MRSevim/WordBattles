@@ -171,7 +171,7 @@ const Meanings = ({
   return (
     <div
       style={{ top: top + "px" }}
-      className="hidden group-hover:block fixed w-72 max-h-40 bg-slate-800 text-white shadow-lg p-4 rounded-md z-30 overflow-auto"
+      className="hidden group-hover:block fixed w-72 max-h-40 bg-primary text-white shadow-lg p-4 rounded-md z-30 overflow-auto"
     >
       <ul>
         {meanings.map((meaning, i) => {

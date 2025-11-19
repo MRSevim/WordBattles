@@ -10,7 +10,7 @@ export const initialBoard: Board = Array.from({ length: 15 }, () =>
 );
 
 export const responsiveLetterSizesTailwind =
-  "h-5.25 w-5.25 xxs:w-6 xxs:h-6 xs:h-7 xs:w-7 sm:w-9 sm:h-9 rounded-sm sm:rounded-lg";
+  "h-5.25 w-5.25 xxs:w-6.5 xxs:h-6.5 xs:h-7 xs:w-7 sm:w-9 sm:h-9 rounded-sm sm:rounded-lg";
 
 export const findSocketPlayer = (state: GameState) => {
   return state.players.find((player) => player.id === socket.sessionId);

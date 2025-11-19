@@ -47,7 +47,7 @@ const ToggleLetterPoolButton = () => {
     <i
       onMouseDown={() => dispatch(toggleLetterPool())}
       title={t(locale, "game.letterPool")}
-      className="bg-brown rounded-lg flex flex-col items-center justify-center w-9 h-9 text-center text-white cursor-pointer"
+      className="bg-brown text-white rounded-lg flex flex-col items-center justify-center w-9 h-9 text-center cursor-pointer"
     >
       <i className="bi bi-archive text-lg leading-none mt-1"></i>
       <span className="text-xxs">{undrawnLetterPool.length}</span>

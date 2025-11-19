@@ -57,7 +57,7 @@ function Draggable({
 
   return (
     <div
-      className={"absolute cursor-pointer " + responsiveLetterSizesTailwind}
+      className="absolute cursor-pointer"
       ref={setNodeRef}
       style={style}
       {...listeners}

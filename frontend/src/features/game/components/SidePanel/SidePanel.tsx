@@ -64,7 +64,7 @@ const OngoingGameContainer = () => {
             />
             <div
               onClick={leave}
-              className="bg-brown rounded-lg p-2 flex justify-center items-center gap-2 text-white cursor-pointer"
+              className="bg-brown text-white font-bold rounded-lg p-2 flex justify-center items-center gap-2 cursor-pointer"
             >
               <span>{t(locale, "game.leave")}</span>
               <i className="bi bi-door-open"></i>

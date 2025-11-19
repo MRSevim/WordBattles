@@ -5,8 +5,10 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL("https://lh3.googleusercontent.com/**")],
   },
+  reactCompiler: true,
   experimental: {
-    reactCompiler: true,
+    // Enable filesystem caching for `next dev`
+    turbopackFileSystemCacheForDev: true,
   },
 };
 

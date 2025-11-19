@@ -82,7 +82,7 @@ export const LetterOnHand = ({ letter, droppable, draggable, i }: Props) => {
   const translateY = isSwitchingActive ? `translateY(-10px)` : undefined;
 
   return (
-    <div className={"relative " + responsiveLetterSizesTailwind}>
+    <div className="relative">
       <Droppable id={letter.id} droppable={droppable} />
 
       <Draggable

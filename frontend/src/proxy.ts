@@ -4,7 +4,7 @@ import { getSessionCookie } from "better-auth/cookies";
 
 const authenticatedRoutes = [routeStrings.profile];
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const requiresAuth = authenticatedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
