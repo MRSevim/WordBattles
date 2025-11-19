@@ -1,22 +1,21 @@
 "use client"; //this has to be client because it is used inside mobileHeaderLinks which is client
 
 import LanguageSwitcher from "@/features/language/components/LanguageSwitcher";
-import { Lang } from "@/features/language/helpers/types";
-import { t } from "@/features/language/lib/i18n";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { ThemeToggler } from "./ThemeToggler";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const Links = ({
   mobile,
   closeMenu,
-  locale,
 }: {
   mobile?: boolean;
   closeMenu?: () => void;
-  locale: Lang;
 }) => {
+  const { dictionary, locale } = useDictionaryContext();
+
   const linkBase =
     "transition-all duration-200 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-400";
   const mobileLinks =
@@ -35,7 +34,7 @@ export const Links = ({
     >
       {mobile && (
         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
-          {t(locale, "header.menu")}
+          {dictionary.header.menu}
         </h2>
       )}
       {/* Links */}
@@ -44,7 +43,7 @@ export const Links = ({
         onClick={closeMenu}
         className={`${linkBase} ${mobile ? mobileLinks : ""}`}
       >
-        {t(locale, "header.about")}
+        {dictionary.header.about}
       </Link>
 
       {mobile && mobileLine}
@@ -54,7 +53,7 @@ export const Links = ({
         onClick={closeMenu}
         className={`${linkBase} ${mobile ? mobileLinks : ""}`}
       >
-        {t(locale, "header.leaderboard")}
+        {dictionary.header.leaderboard}
       </Link>
 
       <Link
@@ -62,7 +61,7 @@ export const Links = ({
         onClick={closeMenu}
         className={`${linkBase} ${mobile ? mobileLinks : ""}`}
       >
-        {t(locale, "header.contact")}
+        {dictionary.header.contact}
       </Link>
 
       {mobile && mobileLine}
@@ -75,7 +74,7 @@ export const Links = ({
       >
         <LanguageSwitcher />
         <ThemeToggler />
-        <UserMenu onClick={closeMenu} locale={locale} />
+        <UserMenu onClick={closeMenu} />
       </div>
     </nav>
   );

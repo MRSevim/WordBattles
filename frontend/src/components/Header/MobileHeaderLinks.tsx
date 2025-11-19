@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Links } from "./Links";
-import { Lang } from "@/features/language/helpers/types";
 
-const MobileHeaderLinks = ({ locale }: { locale: Lang }) => {
+const MobileHeaderLinks = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
@@ -20,11 +19,7 @@ const MobileHeaderLinks = ({ locale }: { locale: Lang }) => {
             : "translate-x-full opacity-0 translate-y-[-10px]"
         } `}
       >
-        <Links
-          mobile={true}
-          closeMenu={() => setMenuOpen(false)}
-          locale={locale}
-        />
+        <Links mobile={true} closeMenu={() => setMenuOpen(false)} />
       </div>
     </>
   );

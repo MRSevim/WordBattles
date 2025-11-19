@@ -10,12 +10,11 @@ import {
   returnEverythingToHand,
   shuffleHand,
 } from "@/features/game/lib/redux/slices/gameSlice";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 const LeftPanel = () => {
   const dispatch = useAppDispatch();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <div className="flex gap-2">
@@ -23,14 +22,14 @@ const LeftPanel = () => {
       <SwitchButton />
       <Button
         classes="bi bi-arrow-left-right"
-        title={t(locale, "game.shuffle")}
+        title={dictionary.game.shuffle}
         onClick={() => {
           dispatch(shuffleHand());
         }}
       />
       <Button
         classes="bi bi-arrow-down"
-        title={t(locale, "game.bringBack")}
+        title={dictionary.game.bringBack}
         onClick={() => {
           dispatch(returnEverythingToHand());
         }}
@@ -41,12 +40,12 @@ const LeftPanel = () => {
 
 const ToggleLetterPoolButton = () => {
   const dispatch = useAppDispatch();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const undrawnLetterPool = useAppSelector(selectUndrawnLetterPool);
   return (
     <i
       onMouseDown={() => dispatch(toggleLetterPool())}
-      title={t(locale, "game.letterPool")}
+      title={dictionary.game.letterPool}
       className="bg-brown text-white rounded-lg flex flex-col items-center justify-center w-9 h-9 text-center cursor-pointer"
     >
       <i className="bi bi-archive text-lg leading-none mt-1"></i>
@@ -58,12 +57,12 @@ const ToggleLetterPoolButton = () => {
 const SwitchButton = () => {
   const dispatch = useAppDispatch();
   const switching = useAppSelector(selectIsSwitching);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <Button
       classes={"bi bi-arrow-down-up " + (switching ? "animate-bounce" : "")}
-      title={t(locale, "game.switch")}
+      title={dictionary.game.switch}
       onClick={() => {
         dispatch(toggleSwitching());
       }}

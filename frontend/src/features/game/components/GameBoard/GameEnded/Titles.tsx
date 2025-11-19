@@ -1,21 +1,20 @@
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { capitalizeFirstLetter } from "@/utils/helpers";
 import React from "react";
 
 const Titles = () => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <div className="grid grid-rows-subgrid row-start-3 row-span-8 text-sm font-semibold text-gray-200">
-      <Span>{capitalizeFirstLetter(t(locale, "points"))}</Span>
-      <Span>{t(locale, "game.endedModal.pointsDiff")}</Span>
-      <Span>{t(locale, "game.endedModal.totalWordsPlayed")}</Span>
-      <Span>{t(locale, "game.endedModal.highestScoreWord")}</Span>
-      <Span>{t(locale, "game.endedModal.highestScoreMove")}</Span>
-      <Span>{t(locale, "game.endedModal.avgPointsPerWord")}</Span>
-      <Span>{t(locale, "game.endedModal.totalPassCount")}</Span>
-      <Span>{t(locale, "game.endedModal.endBonus")}</Span>
+      <Span>{capitalizeFirstLetter(dictionary.points)}</Span>
+      <Span>{dictionary.game.endedModal.pointsDiff}</Span>
+      <Span>{dictionary.game.endedModal.totalWordsPlayed}</Span>
+      <Span>{dictionary.game.endedModal.highestScoreWord}</Span>
+      <Span>{dictionary.game.endedModal.highestScoreMove}</Span>
+      <Span>{dictionary.game.endedModal.avgPointsPerWord}</Span>
+      <Span>{dictionary.game.endedModal.totalPassCount}</Span>
+      <Span>{dictionary.game.endedModal.endBonus}</Span>
     </div>
   );
 };

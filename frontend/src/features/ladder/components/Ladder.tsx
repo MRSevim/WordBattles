@@ -1,13 +1,15 @@
 import Container from "../../../components/Container";
 import Pagination from "../../../components/Paginations";
 import { fetchLadder } from "../utils/apiCalls";
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
-import { cookies } from "next/headers";
 import { Division } from "@/features/game/utils/types/gameTypes";
 import { DivisionComp } from "@/features/game/components/DivisionComp";
 import { UserSearchParams } from "@/utils/types";
 import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
 import UserLink from "@/components/UserLink";
+import {
+  getDictionaryFromSubdomain,
+  getLocaleFromSubdomain,
+} from "@/features/language/lib/helpersServer";
 
 interface Ladder {
   position: number;
@@ -49,7 +51,8 @@ export const Ladder = async ({
     } | null;
   } = await fetchLadder({ page, limit, lang, season });
 
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
+  const locale = await getLocaleFromSubdomain();
   const userRank = ladder?.userRank;
   return (
     <Container className="py-10">
@@ -60,10 +63,10 @@ export const Ladder = async ({
             {/* Table Header */}
             <div className="col-span-3 grid grid-cols-subgrid items-center p-2 font-semibold border-b text-sm sm:text-base">
               <div className="col-span-2 grid grid-cols-subgrid">
-                <span>{t(locale, "ladder.username")}</span>
-                <span>{t(locale, "ladder.rankedPoints")}</span>
+                <span>{dictionary.ladder.username}</span>
+                <span>{dictionary.ladder.rankedPoints}</span>
               </div>
-              <span className="text-end">{t(locale, "ladder.division")}</span>
+              <span className="text-end">{dictionary.ladder.division}</span>
             </div>
 
             {/* Ladder Items */}
@@ -126,7 +129,7 @@ export const Ladder = async ({
           )}
         </>
       ) : (
-        <p className="font-bold text-lg mx-4">{t(locale, "noData")}</p>
+        <p className="font-bold text-lg mx-4">{dictionary.noData}</p>
       )}
     </Container>
   );

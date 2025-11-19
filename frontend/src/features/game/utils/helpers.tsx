@@ -31,8 +31,16 @@ export const handleDragEnd = (e: DragEndEvent, dispatch: AppDispatch) => {
   }
 };
 
-export const computeClass = (row: number, col: number) => {
-  let cls = "";
+type classStringType =
+  | "triple-word"
+  | "center"
+  | "double-word"
+  | "double-letter"
+  | "triple-letter"
+  | "";
+
+export const computeClass = (row: number, col: number): classStringType => {
+  let cls: classStringType = "";
   if (row === 0 || row === 7 || row === 14) {
     if (col === 0 || col === 7 || col === 14)
       if (row !== 7 || col !== 7) {

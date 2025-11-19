@@ -1,5 +1,3 @@
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
-import { cookies } from "next/headers";
 import React, { ReactNode } from "react";
 import { fetchPastGames } from "../utils/apiCalls";
 import { UserSearchParams } from "@/utils/types";
@@ -7,6 +5,7 @@ import Pagination from "@/components/Paginations";
 import Games from "./Games";
 import { GameState } from "@/features/game/utils/types/gameTypes";
 import ErrorMessage from "@/components/ErrorMessage";
+import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
 
 const PastGamesWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
@@ -21,7 +20,7 @@ const UserPastGames = async ({
   id: string;
   searchParams: UserSearchParams;
 }) => {
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
   const currentPage = Number(searchParams.page) || 1;
   let data;
   try {
@@ -50,7 +49,7 @@ const UserPastGames = async ({
     // fallback for non-Error cases
     return (
       <PastGamesWrapper>
-        <ErrorMessage error={t(locale, "unexpectedError")} />
+        <ErrorMessage error={dictionary.unexpectedError} />
       </PastGamesWrapper>
     );
   }
@@ -60,10 +59,10 @@ const UserPastGames = async ({
     <PastGamesWrapper>
       {" "}
       <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        {t(locale, "publicUserPage.pastGames.pastGames")}
+        {dictionary.publicUserPage.pastGames.pastGames}
       </h3>
       <div className="text-gray-600 dark:text-gray-400">
-        {!games.length && <>{t(locale, "publicUserPage.pastGames.noGames")}</>}
+        {!games.length && <>{dictionary.publicUserPage.pastGames.noGames}</>}
         {games.length !== 0 && (
           <>
             <Games games={games} />

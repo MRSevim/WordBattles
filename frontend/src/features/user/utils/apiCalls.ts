@@ -1,4 +1,4 @@
-import { fetchFromBackend } from "@/utils/fetcher";
+import { fetchFromBackend } from "@/utils/serverHelpers";
 import { Lang, Season } from "@/features/game/utils/types/gameTypes";
 
 export const fetchUser = async (id: string, lang: Lang, season: Season) => {

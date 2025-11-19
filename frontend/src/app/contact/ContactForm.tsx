@@ -2,8 +2,7 @@
 import Container from "@/components/Container";
 import { submitAction } from "./submitAction";
 import { useState } from "react";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 const initialState = {
   error: "",
@@ -11,7 +10,7 @@ const initialState = {
 };
 
 export default function ContactForm() {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const [isPending, setIsPending] = useState(false);
   const [state, setState] = useState(initialState);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,43 +27,43 @@ export default function ContactForm() {
     <Container className="mt-10">
       <div className="max-w-xl mx-auto mt-10 p-6 bg-primary rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6">
-          {t(locale, "contactForm.label")}
+          {dictionary.contactForm.label}
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="name" className="block font-semibold mb-2">
-              {t(locale, "contactForm.fields.name")}
+              {dictionary.contactForm.fields.name}
             </label>
             <input
               type="text"
               name="name"
               id="name"
-              placeholder={t(locale, "contactForm.placeholders.name")}
+              placeholder={dictionary.contactForm.placeholders.name}
               required
               className="w-full p-3 border bg-white text-black rounded-md focus:outline"
             />
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="block font-semibold mb-2">
-              {t(locale, "contactForm.fields.email")}
+              {dictionary.contactForm.fields.email}
             </label>
             <input
               type="email"
               name="email"
               id="email"
-              placeholder={t(locale, "contactForm.placeholders.email")}
+              placeholder={dictionary.contactForm.placeholders.email}
               required
               className="w-full p-3 border bg-white text-black rounded-md focus:outline"
             />
           </div>
           <div className="mb-4">
             <label htmlFor="message" className="block font-semibold mb-2">
-              {t(locale, "contactForm.fields.message")}
+              {dictionary.contactForm.fields.message}
             </label>
             <textarea
               name="message"
               id="message"
-              placeholder={t(locale, "contactForm.placeholders.message")}
+              placeholder={dictionary.contactForm.placeholders.message}
               required
               rows={4}
               className="w-full p-3 border bg-white text-black rounded-md focus:outline"
@@ -75,7 +74,7 @@ export default function ContactForm() {
             type="submit"
             className="w-full bg-white text-primary py-3 rounded-md transition duration-300 cursor-pointer disabled:cursor-not-allowed disabled:bg-zinc-500 disabled:text-gray-700"
           >
-            {t(locale, "contactForm.send")}
+            {dictionary.contactForm.send}
           </button>
           {state.successMessage && (
             <div

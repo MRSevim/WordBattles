@@ -1,13 +1,21 @@
 const Container = ({
   children,
   className,
+  isMain = true,
 }: {
   children: React.ReactNode;
   className?: string;
+  isMain?: boolean;
 }) => {
-  return (
-    <div className={"mx-auto px-4 max-w-7xl " + className}>{children}</div>
-  );
+  if (isMain) {
+    return (
+      <main className={"mx-auto px-4 max-w-7xl " + className}>{children}</main>
+    );
+  } else {
+    return (
+      <div className={"mx-auto px-4 max-w-7xl " + className}>{children}</div>
+    );
+  }
 };
 
 export default Container;

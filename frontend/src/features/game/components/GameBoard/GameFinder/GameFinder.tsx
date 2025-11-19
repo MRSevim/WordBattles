@@ -14,16 +14,17 @@ import { selectUser } from "@/features/auth/lib/redux/selectors";
 import Spinner from "@/components/Spinner";
 import { removeCookie } from "@/utils/helpers";
 import { useEffect, useState } from "react";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t, tReact } from "@/features/language/lib/i18n";
+
 import { buttonClasses, FindButton } from "./FindButton";
 import GameSettingsModal from "./GameSettingsModal";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { interpolateReact } from "@/features/language/lib/i18n";
 
 export const GameFinder = () => {
   const dispatch = useAppDispatch();
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const lang = useAppSelector(selectGameLanguage);
   const type = useAppSelector(selectGameType);
   const looking = gameStatus === "looking";
@@ -31,13 +32,27 @@ export const GameFinder = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (roomId || looking) {
+    if (!socket) return;
+
+    const handleConnect = () => {
+      if (looking && !roomId) {
+        socket.emit("Started Looking", { lang, type });
+      }
+    };
+
+    // If connecting is needed
+    if ((roomId || looking) && !socket.connected) {
       socket.connect();
     }
-    if (looking && !roomId) {
-      socket.emit("Started Looking", { lang, type });
-    }
+
+    // Listen once
+    socket.once("connect", handleConnect);
+
     if (!isClient) setIsClient(true);
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
   }, []);
 
   const stopLooking = () => {
@@ -54,7 +69,7 @@ export const GameFinder = () => {
     return (
       <Modal>
         <div className="bg-primary text-white flex flex-col gap-2 font-medium rounded-lg p-4">
-          {t(locale, "game.connectingToExisting")}
+          {dictionary.game.connectingToExisting}
         </div>
       </Modal>
     );
@@ -67,7 +82,7 @@ export const GameFinder = () => {
     <Modal>
       <div className="text-white bg-primary rounded-lg p-4 flex flex-col gap-2 justify-center items-center">
         {!isClient ? (
-          <Spinner variant="white" locale={locale} />
+          <Spinner variant="white" dictionary={dictionary} />
         ) : (
           <>
             {gameSettingsModalOpen && (
@@ -94,26 +109,28 @@ export const GameFinder = () => {
 
 const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
   const user = useAppSelector(selectUser);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <>
-      {user === null && <Spinner variant="white" locale={locale} />}
+      {user === null && <Spinner variant="white" dictionary={dictionary} />}
       {user && (
         <FindButton
           onClick={openGameSettings}
-          text={tReact(locale, "game.findGameWithAccount", { name: user.name })}
+          text={interpolateReact(dictionary.game.findGameWithAccount, {
+            name: user.name,
+          })}
         />
       )}
       {user === undefined && (
         <>
           <Link href={routeStrings.signin} className={buttonClasses}>
-            {t(locale, "game.signInToAccount")}{" "}
+            {dictionary.game.signInToAccount}{" "}
           </Link>
-          {t(locale, "or")}
+          {dictionary.or}
           <FindButton
             onClick={openGameSettings}
-            text={t(locale, "game.findAsGuest")}
+            text={dictionary.game.findAsGuest}
           />
         </>
       )}
@@ -122,7 +139,7 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
 };
 
 export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -145,7 +162,7 @@ export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-2 text-lg font-semibold">
             <i className="bi bi-search animate-pulse text-2xl" />
-            {t(locale, "game.lookingForAGame")}
+            {dictionary.game.lookingForAGame}
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-200">
@@ -156,7 +173,7 @@ export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
           </div>
         </div>
 
-        <FindButton onClick={stopLooking} text={t(locale, "game.stop")} />
+        <FindButton onClick={stopLooking} text={dictionary.game.stop} />
       </div>
     </Modal>
   );

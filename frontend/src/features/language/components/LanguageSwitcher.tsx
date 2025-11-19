@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import { Lang } from "../helpers/types";
-import { t } from "../lib/i18n";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import {
@@ -10,31 +9,31 @@ import {
 } from "@/features/game/lib/redux/selectors";
 import { toast } from "react-toastify";
 import useHandleClickOutside from "@/utils/hooks/useHandleClickOutside";
-import { useLocaleContext } from "../helpers/LocaleContext";
 import { setCookie } from "@/utils/helpers";
+import { useDictionaryContext } from "../helpers/DictionaryContext";
 
 type LangItem = {
   lang: Lang;
   abbr: string;
-  name: string;
+  name: "langEnglish" | "langTurkish";
 };
 
 const LangArr: LangItem[] = [
   {
     lang: "tr",
     abbr: "🇹🇷",
-    name: "langSwitcher.langTurkish",
+    name: "langTurkish",
   },
   {
     lang: "en",
     abbr: "🇺🇸",
-    name: "langSwitcher.langEnglish",
+    name: "langEnglish",
   },
 ];
 
 export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
-  const [locale, setLocale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const router = useRouter();
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
@@ -44,12 +43,10 @@ export default function LanguageSwitcher() {
     // close dropdown
     setOpen(false);
     if (gameStatus !== "idle" || roomId) {
-      return toast.error(t(locale, "langSwitcher.cantSwitch"));
+      return toast.error(dictionary.langSwitcher.cantSwitch);
     }
     // set cookie for persistence
     setCookie("locale", lang, 365); // 1 year
-    // update context
-    setLocale(lang);
     // refresh page
     router.refresh();
   };
@@ -64,7 +61,7 @@ export default function LanguageSwitcher() {
         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-all text-sm font-medium text-gray-700"
       >
         <i className="bi bi-translate text-lg"></i>
-        <span>{t(locale, "langSwitcher.label")}</span>
+        <span>{dictionary.langSwitcher.label}</span>
         <i
           className={`bi bi-chevron-down text-xs transition-transform duration-200 ${
             open ? "rotate-180" : ""
@@ -93,7 +90,7 @@ const Li = ({
   item: LangItem;
   onClick: (lang: Lang) => void;
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <li>
@@ -103,7 +100,8 @@ const Li = ({
         }}
         className="flex items-center w-full px-4 py-2 hover:bg-gray-100 rounded-lg transition"
       >
-        {item.abbr} <span className="ml-2">{t(locale, item.name)}</span>
+        {item.abbr}{" "}
+        <span className="ml-2">{dictionary.langSwitcher[item.name]}</span>
       </button>
     </li>
   );

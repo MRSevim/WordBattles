@@ -2,7 +2,7 @@
 
 import { Season } from "@/features/game/utils/types/gameTypes";
 import { Lang } from "@/features/language/helpers/types";
-import { fetchFromBackend } from "@/utils/fetcher";
+import { fetchFromBackend } from "@/utils/serverHelpers";
 
 export const fetchLadder = async ({
   page,

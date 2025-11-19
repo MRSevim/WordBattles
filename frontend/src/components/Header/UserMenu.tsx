@@ -3,8 +3,7 @@ import { selectUser } from "@/features/auth/lib/redux/selectors";
 import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
 import { logout } from "@/features/auth/utils/apiCallsClient";
 import { selectGameStatus } from "@/features/game/lib/redux/selectors";
-import { Lang } from "@/features/language/helpers/types";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import useHandleClickOutside from "@/utils/hooks/useHandleClickOutside";
 import { routeStrings } from "@/utils/routeStrings";
@@ -13,25 +12,20 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-const UserMenu = ({
-  onClick,
-  locale,
-}: {
-  onClick?: () => void;
-  locale: Lang;
-}) => {
+const UserMenu = ({ onClick }: { onClick?: () => void }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const user = useAppSelector(selectUser);
   const gameStatus = useAppSelector(selectGameStatus);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { dictionary } = useDictionaryContext();
 
   useHandleClickOutside({ dropdownRef, setOpen });
 
   const handleLogout = async () => {
     if (gameStatus === "playing" || gameStatus === "looking") {
-      toast.error(t(locale, "header.userMenu.cantLogout"));
+      toast.error(dictionary.header.userMenu.cantLogout);
       return;
     }
 
@@ -52,7 +46,7 @@ const UserMenu = ({
           href={routeStrings.signin}
           onClick={onClick}
         >
-          {t(locale, "signIn")}
+          {dictionary.signIn}
         </Link>
       ) : user === null ? (
         <div
@@ -67,7 +61,7 @@ const UserMenu = ({
           >
             <i className="bi bi-person-circle text-xl"></i>
             <span className="inline">
-              {user.name ?? t(locale, "header.userMenu.profile")}
+              {user.name ?? dictionary.header.userMenu.profile}
             </span>
             <i
               className={`bi bi-chevron-${
@@ -87,7 +81,7 @@ const UserMenu = ({
                 className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 hover:text-black rounded-t-lg transition-colors"
               >
                 <i className="bi bi-person"></i>
-                {t(locale, "header.userMenu.profile")}
+                {dictionary.header.userMenu.profile}
               </Link>
               <button
                 onClick={() => {
@@ -98,7 +92,7 @@ const UserMenu = ({
                 className="w-full text-left flex items-center gap-2 px-4 py-2 hover:bg-gray-100 hover:text-red-600 rounded-b-lg transition-colors cursor-pointer"
               >
                 <i className="bi bi-box-arrow-right"></i>
-                {t(locale, "header.userMenu.logout")}
+                {dictionary.header.userMenu.logout}
               </button>
             </div>
           )}

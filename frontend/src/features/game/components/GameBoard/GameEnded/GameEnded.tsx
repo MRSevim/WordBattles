@@ -6,19 +6,19 @@ import {
   selectPlayers,
   selectWinnerId,
 } from "../../../lib/redux/selectors";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+
 import Image from "next/image";
 import { EndReason, Player } from "../../../utils/types/gameTypes";
 import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import EndingPlayerDisplay from "./EndingPlayerDisplay";
 import UserLink from "@/components/UserLink";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);
   const players = useAppSelector(selectPlayers);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   if (gameStatus !== "ended") return null;
 
@@ -26,7 +26,7 @@ export const GameEnded = () => {
     <Modal z={40} className="items-start sm:items-center">
       <div className="p-2 xxs:p-4 bg-slate-800 rounded-2xl text-white shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-2">
-          {t(locale, "game.gameEnded")}
+          {dictionary.game.gameEnded}
         </h2>
         <div className="text-center text-gray-300 italic mb-2 xxs:mb-4">
           <EndingPlayerDisplay />
@@ -72,7 +72,8 @@ export const PlayerCompInner = ({
   endReason: EndReason;
   players: Player[];
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary, locale } = useDictionaryContext();
+
   const otherPlayer = players.find((p) => p.id !== player.id);
   const isWinner = player.id === winnerId;
 
@@ -100,12 +101,12 @@ export const PlayerCompInner = ({
         )}
         {player.leftTheGame && (
           <span className="absolute -bottom-2 -right-2 text-sm text-red-400">
-            ({t(locale, "left")})
+            ({dictionary.left})
           </span>
         )}
         {isYou && (
           <span className="absolute -bottom-2 -left-2 text-sm font-bold">
-            ({t(locale, "you")})
+            ({dictionary.you})
           </span>
         )}
       </div>
@@ -166,11 +167,11 @@ export const PlayerCompInner = ({
 };
 
 const Paragraph = ({ text }: { text: string | number | undefined }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <p className="text-center m-0">
-      {text ?? t(locale, "game.endedModal.unavailable")}
+      {text ?? dictionary.game.endedModal.unavailable}
     </p>
   );
 };

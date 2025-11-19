@@ -1,9 +1,9 @@
 import Container from "@/components/Container";
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
+import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { interpolateString } from "@/features/language/lib/i18n";
 import UserPage from "@/features/user/components/pages/UserPage";
 import { fetchUser } from "@/features/user/utils/apiCalls";
 import { UserSearchParams } from "@/utils/types";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 type SearchParamsPromise = Promise<UserSearchParams>;
@@ -32,13 +32,18 @@ export async function generateMetadata({
   searchParams: Promise<UserSearchParams>;
   params: Promise<{ id: string }>;
 }) {
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
   const data = await fetchHelper(params, searchParams);
 
-  const title = t(locale, "metadata.userPage.title", { username: data.name });
-  const description = t(locale, "metadata.userPage.description", {
+  const title = interpolateString(dictionary.metadata.userPage.title, {
     username: data.name,
   });
+  const description = interpolateString(
+    dictionary.metadata.userPage.description,
+    {
+      username: data.name,
+    }
+  );
 
   return {
     title,

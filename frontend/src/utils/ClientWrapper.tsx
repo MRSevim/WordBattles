@@ -9,22 +9,26 @@ import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
 import { Lang } from "@/features/language/helpers/types";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import {
+  setDictionary,
   setGameLanguage,
   setGameRoomId,
   setGameStatus,
   setGameType,
 } from "@/features/game/lib/redux/slices/gameSlice";
 import { GameType } from "../../../types";
+import { DictionaryType } from "@/features/language/lib/dictionaries";
 
 const ClientWrapper = ({
   children,
   user,
   gameCookies,
   initialLocale,
+  dictionary,
 }: {
   children: React.ReactNode;
   user: User;
   initialLocale: Lang;
+  dictionary: DictionaryType;
   gameCookies: {
     sessionId?: string;
     roomId?: string;
@@ -38,6 +42,7 @@ const ClientWrapper = ({
     storeRef.current = makeStore();
     const dispatch = storeRef.current.dispatch;
     dispatch(setUser(user));
+    dispatch(setDictionary(dictionary));
 
     const sessionId = gameCookies.sessionId;
     const roomId = gameCookies.roomId;

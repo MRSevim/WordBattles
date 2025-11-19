@@ -14,11 +14,11 @@ import {
 } from "../../lib/redux/selectors";
 import "./SidePanel.css";
 import { removeCookie } from "@/utils/helpers";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+
 import { Button } from "../GameBoard/BottomPanel/Button";
 import { DivisionComp } from "../DivisionComp";
 import UserLink from "@/components/UserLink";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -38,7 +38,7 @@ export const SidePanel = () => {
 const OngoingGameContainer = () => {
   const gameOngoing = useAppSelector(selectGameRoomId);
   const dispatch = useAppDispatch();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   const leave = () => {
     dispatch(leaveGame());
@@ -57,7 +57,7 @@ const OngoingGameContainer = () => {
           <div className="flex justify-between m-2 xxs:m-3">
             <Button
               classes="bi bi bi-x-lg block lg:invisible"
-              title={t(locale, "game.toggleSidePanel")}
+              title={dictionary.game.toggleSidePanel}
               onClick={() => {
                 dispatch(toggleSidePanel());
               }}
@@ -66,7 +66,7 @@ const OngoingGameContainer = () => {
               onClick={leave}
               className="bg-brown text-white font-bold rounded-lg p-2 flex justify-center items-center gap-2 cursor-pointer"
             >
-              <span>{t(locale, "game.leave")}</span>
+              <span>{dictionary.game.leave}</span>
               <i className="bi bi-door-open"></i>
             </div>
           </div>
@@ -110,7 +110,7 @@ const PlayerSkeleton = () => {
 
 const PlayerContainer = ({ player }: { player: Player }) => {
   const timer = player.timer;
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <div
@@ -137,8 +137,7 @@ const PlayerContainer = ({ player }: { player: Player }) => {
               : "text-red-500")
           }
         >
-          {timer}{" "}
-          {timer > 1 ? t(locale, "game.seconds") : t(locale, "game.second")}
+          {timer} {timer > 1 ? dictionary.game.seconds : dictionary.game.second}
         </p>
       </div>
     </div>
@@ -158,7 +157,8 @@ export const UsernameAndPoints = ({
   points: number;
   division?: Division;
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary, locale } = useDictionaryContext();
+
   return (
     <>
       <UserLink
@@ -169,8 +169,8 @@ export const UsernameAndPoints = ({
       >
         {username}
       </UserLink>
-      {leftTheGame && <p className="font-bold">{t(locale, "left")}</p>}
-      {t(locale, "points")}: {points}
+      {leftTheGame && <p className="font-bold">{dictionary.left}</p>}
+      {dictionary.points}: {points}
       <DivisionComp division={division} />
     </>
   );
@@ -196,11 +196,11 @@ export const GameBannerInner = ({
   type: GameType;
   lang: Lang;
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
+
   return (
     <p className="p-2 text-center font-bold ">
-      {t(locale, `types.${type}`)} {t(locale, `lang.${lang}`)}{" "}
-      {t(locale, `game.label`)}
+      {dictionary.types[type]} {dictionary.lang[lang]} {dictionary.game.label}
     </p>
   );
 };

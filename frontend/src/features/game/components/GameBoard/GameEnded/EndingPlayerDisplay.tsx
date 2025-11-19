@@ -4,8 +4,8 @@ import {
   selectPlayers,
 } from "@/features/game/lib/redux/selectors";
 import { EndReason, Player } from "@/features/game/utils/types/gameTypes";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t, tReact } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { interpolateReact } from "@/features/language/lib/i18n";
 import { useAppSelector } from "@/lib/redux/hooks";
 
 const EndingPlayerDisplay = () => {
@@ -32,10 +32,10 @@ export const EndingPlayerDisplayInner = ({
   endingPlayerId?: string;
 }) => {
   const endingPlayer = players.find((player) => player.id === endingPlayerId);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   // 🗣️ Localized reason text
-  let localeText;
+  let localeText: EndReason = "none";
   switch (endReason) {
     case "consecutivePasses":
       localeText = "consecutivePasses";
@@ -47,12 +47,12 @@ export const EndingPlayerDisplayInner = ({
       localeText = "playerLeft";
       break;
     default:
-      localeText = "default";
+      localeText = "none";
   }
   return (
     <p>
-      {t(locale, "game.endedModal.endReason.label")}
-      {tReact(locale, "game.endedModal.endReason." + localeText, {
+      {dictionary.game.endedModal.endReason.label}
+      {interpolateReact(dictionary.game.endedModal.endReason[localeText], {
         player: <span className="font-bold">{endingPlayer?.username}</span>,
       })}
     </p>

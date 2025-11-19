@@ -5,14 +5,13 @@ import {
 import { changeEmptyLetter } from "@/features/game/lib/redux/slices/gameSlice";
 import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 import { Letter } from "@/features/game/utils/types/gameTypes";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { toast } from "react-toastify";
 
 export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
   const notFixed = !letter.fixed;
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const id = letter.id;
   const emptyLetterIds = useAppSelector(selectEmptyLetterIds);
   const dispatch = useAppDispatch();
@@ -45,7 +44,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
               const newLetter = e.target.value.toUpperCase(); // Convert to uppercase for comparison
 
               if (!validLetters.includes(newLetter) && newLetter !== "") {
-                toast.error(t(locale, "game.pleaseEnterValid"));
+                toast.error(dictionary.game.pleaseEnterValid);
               }
               dispatch(
                 changeEmptyLetter({

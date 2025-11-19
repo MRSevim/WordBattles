@@ -4,9 +4,8 @@ import {
   Coordinates,
   Letter,
 } from "@/features/game/utils/types/gameTypes";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
 import { LetterSkeleton } from "./LetterSkeleton";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const BoardComp = ({ board }: { board: Board }) => {
   return (
@@ -39,9 +38,10 @@ const Cell = ({
 }) => {
   const cls = computeClass(coordinates.row, coordinates.col);
 
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
-  const afterContent = t(locale, `game.${cls}`);
+  const afterContent =
+    cls !== "" && cls !== "center" ? dictionary.game[cls] : "";
 
   return (
     <>

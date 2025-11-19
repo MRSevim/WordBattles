@@ -4,10 +4,11 @@ import {
   Player,
   Word,
 } from "@/features/game/utils/types/gameTypes";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t, tReact } from "@/features/language/lib/i18n";
+
 import { RefObject, useEffect, useRef, useState } from "react";
 import { useReplayIndexContext } from "../../utils/contexts/replayIndexContext";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { interpolateReact } from "@/features/language/lib/i18n";
 
 export const GameMoves = ({ game }: { game: GameState }) => {
   return (
@@ -34,7 +35,7 @@ const HistoryItem = ({
 }) => {
   const wordsLength = item.words.length;
   const points = item.playerPoints;
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const player = players.find((player) => item.playerId === player.id);
   const [replayIndex, setReplayIndex] = useReplayIndexContext();
 
@@ -54,27 +55,25 @@ const HistoryItem = ({
       <div className="ms-4 p-2">
         <span>{i + 1}.</span>
         <span>{player?.username}</span>
-        {wordsLength === 0 && item.type === "pass" && t(locale, "game.passed")}
+        {wordsLength === 0 && item.type === "pass" && dictionary.game.passed}
         {wordsLength === 0 &&
           item.type === "switch" &&
-          t(locale, "game.switched")}
-        {wordsLength === 0 &&
-          item.type === "leave" &&
-          t(locale, "game.leftGame")}
+          dictionary.game.switched}
+        {wordsLength === 0 && item.type === "leave" && dictionary.game.leftGame}
         {wordsLength > 0 && (
           <>
             {" "}
             {wordsLength === 1 &&
-              tReact(locale, "game.generatedWords-one", {
+              interpolateReact(dictionary.game["generatedWords-one"], {
                 words: <Words words={item.words} />,
               })}
             {wordsLength > 1 &&
-              tReact(locale, "game.generatedWords-multiple", {
+              interpolateReact(dictionary.game["generatedWords-multiple"], {
                 words: <Words words={item.words} />,
               })}
           </>
         )}
-        {" (" + points + " " + t(locale, "points") + ")"}
+        {" (" + points + " " + dictionary.points + ")"}
       </div>
     </div>
   );
@@ -100,12 +99,12 @@ const WordComp = ({
   word: Word;
 }) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <div className="inline">
       <div className="group relative inline">
-        {wordsLength > 1 && i === wordsLength - 1 && t(locale, "and")}
+        {wordsLength > 1 && i === wordsLength - 1 && dictionary.and}
         <span className="cursor-pointer" ref={ref}>
           {word.word}
         </span>

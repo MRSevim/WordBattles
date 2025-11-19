@@ -1,4 +1,4 @@
-import { returnErrorFromUnknown } from "@/utils/helpers";
+import { returnErrorFromUnknown } from "@/utils/serverHelpers";
 import { authClient } from "../lib/authClient";
 import { redirect } from "next/navigation";
 import { routeStrings } from "@/utils/routeStrings";
@@ -19,7 +19,7 @@ export const signInWithGoogle = async () => {
     url = data.url;
   } catch (error) {
     console.error("Sign-in error:", error);
-    return returnErrorFromUnknown(error);
+    return await returnErrorFromUnknown(error);
   }
   redirect(url);
 };
@@ -30,7 +30,7 @@ export const logout = async () => {
     return { error: "" };
   } catch (error) {
     console.error("Logout error:", error);
-    return returnErrorFromUnknown(error);
+    return await returnErrorFromUnknown(error);
   }
 };
 export const deleteUser = async () => {
@@ -41,6 +41,6 @@ export const deleteUser = async () => {
     return { error: "" };
   } catch (error) {
     console.error("Logout error:", error);
-    return returnErrorFromUnknown(error);
+    return await returnErrorFromUnknown(error);
   }
 };

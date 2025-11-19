@@ -1,7 +1,5 @@
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { FindButton } from "./FindButton";
 import { Lang } from "@/features/language/helpers/types";
-import { t } from "@/features/language/lib/i18n";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import {
@@ -16,12 +14,13 @@ import {
 } from "@/features/game/lib/redux/selectors";
 import { GameType } from "@/features/game/utils/types/gameTypes";
 import { selectUser } from "@/features/auth/lib/redux/selectors";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 const selectClasses =
   "w-full px-4 py-2 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500";
 
 const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const userLoggedIn = useAppSelector(selectUser) !== undefined;
 
   const lang = useAppSelector(selectGameLanguage);
@@ -38,7 +37,7 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
   return (
     <>
       <h2 className="text-lg font-semibold">
-        {t(locale, "game.finder.selectLanguage")}
+        {dictionary.game.finder.selectLanguage}
       </h2>
 
       <select
@@ -46,8 +45,8 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
         onChange={(e) => dispatch(setGameLanguage(e.target.value as Lang))}
         className={selectClasses}
       >
-        <option value="en">{t(locale, "lang.en")}</option>
-        <option value="tr">{t(locale, "lang.tr")}</option>
+        <option value="en">{dictionary.lang.en}</option>
+        <option value="tr">{dictionary.lang.tr}</option>
       </select>
 
       <select
@@ -55,15 +54,15 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
         onChange={(e) => dispatch(setGameType(e.target.value as GameType))}
         className={selectClasses}
       >
-        <option value="casual">{t(locale, "types.casual")}</option>
+        <option value="casual">{dictionary.types.casual}</option>
         {userLoggedIn && (
-          <option value="ranked">{t(locale, "types.ranked")}</option>
+          <option value="ranked">{dictionary.types.ranked}</option>
         )}
       </select>
 
       <div className="flex gap-2 mt-2">
-        <FindButton onClick={cancel} text={t(locale, "cancel")} />
-        <FindButton onClick={findGame} text={t(locale, "game.finder.find")} />
+        <FindButton onClick={cancel} text={dictionary.cancel} />
+        <FindButton onClick={findGame} text={dictionary.game.finder.find} />
       </div>
     </>
   );

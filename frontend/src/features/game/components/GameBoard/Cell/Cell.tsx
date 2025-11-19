@@ -5,17 +5,18 @@ import {
   getLetterOnBoard,
   selectDraggingActive,
 } from "@/features/game/lib/redux/selectors";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+
 import { computeClass } from "@/features/game/utils/helpers";
 import { Coordinates } from "@/features/game/utils/types/gameTypes";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const Cell = ({ row, col }: Coordinates) => {
   const cls = computeClass(row, col);
 
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
-  const afterContent = t(locale, `game.${cls}`);
+  const afterContent =
+    cls !== "" && cls !== "center" ? dictionary.game[cls] : "";
 
   const coordinates = { row, col };
 

@@ -1,11 +1,10 @@
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
+import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
 import ContactForm from "./ContactForm";
-import { cookies } from "next/headers";
 
 export async function generateMetadata() {
-  const locale = await getLocaleFromCookie(cookies);
-  const title = t(locale, "metadata.contact.title");
-  const description = t(locale, "metadata.contact.description");
+  const dictionary = await getDictionaryFromSubdomain();
+  const title = dictionary.metadata.contact.title;
+  const description = dictionary.metadata.contact.description;
 
   return {
     title,

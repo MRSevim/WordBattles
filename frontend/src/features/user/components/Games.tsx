@@ -1,18 +1,17 @@
 "use client";
 import { Modal } from "@/components/Modal";
-import { t } from "@/features/language/lib/i18n";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { useState } from "react";
 import { PlayerCompInner } from "@/features/game/components/GameBoard/GameEnded/GameEnded";
 import Titles from "@/features/game/components/GameBoard/GameEnded/Titles";
 import { EndingPlayerDisplayInner } from "@/features/game/components/GameBoard/GameEnded/EndingPlayerDisplay";
 import { GameHistoryDisplayWrapper } from "./GameHistory.tsx/GameHistoryDisplay";
 import { GameState } from "@/features/game/utils/types/gameTypes";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export type ModalType = "history" | "stats" | "";
 
 const Games = ({ games }: { games: GameState[] }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const [selectedGame, setSelectedGame] = useState<GameState | null>(null);
   const [modalType, setModalType] = useState<ModalType>("");
 
@@ -38,7 +37,7 @@ const Games = ({ games }: { games: GameState[] }) => {
                   className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1.5 rounded-md transition cursor-pointer"
                 >
                   <i className="bi bi-bar-chart-fill"></i>
-                  {t(locale, "publicUserPage.pastGames.viewStats")}
+                  {dictionary.publicUserPage.pastGames.viewStats}
                 </button>
 
                 <button
@@ -49,7 +48,7 @@ const Games = ({ games }: { games: GameState[] }) => {
                   className="flex items-center gap-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm px-3 py-1.5 rounded-md transition cursor-pointer"
                 >
                   <i className="bi bi-clock-history"></i>
-                  {t(locale, "publicUserPage.pastGames.viewHistory")}
+                  {dictionary.publicUserPage.pastGames.viewHistory}
                 </button>
               </div>
             </div>
@@ -71,19 +70,19 @@ const Games = ({ games }: { games: GameState[] }) => {
 };
 
 const GameInfo = ({ game }: { game: GameState }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const winner = game.players.find((p) => p.id === game.winnerId);
   return (
     <div className="flex flex-col gap-1 text-gray-700 dark:text-gray-200">
       <div className="font-medium">
         <i className="bi bi-translate mr-1 text-blue-500" />
         {game.lang.toUpperCase()} •{" "}
-        {t(locale, "publicUserPage.pastGames.type." + game.type)}
+        {dictionary.publicUserPage.pastGames.type[game.type]}
       </div>
       <div className="text-sm text-gray-500 dark:text-gray-400">
         {winner
-          ? `${t(locale, "winner")}: ${winner.username}`
-          : t(locale, "publicUserPage.pastGames.noWinner")}
+          ? `${dictionary.winner}: ${winner.username}`
+          : dictionary.publicUserPage.pastGames.noWinner}
       </div>
     </div>
   );
@@ -98,7 +97,8 @@ const GameModal = ({
   game: GameState;
   onClose: () => void;
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
+  if (!type) return null;
 
   return (
     <Modal className="fixed">
@@ -116,7 +116,7 @@ const GameModal = ({
                 : "bi-bar-chart-fill text-blue-500"
             }`}
           ></i>
-          {t(locale, `publicUserPage.pastGames.${type}Label`)}
+          {dictionary.publicUserPage.pastGames[`${type}Label`]}
         </h4>
 
         {type === "stats" && <GameStatsDisplay game={game} />}
@@ -125,7 +125,7 @@ const GameModal = ({
           onClick={onClose}
           className="cursor-pointer mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-3 py-2 rounded-md transition"
         >
-          {t(locale, "closeModal")}
+          {dictionary.closeModal}
         </button>
       </div>
     </Modal>

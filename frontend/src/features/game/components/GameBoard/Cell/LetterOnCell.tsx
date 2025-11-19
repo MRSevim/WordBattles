@@ -8,7 +8,6 @@ import {
 import { useDraggable } from "@dnd-kit/core";
 import { useEffect } from "react";
 import { setDraggingValues } from "@/features/game/lib/redux/slices/gameSlice";
-import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 
 export const LetterOnCell = ({ coordinates }: { coordinates: Coordinates }) => {
   const letter = useAppSelector((state) =>

@@ -173,7 +173,7 @@
         "consecutivePasses": "{{player}} 2 tur üst üste pas geçti.",
         "allTilesUsed": "{{player}} havuz boş iken elindeki tüm taşları bitirdi.",
         "playerLeft": "{{player}} oyundan ayrıldı.",
-        "default": "Oyun bilinmeyen sebeple sonlandı."
+        "none": "Oyun bilinmeyen sebeple sonlandı."
       },
       "pointsDiff": "Puan farkı",
       "totalWordsPlayed": "Üretilen kelime sayısı",

@@ -7,25 +7,24 @@ import {
   pass,
 } from "@/features/game/lib/redux/slices/gameSlice";
 import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 const RightPanel = () => {
   const dispatch = useAppDispatch();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <div className="flex gap-2">
       <Button
         classes="bi bi bi-three-dots-vertical block lg:hidden"
-        title={t(locale, "game.toggleSidePanel")}
+        title={dictionary.game.toggleSidePanel}
         onClick={() => {
           dispatch(toggleSidePanel());
         }}
       />{" "}
       <Button
         classes="bi bi-arrow-right"
-        title={t(locale, "game.pass")}
+        title={dictionary.game.pass}
         onClick={() => {
           dispatch(pass());
         }}
@@ -38,12 +37,12 @@ const RightPanel = () => {
 const PlayButton = () => {
   const dispatch = useAppDispatch();
   const switching = useAppSelector(selectIsSwitching);
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   return (
     <Button
       classes="bi bi-arrow-right-square"
-      title={t(locale, "game.play")}
+      title={dictionary.game.play}
       onClick={() => {
         if (switching) {
           dispatch(_switch());

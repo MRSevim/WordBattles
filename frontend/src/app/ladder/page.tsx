@@ -1,12 +1,11 @@
 import { Ladder } from "@/features/ladder/components/Ladder";
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
+import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
 import { UserSearchParams } from "@/utils/types";
-import { cookies } from "next/headers";
 
 export async function generateMetadata() {
-  const locale = await getLocaleFromCookie(cookies);
-  const title = t(locale, "metadata.ladder.title");
-  const description = t(locale, "metadata.ladder.description");
+  const dictionary = await getDictionaryFromSubdomain();
+  const title = dictionary.metadata.ladder.title;
+  const description = dictionary.metadata.ladder.description;
 
   return {
     title,

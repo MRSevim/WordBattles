@@ -1,5 +1,3 @@
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import { UserSearchParams } from "@/utils/types";
 import { Division } from "@/features/game/utils/types/gameTypes";
@@ -7,6 +5,8 @@ import { DivisionComp } from "@/features/game/components/DivisionComp";
 import UserPastGames, { UserPastGamesSkeleton } from "../UserPastGames";
 import { Suspense } from "react";
 import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
+import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { interpolateString } from "@/features/language/lib/i18n";
 
 interface User {
   id: string;
@@ -42,7 +42,7 @@ const UserPage = async ({
   user: User;
   searchParams: UserSearchParams;
 }) => {
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
   const stats = user.stats?.[0];
   const ranks = user.ranks?.[0];
   const division = user.division;
@@ -74,7 +74,7 @@ const UserPage = async ({
         <LangAndSeasonSelectors searchParams={searchParams} />
         {ranks && (
           <p className="text-gray-700 dark:text-gray-300">
-            <Span>{t(locale, "publicUserPage.stats.rankedPoints")}</Span>{" "}
+            <Span>{dictionary.publicUserPage.stats.rankedPoints}</Span>{" "}
             {ranks.rankedPoints}
           </p>
         )}
@@ -83,47 +83,50 @@ const UserPage = async ({
         {/* Stats */}
         <div className="w-full mt-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex flex-col gap-2">
           <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-            {t(locale, "publicUserPage.stats.label")}
+            {dictionary.publicUserPage.stats.label}
           </h3>
           {stats && stats.totalGames > 0 ? (
             <div className="flex flex-col gap-2 text-gray-700 dark:text-gray-300">
               <div>
-                <Span>{t(locale, "publicUserPage.stats.totalGames")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats.totalGames}</Span>{" "}
                 {stats.totalGames}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.winrate")}</Span>{" "}
-                {t(locale, "publicUserPage.stats.winrateNumber", {
-                  number: roundTo2Decimals(
-                    (stats.wins / stats.totalGames) * 100
-                  ),
-                })}
+                <Span>{dictionary.publicUserPage.stats.winrate}</Span>{" "}
+                {interpolateString(
+                  dictionary.publicUserPage.stats.winrateNumber,
+                  {
+                    number: roundTo2Decimals(
+                      (stats.wins / stats.totalGames) * 100
+                    ),
+                  }
+                )}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.w/l/t")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats["w/l/t"]}</Span>{" "}
                 {stats.wins}/{stats.losses}/{stats.ties}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.avgGamePoints")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats.avgGamePoints}</Span>{" "}
                 {roundTo2Decimals(stats.totalPoints / stats.totalGames)}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.avgPointsDiff")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats.avgPointsDiff}</Span>{" "}
                 {roundTo2Decimals(stats.totalPointsDiff / stats.totalGames)}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.wordsPerGame")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats.wordsPerGame}</Span>{" "}
                 {roundTo2Decimals(stats.totalWords / stats.totalGames)}
               </div>
               <div>
-                <Span>{t(locale, "publicUserPage.stats.avgPerWord")}</Span>{" "}
+                <Span>{dictionary.publicUserPage.stats.avgPerWord}</Span>{" "}
                 {stats.totalWords > 0
                   ? roundTo2Decimals(stats.totalPoints / stats.totalWords)
                   : 0}
               </div>
               {stats.currentStreakType !== "none" && (
                 <div>
-                  <Span>{t(locale, "publicUserPage.stats.currentStreak")}</Span>{" "}
+                  <Span>{dictionary.publicUserPage.stats.currentStreak}</Span>{" "}
                   {stats.currentStreak}{" "}
                   {stats.currentStreakType === "win" ? "🏆" : "💀"}
                 </div>
@@ -131,14 +134,14 @@ const UserPage = async ({
               <div>
                 {" "}
                 <Span>
-                  {t(locale, "publicUserPage.stats.longestWinStreak")}
+                  {dictionary.publicUserPage.stats.longestWinStreak}
                 </Span>{" "}
                 {stats.longestWinStreak} 🏆
               </div>
               <div>
                 {" "}
                 <Span>
-                  {t(locale, "publicUserPage.stats.longestLossStreak")}
+                  {dictionary.publicUserPage.stats.longestLossStreak}
                 </Span>{" "}
                 {stats.longestLossStreak} 💀
               </div>
@@ -146,7 +149,7 @@ const UserPage = async ({
           ) : (
             <div className="text-gray-600 dark:text-gray-400">
               {" "}
-              <Span>{t(locale, "noData")}</Span>{" "}
+              <Span>{dictionary.noData}</Span>{" "}
             </div>
           )}
         </div>

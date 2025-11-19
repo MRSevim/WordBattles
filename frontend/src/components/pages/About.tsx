@@ -1,64 +1,68 @@
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import Container from "../Container";
-import { cookies } from "next/headers";
 import { Lang } from "@/features/language/helpers/types";
+import {
+  getDictionaryFromSubdomain,
+  getLocaleFromSubdomain,
+} from "@/features/language/lib/helpersServer";
+import { DictionaryType } from "@/features/language/lib/dictionaries";
 
 export const About = async () => {
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
 
   return (
     <Container className="py-10">
       <div className="mb-10">
         <h1 className="text-3xl font-bold mb-4">
-          {t(locale, "about.howToPlay")}
+          {dictionary.about.howToPlay}
         </h1>
         <ul className="list-disc pl-6 space-y-2">
-          <li>{t(locale, "about.p1")}</li>
-          <li>{t(locale, "about.p2")}</li>
-          <li>{t(locale, "about.p3")} </li>
-          <li>{t(locale, "about.p4")}</li>
-          <li>{t(locale, "about.p5")}</li>
+          <li>{dictionary.about.p1}</li>
+          <li>{dictionary.about.p2}</li>
+          <li>{dictionary.about.p3} </li>
+          <li>{dictionary.about.p4}</li>
+          <li>{dictionary.about.p5}</li>
         </ul>
       </div>
 
       <div>
         <h1 className="text-3xl font-bold mb-4">
-          {t(locale, "about.pointCalculation")}
+          {dictionary.about.pointCalculation}
         </h1>
         <ul className="list-disc pl-6 space-y-2">
-          <li>{t(locale, "about.p6")}</li>
-          <li>{t(locale, "about.p7")}</li>
-          <li>{t(locale, "about.p8")}</li>
-          <li>{t(locale, "about.p9")}</li>
-          <li>{t(locale, "about.p10")}</li>
-          <li>{t(locale, "about.p11")}</li>
+          <li>{dictionary.about.p6}</li>
+          <li>{dictionary.about.p7}</li>
+          <li>{dictionary.about.p8}</li>
+          <li>{dictionary.about.p9}</li>
+          <li>{dictionary.about.p10}</li>
+          <li>{dictionary.about.p11}</li>
         </ul>
       </div>
       <div>
-        <LetterTable locale={locale} />
+        <LetterTable dictionary={dictionary} />
       </div>
     </Container>
   );
 };
-const LetterTable = ({ locale }: { locale: Lang }) => {
+const LetterTable = async ({ dictionary }: { dictionary: DictionaryType }) => {
+  const locale = await getLocaleFromSubdomain();
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4 text-center">
-        {t(locale, "about.letterPool")}
+        {dictionary.about.letterPool}
       </h1>
       <table className="min-w-full border border-gray-200">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">{t(locale, "about.letter")}</th>
-            <th className="py-2 px-4 border-b">{t(locale, "about.points")}</th>
-            <th className="py-2 px-4 border-b">{t(locale, "about.amount")}</th>
+            <th className="py-2 px-4 border-b">{dictionary.about.letter}</th>
+            <th className="py-2 px-4 border-b">{dictionary.about.points}</th>
+            <th className="py-2 px-4 border-b">{dictionary.about.amount}</th>
           </tr>
         </thead>
         <tbody>
           {letters[locale].map((letter, index) => (
             <tr key={index} className="hover:bg-gray-50 hover:text-black">
               <td className="py-2 px-4 border-b text-center">
-                {letter.letter || t(locale, "about.empty")}
+                {letter.letter || dictionary.about.empty}
               </td>
               <td className="py-2 px-4 border-b text-center">{letter.point}</td>
               <td className="py-2 px-4 border-b text-center">

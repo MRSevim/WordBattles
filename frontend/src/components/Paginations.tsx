@@ -1,6 +1,5 @@
 "use client";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
@@ -20,7 +19,7 @@ export default function Pagination({
 }: PaginationProps) {
   const pathname = usePathname();
   const { replace } = useRouter();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const searchParams = useSearchParams();
 
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -40,12 +39,12 @@ export default function Pagination({
     <div className="flex justify-center mt-8">
       <nav
         className="inline-flex items-center gap-2 bg-white shadow-sm rounded-lg px-3 py-2"
-        aria-label={t(locale, "pagination.text")}
+        aria-label={dictionary.pagination.text}
       >
         {/* First Page */}
         <button
           onClick={() => handlePageChange(1)}
-          aria-label={t(locale, "pagination.goToFirst")}
+          aria-label={dictionary.pagination.goToFirst}
           disabled={currentPage === 1}
           className={`${buttonClasses} ${
             currentPage === 1 ? disabledButtonClasses : activeButtonClasses
@@ -58,7 +57,7 @@ export default function Pagination({
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          aria-label={t(locale, "pagination.goToPrev")}
+          aria-label={dictionary.pagination.goToPrev}
           className={`${buttonClasses} ${
             currentPage === 1 ? disabledButtonClasses : activeButtonClasses
           }`}
@@ -82,7 +81,7 @@ export default function Pagination({
         {/* Next Button */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
-          aria-label={t(locale, "pagination.goToNext")}
+          aria-label={dictionary.pagination.goToNext}
           disabled={currentPage === totalPages}
           className={`${buttonClasses} ${
             currentPage === totalPages
@@ -97,7 +96,7 @@ export default function Pagination({
         <button
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
-          aria-label={t(locale, "pagination.goToLast")}
+          aria-label={dictionary.pagination.goToLast}
           className={`${buttonClasses} ${
             currentPage === totalPages
               ? disabledButtonClasses

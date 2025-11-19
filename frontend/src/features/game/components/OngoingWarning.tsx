@@ -5,8 +5,7 @@ import { routeStrings } from "@/utils/routeStrings";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { selectGameRoomId, selectGameStatus } from "../lib/redux/selectors";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const OngoingWarning = () => {
   const pathname = usePathname();
@@ -15,7 +14,7 @@ export const OngoingWarning = () => {
   const roomId = useAppSelector(selectGameRoomId);
   const gameIsOngoing = roomId || gameStatus === "ended";
   const lookingForGame = gameStatus === "looking";
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   const home = routeStrings.home;
 
@@ -37,14 +36,14 @@ export const OngoingWarning = () => {
         >
           X
         </span>
-        {gameIsOngoing && t(locale, "game.ongoing.ongoingGameWarning")}
+        {gameIsOngoing && dictionary.game.ongoing.ongoingGameWarning}
         {!gameIsOngoing &&
           lookingForGame &&
-          t(locale, "game.ongoing.ongoingLookingWarning")}
+          dictionary.game.ongoing.ongoingLookingWarning}
         <div className="flex items-center justify-center">
           <Link className="underline" href={routeStrings.home}>
             {" "}
-            {t(locale, "game.ongoing.go")}
+            {dictionary.game.ongoing.go}
           </Link>
         </div>
       </div>

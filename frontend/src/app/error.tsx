@@ -1,8 +1,7 @@
 "use client"; // Error boundaries must be Client Components
 
 import Container from "@/components/Container";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { useEffect } from "react";
 
 export default function ErrorBoundary({
@@ -12,7 +11,7 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   useEffect(() => {
     console.error(error);
@@ -27,17 +26,17 @@ export default function ErrorBoundary({
           </div>
 
           <h1 className="text-2xl font-semibold text-gray-900">
-            {t(locale, "errorBoundary.somethingWentWrong")}
+            {dictionary.errorBoundary.somethingWentWrong}
           </h1>
           <p className="text-gray-500 text-sm">
-            {error.message || t(locale, "unexpectedError")}
+            {error.message || dictionary.unexpectedError}
           </p>
 
           <button
             onClick={() => reset()}
             className="mt-6 px-6 py-2 rounded-lg bg-primary text-white font-medium shadow hover:opacity-90 transition"
           >
-            {t(locale, "errorBoundary.tryAgain")}
+            {dictionary.errorBoundary.tryAgain}
           </button>
         </div>
       </div>

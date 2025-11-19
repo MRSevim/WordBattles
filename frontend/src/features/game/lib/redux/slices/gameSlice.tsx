@@ -25,9 +25,9 @@ import {
   returnEverythingToHandHelper,
   shuffle,
 } from "@/features/game/utils/reduxSliceHelpers";
-import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
 import { Lang } from "@/features/language/helpers/types";
 import { v4 as uuidv4 } from "uuid";
+import { DictionaryType } from "@/features/language/lib/dictionaries";
 
 const initialDraggingValues = {
   active: null,
@@ -65,6 +65,9 @@ export const gameSlice = createSlice({
     setGameType: (state, action: PayloadAction<GameType>) => {
       state.type = action.payload;
     },
+    setDictionary: (state, action: PayloadAction<DictionaryType>) => {
+      state.dictionary = action.payload;
+    },
     leaveGame: (state) => {
       socket.emit("Leave Game", { state: getStrippedState(state) }, () => {
         socket.disconnect();
@@ -97,7 +100,7 @@ export const gameSlice = createSlice({
     moveLetter: (state, action: PayloadAction<Coordinates | undefined>) => {
       const player = findSocketPlayer(state);
 
-      const isPlaying = checkPlaying(state.status);
+      const isPlaying = checkPlaying(state);
 
       if (
         !player ||
@@ -118,7 +121,7 @@ export const gameSlice = createSlice({
 
       // If target is a board cell, ensure it's the player's turn
       if (targetData.coordinates) {
-        const playersTurn = checkPlayersTurn(player);
+        const playersTurn = checkPlayersTurn(player, state.dictionary);
 
         if (!playersTurn) return;
       }
@@ -157,7 +160,7 @@ export const gameSlice = createSlice({
     },
     shuffleHand: (state) => {
       const player = findSocketPlayer(state);
-      const isPlaying = checkPlaying(state.status);
+      const isPlaying = checkPlaying(state);
       if (player && isPlaying) {
         shuffle(player.hand);
       }
@@ -165,14 +168,14 @@ export const gameSlice = createSlice({
     _switch: (state) => {
       const player = findSocketPlayer(state);
       const switchedIndices = state.switchIndices;
-      const isPlaying = checkPlaying(state.status);
-      const playersTurn = checkPlayersTurn(player);
+      const isPlaying = checkPlaying(state);
+      const playersTurn = checkPlayersTurn(player, state.dictionary);
 
-      const locale = getLocaleFromClientCookie();
+      const dictionary = state.dictionary;
 
       const switchIndicesLength = state.switchIndices.length;
 
-      if (switchIndicesLength === 0) {
+      if (switchIndicesLength === 0 || !dictionary) {
         return;
       }
 
@@ -182,7 +185,7 @@ export const gameSlice = createSlice({
         }
 
         if (switchIndicesLength > state.undrawnLetterPool.length) {
-          toast.error(t(locale, "game.notEnoughLetter"));
+          toast.error(dictionary.game.notEnoughLetter);
           return;
         }
         returnEverythingToHandHelper(state);
@@ -201,8 +204,8 @@ export const gameSlice = createSlice({
     pass: (state) => {
       const player = findSocketPlayer(state);
 
-      const playersTurn = checkPlayersTurn(player);
-      const isPlaying = checkPlaying(state.status);
+      const playersTurn = checkPlayersTurn(player, state.dictionary);
+      const isPlaying = checkPlaying(state);
       if (!playersTurn || !isPlaying) return;
 
       const moveId = uuidv4();
@@ -214,8 +217,8 @@ export const gameSlice = createSlice({
     },
     returnEverythingToHand: (state) => {
       const player = findSocketPlayer(state);
-      const playersTurn = checkPlayersTurn(player);
-      const isPlaying = checkPlaying(state.status);
+      const playersTurn = checkPlayersTurn(player, state.dictionary);
+      const isPlaying = checkPlaying(state);
 
       if (isPlaying && playersTurn) {
         returnEverythingToHandHelper(state);
@@ -224,8 +227,8 @@ export const gameSlice = createSlice({
     makePlay: (state) => {
       const player = findSocketPlayer(state);
 
-      const isPlaying = checkPlaying(state.status);
-      const playersTurn = checkPlayersTurn(player);
+      const isPlaying = checkPlaying(state);
+      const playersTurn = checkPlayersTurn(player, state.dictionary);
       if (!playersTurn || !isPlaying) return;
       const moveId = uuidv4();
 
@@ -243,7 +246,7 @@ export const gameSlice = createSlice({
       }>
     ) => {
       const player = findSocketPlayer(state);
-      const isPlaying = checkPlaying(state.status);
+      const isPlaying = checkPlaying(state);
 
       const { newLetter, targetId } = action.payload;
 
@@ -265,7 +268,7 @@ export const gameSlice = createSlice({
       state,
       action: PayloadAction<Partial<DraggingValues>>
     ) => {
-      const isPlaying = checkPlaying(state.status);
+      const isPlaying = checkPlaying(state);
       if (!isPlaying) return;
       const payload = action.payload;
       if (payload.active !== undefined)
@@ -275,7 +278,7 @@ export const gameSlice = createSlice({
         state.draggingValues.activeLetter = payload.activeLetter;
     },
     toggleSwitching: (state) => {
-      const isPlaying = checkPlaying(state.status);
+      const isPlaying = checkPlaying(state);
       const hand = findSocketPlayer(state)?.hand;
       if (!isPlaying || !hand) return;
       if (!state.switching) {
@@ -330,6 +333,7 @@ export const {
   changeSwitchValue,
   setGameLanguage,
   setGameType,
+  setDictionary,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

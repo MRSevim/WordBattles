@@ -173,7 +173,7 @@
         "consecutivePasses": "{{player}} passed 2 consecutive times.",
         "allTilesUsed": "{{player}} used all the their remaining tiles while pool is empty.",
         "playerLeft": "{{player}} has left the game.",
-        "default": "Game ended for unknown reasons."
+        "none": "Game ended for unknown reasons."
       },
       "pointsDiff": "Points difference",
       "totalWordsPlayed": "Total words generated",

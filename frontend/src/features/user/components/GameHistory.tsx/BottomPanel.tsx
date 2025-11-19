@@ -1,8 +1,7 @@
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
 import { useLetterPoolToggleContext } from "../../utils/contexts/LetterPoolToggleContext";
-import { t } from "@/features/language/lib/i18n";
 import NakedLetterSkeleton from "@/features/game/components/GameBoard/LetterRelated/NakedLetterSkeleton";
 import { LetterAndPoints } from "@/features/game/utils/types/gameTypes";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const BottomPanel = ({
   undrawnLettersLength,
@@ -24,13 +23,13 @@ const ToggleLetterPoolButton = ({
 }: {
   undrawnLettersLength: number;
 }) => {
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
   const [, setLetterPoolOpen] = useLetterPoolToggleContext();
 
   return (
     <i
       onMouseDown={() => setLetterPoolOpen((prev) => !prev)}
-      title={t(locale, "game.letterPool")}
+      title={dictionary.game.letterPool}
       className="bg-brown rounded-lg flex flex-col items-center justify-center w-9 h-9 text-center text-white cursor-pointer"
     >
       <i className="bi bi-archive text-lg leading-none mt-1"></i>

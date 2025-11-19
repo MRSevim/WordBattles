@@ -2,13 +2,16 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import ClientWrapper from "@/utils/ClientWrapper";
 import { Header } from "@/components/Header/Header";
-import { Provider as LocaleContextProvider } from "@/features/language/helpers/LocaleContext";
+import { Provider as DictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
 import { cookies } from "next/headers";
-import { getLocaleFromCookie, t } from "@/features/language/lib/i18n";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
 import Script from "next/script";
+import {
+  getDictionaryFromSubdomain,
+  getLocaleFromSubdomain,
+} from "@/features/language/lib/helpersServer";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -18,9 +21,9 @@ const geistSans = Open_Sans({
 const title = "WordBattles";
 
 export async function generateMetadata() {
-  const locale = await getLocaleFromCookie(cookies);
+  const dictionary = await getDictionaryFromSubdomain();
 
-  const description = t(locale, "metadata.description");
+  const description = dictionary.metadata.description;
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
@@ -30,17 +33,21 @@ export async function generateMetadata() {
     },
     alternates: {
       canonical: "/",
+      languages: {
+        "en-US": "https://en.wordbattles.net",
+        "tr-TR": "https://tr.wordbattles.net",
+      },
     },
     description,
     keywords: [
-      t(locale, "metadata.keywords.onlineScrabble"),
-      t(locale, "metadata.keywords.competitiveScrabble"),
-      t(locale, "metadata.keywords.multiplayerWordGame"),
-      t(locale, "metadata.keywords.englishScrabble"),
-      t(locale, "metadata.keywords.turkishScrabble"),
-      t(locale, "metadata.keywords.wordBattles"),
-      t(locale, "metadata.keywords.rankedScrabbleOnline"),
-      t(locale, "metadata.keywords.vocabularyChallenge"),
+      dictionary.metadata.keywords.onlineScrabble,
+      dictionary.metadata.keywords.competitiveScrabble,
+      dictionary.metadata.keywords.multiplayerWordGame,
+      dictionary.metadata.keywords.englishScrabble,
+      dictionary.metadata.keywords.turkishScrabble,
+      dictionary.metadata.keywords.wordBattles,
+      dictionary.metadata.keywords.rankedScrabbleOnline,
+      dictionary.metadata.keywords.vocabularyChallenge,
     ],
     openGraph: {
       title,
@@ -57,13 +64,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialLocale = await getLocaleFromCookie(cookies);
-  const initialTheme = (await cookies()).get("theme")?.value;
-  const gameCookies = await getGameCookies();
-  const user = await getUserData();
+  const [initialDictionary, initialLocale, cookieStore, gameCookies, user] =
+    await Promise.all([
+      getDictionaryFromSubdomain(),
+      getLocaleFromSubdomain(),
+      cookies(),
+      getGameCookies(),
+      getUserData(),
+    ]);
+
+  const initialTheme = cookieStore.get("theme")?.value;
 
   return (
-    <html lang="en">
+    <html lang={initialLocale}>
       <head>
         {process.env.NODE_ENV === "production" && (
           <>
@@ -91,18 +104,22 @@ export default async function RootLayout({
           initialTheme === "dark" ? "dark" : ""
         }`}
       >
-        <LocaleContextProvider initialLocale={initialLocale}>
+        <DictionaryContext
+          initialDictionary={initialDictionary}
+          initialLocale={initialLocale}
+        >
           <ThemeContextProvider initialTheme={initialTheme}>
             <ClientWrapper
               user={user}
               gameCookies={gameCookies}
               initialLocale={initialLocale}
+              dictionary={initialDictionary}
             >
               <Header />
               {children}
             </ClientWrapper>
           </ThemeContextProvider>
-        </LocaleContextProvider>
+        </DictionaryContext>
       </body>
     </html>
   );

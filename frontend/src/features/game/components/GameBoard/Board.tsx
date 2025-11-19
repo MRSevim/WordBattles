@@ -7,15 +7,14 @@ import {
 } from "../../lib/redux/selectors";
 import { initialBoard } from "../../utils/helpers";
 import { Cell } from "./Cell/Cell";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
-import { t } from "@/features/language/lib/i18n";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export const Board = () => {
   const [bingo, setBingo] = useState<boolean>(false);
   const playerTurn = useAppSelector(selectPlayerTurnState);
   const [playerTurnPopup, setPlayerTurnPopup] = useState<boolean>(false);
   const isPlaying = useAppSelector(selectGameStatus) === "playing";
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   useEffect(() => {
     socket.on("Bingo", () => {
@@ -56,8 +55,8 @@ export const Board = () => {
           >
             x
           </div>
-          {playerTurnPopup && t(locale, "game.yourTurn")}
-          {bingo && t(locale, "game.bingo")}
+          {playerTurnPopup && dictionary.game.yourTurn}
+          {bingo && dictionary.game.bingo}
         </div>
       )}
       <Cells />

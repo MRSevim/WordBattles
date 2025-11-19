@@ -2,28 +2,31 @@ import {
   Board,
   GameState,
   GameStateWithInteractivity,
-  GameStatus,
   LettersArray,
   Player,
 } from "@/features/game/utils/types/gameTypes";
 import { toast } from "react-toastify";
 import { findSocketPlayer } from "./helpers";
-import { getLocaleFromClientCookie, t } from "@/features/language/lib/i18n";
+import { DictionaryType } from "@/features/language/lib/dictionaries";
 
-export const checkPlayersTurn = (player: Player | undefined) => {
-  const locale = getLocaleFromClientCookie();
-  if (player) {
+export const checkPlayersTurn = (
+  player: Player | undefined,
+  dictionary: DictionaryType | undefined
+) => {
+  if (player && dictionary) {
     if (!player.turn) {
-      toast.error(t(locale, "notYourTurn"));
+      toast.error(dictionary.notYourTurn);
       return false;
     } else return true;
   }
 };
 
-export const checkPlaying = (status: GameStatus) => {
-  const locale = getLocaleFromClientCookie();
+export const checkPlaying = (state: GameStateWithInteractivity) => {
+  const status = state.status;
+  const dictionary = state.dictionary;
+  if (!dictionary) return;
   const isPlaying = status === "playing";
-  if (!isPlaying) toast.error(t(locale, "notInActiveGame"));
+  if (!isPlaying) toast.error(dictionary.notInActiveGame);
   return isPlaying;
 };
 

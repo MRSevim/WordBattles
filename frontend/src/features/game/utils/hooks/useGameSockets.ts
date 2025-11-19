@@ -11,16 +11,15 @@ import {
 import { toast } from "react-toastify";
 import { removeCookie, setCookie } from "@/utils/helpers";
 import { setInitialData } from "../../lib/redux/slices/initialDataSlice";
-import { t } from "@/features/language/lib/i18n";
-import { useLocaleContext } from "@/features/language/helpers/LocaleContext";
+import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
-  const [locale] = useLocaleContext();
+  const { dictionary } = useDictionaryContext();
 
   useEffect(() => {
     socket.on("connect_error", (err) => {
-      const error: string = `${t(locale, "connectionFailed")} ${err.message}`;
+      const error: string = `${dictionary.connectionFailed} ${err.message}`;
       toast.error(error);
     });
 
@@ -48,7 +47,7 @@ export default function useGameSockets() {
       "Time is Up",
       ({ currentPlayerId }: { currentPlayerId: string }) => {
         if (currentPlayerId === socket.sessionId)
-          toast.error(t(locale, "timeIsUp"));
+          toast.error(dictionary.timeIsUp);
       }
     );
 
