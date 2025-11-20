@@ -13,9 +13,9 @@ export const checkPlayersTurn = (
   player: Player | undefined,
   dictionary: DictionaryType | undefined
 ) => {
-  if (player && dictionary) {
+  if (player) {
     if (!player.turn) {
-      toast.error(dictionary.notYourTurn);
+      if (dictionary) toast.error(dictionary.notYourTurn);
       return false;
     } else return true;
   }
@@ -24,9 +24,9 @@ export const checkPlayersTurn = (
 export const checkPlaying = (state: GameStateWithInteractivity) => {
   const status = state.status;
   const dictionary = state.dictionary;
-  if (!dictionary) return;
+
   const isPlaying = status === "playing";
-  if (!isPlaying) toast.error(dictionary.notInActiveGame);
+  if (!isPlaying && dictionary) toast.error(dictionary.notInActiveGame);
   return isPlaying;
 };
 

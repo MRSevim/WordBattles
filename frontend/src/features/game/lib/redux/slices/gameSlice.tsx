@@ -81,6 +81,7 @@ export const gameSlice = createSlice({
         draggingValues: initialDraggingValues,
         switching: state.switching,
         switchIndices: state.switchIndices,
+        dictionary: state.dictionary,
       };
     },
     setGameRoomId: (state, action: PayloadAction<string>) => {
