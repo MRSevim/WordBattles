@@ -56,7 +56,10 @@ export const GameFinder = () => {
   }, []);
 
   const stopLooking = () => {
-    socket.disconnect();
+    socket.emit("Stopped Looking", undefined, () => {
+      socket.disconnect();
+    });
+
     dispatch(setGameStatus("idle"));
     removeCookie("sessionId");
     removeCookie("lang");
@@ -140,20 +143,26 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
 
 export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
   const { dictionary } = useDictionaryContext();
-  const [seconds, setSeconds] = useState(0);
+  const [milliseconds, setMilliseconds] = useState<number | undefined>();
 
   useEffect(() => {
-    const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => clearInterval(interval);
+    socket.on("Looking Tick", ({ elapsedMs }: { elapsedMs: number }) => {
+      setMilliseconds(elapsedMs);
+    });
+
+    return () => {
+      socket.off("Looking Tick");
+    };
   }, []);
 
   // Format to mm:ss
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60)
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60)
       .toString()
       .padStart(2, "0");
-    const sec = (s % 60).toString().padStart(2, "0");
-    return `${m}:${sec}`;
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
   };
 
   return (
@@ -165,12 +174,16 @@ export const LookingModal = ({ stopLooking }: { stopLooking: () => void }) => {
             {dictionary.game.lookingForAGame}
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-gray-200">
-            <i className="bi bi-clock-history text-lg" />
-            <span className="font-mono text-lg tracking-wider">
-              {formatTime(seconds)}
-            </span>
-          </div>
+          {milliseconds !== undefined ? (
+            <div className="flex items-center gap-2 text-sm text-gray-200">
+              <i className="bi bi-clock-history text-lg" />
+              <span className="font-mono text-lg tracking-wider">
+                {formatTime(milliseconds)}
+              </span>
+            </div>
+          ) : (
+            <div className="w-20 h-6 bg-gray-400 rounded-md animate-pulse mt-2" />
+          )}
         </div>
 
         <FindButton onClick={stopLooking} text={dictionary.game.stop} />

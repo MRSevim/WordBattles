@@ -43,12 +43,42 @@ let waitingPlayers: Record<Lang, Record<GameType, Socket[]>> = {
   en: { ranked: [], casual: [] },
 };
 
+interface ActiveSearchTimer {
+  startTime: number; // when the player started searching
+  timerInterval: NodeJS.Timeout; // interval reference
+  currentTolerance?: number; // only used for ranked games
+}
+
+const activeTimers: Record<string, ActiveSearchTimer> = {}; //keyed by sessionId
+
 const BASE_TOLERANCE = 100;
 const TOLERANCE_STEP = 50;
 const MAX_TOLERANCE = 600;
 const INTERVAL_MS = 5000;
 
 export const runSocketLogic = (io: Io) => {
+  // Periodic cleanup of orphaned timers
+  setInterval(() => {
+    for (const sessionId in activeTimers) {
+      const timer = activeTimers[sessionId];
+
+      // If timer does not exist, skip
+      if (!timer) continue;
+
+      // If no connected socket has this sessionId → remove
+      const socketStillConnected = [...io.sockets.sockets.values()].some(
+        (s) => s.sessionId === sessionId
+      );
+
+      if (!socketStillConnected) {
+        console.log("🧹 Cleaning orphaned timer:", sessionId);
+        clearInterval(timer.timerInterval);
+        delete activeTimers[sessionId];
+        continue;
+      }
+    }
+  }, 30000);
+
   io.on("connection", async (socket: Socket) => {
     console.log("a user connected");
 
@@ -110,6 +140,18 @@ export const runSocketLogic = (io: Io) => {
         saveGame(gameState, io);
         updateCurrentRoomIdInDB(p1.user?.id, gameState.roomId);
         updateCurrentRoomIdInDB(p2.user?.id, gameState.roomId);
+        clearInterval(activeTimers[p1.sessionId]?.timerInterval);
+        clearInterval(activeTimers[p2.sessionId]?.timerInterval);
+        delete activeTimers[p1.sessionId];
+        delete activeTimers[p2.sessionId];
+      };
+
+      const emitTick = () => {
+        const activeTimer = activeTimers[socket.sessionId];
+        if (activeTimer) {
+          const elapsedMs = Date.now() - activeTimer.startTime;
+          socket.emit("Looking Tick", { elapsedMs });
+        }
       };
 
       const queue = waitingPlayers[lang][type];
@@ -123,8 +165,6 @@ export const runSocketLogic = (io: Io) => {
           });
           const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
           const division = user?.division ?? getUnfetchedDivision();
-          console.log("user rank:", rank);
-          console.log("user division:", division);
           socket.rankedPoints = rank;
           socket.division = division;
         } catch (err) {
@@ -137,46 +177,60 @@ export const runSocketLogic = (io: Io) => {
         if (!queue.includes(socket)) {
           console.log("ranked player pushed to queue");
           queue.push(socket);
+
+          activeTimers[socket.sessionId] = {
+            startTime: activeTimers[socket.sessionId]?.startTime ?? Date.now(),
+            currentTolerance:
+              activeTimers[socket.sessionId]?.currentTolerance ??
+              BASE_TOLERANCE,
+            timerInterval: setInterval(emitTick, 1000),
+          };
+
+          emitTick();
         }
 
         // --- Search loop ---
-        let currentTolerance = BASE_TOLERANCE;
+        let currentTolerance =
+          activeTimers[socket.sessionId]?.currentTolerance ?? BASE_TOLERANCE;
+        if (!socket.searchInterval) {
+          socket.searchInterval = setInterval(() => {
+            console.log("current tolerance of scanning:", currentTolerance);
 
-        const searchInterval = setInterval(() => {
-          console.log("current tolerance of scanning:", currentTolerance);
+            // 🔎 Find a suitable opponent (ignore self)
+            const matchedIndex = queue.findIndex(
+              (queuedSocket) =>
+                queuedSocket !== socket && // 🧠 Ignore self
+                queuedSocket.searchInterval !== undefined &&
+                Math.abs(
+                  (queuedSocket.rankedPoints ?? 3000) -
+                    (socket.rankedPoints ?? 3000)
+                ) <= currentTolerance
+            );
 
-          // 🔎 Find a suitable opponent (ignore self)
-          const matchedIndex = queue.findIndex(
-            (queuedSocket) =>
-              queuedSocket !== socket && // 🧠 Ignore self
-              queuedSocket.searchInterval !== undefined &&
-              Math.abs(
-                (queuedSocket.rankedPoints ?? 3000) -
-                  (socket.rankedPoints ?? 3000)
-              ) <= currentTolerance
-          );
+            if (matchedIndex !== -1) {
+              const opponent = queue[matchedIndex];
 
-          if (matchedIndex !== -1) {
-            const opponent = queue[matchedIndex];
+              // Clear intervals FIRST
+              clearInterval(socket.searchInterval);
+              socket.searchInterval = undefined;
+              clearInterval(opponent.searchInterval);
+              opponent.searchInterval = undefined;
 
-            // Clear intervals FIRST
-            clearInterval(socket.searchInterval);
-            socket.searchInterval = undefined;
-            clearInterval(opponent.searchInterval);
-            opponent.searchInterval = undefined;
+              // THEN remove from queue
+              queue.splice(matchedIndex, 1);
+              const selfIndex = queue.indexOf(socket);
+              if (selfIndex !== -1) queue.splice(selfIndex, 1);
 
-            // THEN remove from queue
-            queue.splice(matchedIndex, 1);
-            const selfIndex = queue.indexOf(socket);
-            if (selfIndex !== -1) queue.splice(selfIndex, 1);
-
-            startGame(socket, opponent);
-          } else if (currentTolerance < MAX_TOLERANCE) {
-            currentTolerance += TOLERANCE_STEP;
-          }
-        }, INTERVAL_MS);
-
-        socket.searchInterval = searchInterval;
+              startGame(socket, opponent);
+            } else if (currentTolerance < MAX_TOLERANCE) {
+              currentTolerance += TOLERANCE_STEP;
+              if (activeTimers[socket.sessionId]) {
+                activeTimers[socket.sessionId].currentTolerance =
+                  currentTolerance;
+              }
+            }
+          }, INTERVAL_MS);
+        }
       } else if (type === "casual") {
         // Basic queue matchmaking
 
@@ -187,15 +241,24 @@ export const runSocketLogic = (io: Io) => {
           const selfIndex = queue.indexOf(socket);
           if (selfIndex !== -1) queue.splice(selfIndex, 1);
 
-          const gameState = generateGameState(socket, opponent!, options);
-          io.to(gameState.roomId).emit("Start Game", gameState);
-          sendInitialData(io, gameState);
-          saveGame(gameState, io);
+          startGame(socket, opponent!);
         } else if (!queue.includes(socket)) {
           console.log("casual player pushed to queue");
           queue.push(socket);
+
+          activeTimers[socket.sessionId] = {
+            startTime: activeTimers[socket.sessionId]?.startTime ?? Date.now(),
+            timerInterval: setInterval(emitTick, 1000),
+          };
+
+          emitTick();
         }
       }
+    });
+
+    socket.on("Stopped Looking", () => {
+      clearInterval(activeTimers[socket.sessionId]?.timerInterval);
+      delete activeTimers[socket.sessionId];
     });
 
     socket.on("disconnect", () => {
@@ -204,6 +267,7 @@ export const runSocketLogic = (io: Io) => {
         clearInterval(socket.searchInterval);
         socket.searchInterval = undefined;
       }
+      clearInterval(activeTimers[socket.sessionId]?.timerInterval);
       if (socket.roomId) {
         socket.leave(socket.roomId);
       }
