@@ -46,6 +46,14 @@ export const Links = ({
         {dictionary.header.about}
       </Link>
 
+      <Link
+        href={routeStrings.game}
+        onClick={closeMenu}
+        className={`${linkBase} ${mobile ? mobileLinks : ""}`}
+      >
+        {dictionary.header.play}
+      </Link>
+
       {mobile && mobileLine}
 
       <Link

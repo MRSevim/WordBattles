@@ -15,7 +15,7 @@ export const Header = async () => {
           WordBattles
         </Link>
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Links />
         </div>
 

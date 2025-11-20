@@ -20,6 +20,10 @@
   "you": "Sen",
   "points": "puan",
   "winner": "Kazanan",
+  "homepage": {
+    "title": "Dereceli Scrabble",
+    "play": "Şimdi Oyna"
+  },
   "metadata": {
     "description": "Gerçek zamanlı kelime savaşlarında rakiplerinle yarış! İngilizce ve Türkçe dillerinde oynanabilen rekabetçi Scrabble deneyimiyle kelime gücünü kanıtla ve sıralamada zirveye tırman!",
     "keywords": {
@@ -75,6 +79,7 @@
   "header": {
     "about": "Oyun Hakkında",
     "leaderboard": "Skor Tablosu",
+    "play": "Oyna",
     "contact": "İletişim",
     "userMenu": {
       "cantLogout": "Şu anda çıkış yapamazsınız!",

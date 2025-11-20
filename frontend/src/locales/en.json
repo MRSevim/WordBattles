@@ -20,6 +20,10 @@
   "you": "You",
   "points": "points",
   "winner": "Winner",
+  "homepage": {
+    "title": "Ranked Scrabble",
+    "play": "Play Now"
+  },
   "metadata": {
     "description": "Play the ultimate competitive Scrabble experience — real-time word battles in English and Turkish. Climb the ranks and prove your vocabulary power!",
     "keywords": {
@@ -75,6 +79,7 @@
   "header": {
     "about": "About The Game",
     "leaderboard": "Leaderboard",
+    "play": "Play",
     "contact": "Contact",
     "userMenu": {
       "cantLogout": "You cannot logout right now!",

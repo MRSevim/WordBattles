@@ -16,13 +16,13 @@ export const OngoingWarning = () => {
   const lookingForGame = gameStatus === "looking";
   const { dictionary } = useDictionaryContext();
 
-  const home = routeStrings.home;
+  const game = routeStrings.game;
 
   useEffect(() => {
-    if (pathname !== home && (gameIsOngoing || lookingForGame)) {
+    if (pathname !== game && (gameIsOngoing || lookingForGame)) {
       setOpen(true);
     }
-    if (pathname === home) {
+    if (pathname === game) {
       setOpen(false);
     }
   }, [pathname, gameStatus, roomId]);
@@ -41,7 +41,7 @@ export const OngoingWarning = () => {
           lookingForGame &&
           dictionary.game.ongoing.ongoingLookingWarning}
         <div className="flex items-center justify-center">
-          <Link className="underline" href={routeStrings.home}>
+          <Link className="underline" href={game}>
             {" "}
             {dictionary.game.ongoing.go}
           </Link>

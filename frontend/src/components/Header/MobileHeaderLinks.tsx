@@ -7,13 +7,13 @@ const MobileHeaderLinks = () => {
   return (
     <>
       <button
-        className="md:hidden text-white cursor-pointer"
+        className="lg:hidden text-white cursor-pointer"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         ☰
       </button>
       <div
-        className={`fixed top-[48px] md:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-all duration-300 ${
+        className={`fixed top-[48px] lg:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-all duration-300 ${
           menuOpen
             ? "translate-0 opacity-100 "
             : "translate-x-full opacity-0 translate-y-[-10px]"
