@@ -15,8 +15,6 @@ export const ladderController: RequestHandler = async (
     headers: fromNodeHeaders(req.headers),
   });
   const user = session?.user;
-  const locale = req.cookies.locale;
-
   const lang = (req.query.lang as Lang) || "en";
   const season = (req.query.season as Season) || "Season1";
   const page = parseInt(req.query.page as string) || 1;
@@ -62,7 +60,7 @@ export const ladderController: RequestHandler = async (
     return {
       ...player,
       position: pos + 1,
-      division: determineDivision(pos, totalPlayers, locale),
+      division: determineDivision(pos, totalPlayers),
     };
   });
 
@@ -119,7 +117,7 @@ export const ladderController: RequestHandler = async (
         rank: position + 1,
         username: user.name,
         rankedPoints: userRankEntry.rankedPoints,
-        division: determineDivision(position, totalPlayers, locale),
+        division: determineDivision(position, totalPlayers),
       };
     }
   }

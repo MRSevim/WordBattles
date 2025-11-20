@@ -35,6 +35,7 @@ export const About = async () => {
           <li>{dictionary.about.p9}</li>
           <li>{dictionary.about.p10}</li>
           <li>{dictionary.about.p11}</li>
+          <li>{dictionary.about.p12}</li>
         </ul>
       </div>
       <div>

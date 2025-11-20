@@ -17,7 +17,7 @@ export const getUserController: RequestHandler = async (req, res) => {
   const lang = (req.query.lang as Lang) || "en";
   const season = (req.query.season as Season) || "Season1";
 
-  const user = await getUser(userId, { lang, season, locale });
+  const user = await getUser(userId, { lang, season });
 
   if (!user) {
     res.status(404);

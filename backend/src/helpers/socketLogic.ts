@@ -120,7 +120,6 @@ export const runSocketLogic = (io: Io) => {
           const user = await getUser(socket.user.id, {
             lang,
             season,
-            locale,
           });
           const rank = user?.ranks?.[0]?.rankedPoints ?? 3000;
           const division = user?.division ?? getUnfetchedDivision();

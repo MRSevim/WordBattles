@@ -3,7 +3,7 @@ import { prisma } from "../prisma";
 
 export async function getUser(
   userId: string,
-  { lang, season, locale }: { lang: Lang; season: Season; locale: Lang }
+  { lang, season }: { lang: Lang; season: Season }
 ) {
   try {
     const [user, division] = await Promise.all([
@@ -24,7 +24,7 @@ export async function getUser(
           },
         },
       }),
-      getDivision(userId, { lang, season }, locale),
+      getDivision(userId, { lang, season }),
     ]);
     if (!user) return null;
 
@@ -38,8 +38,7 @@ export async function getUser(
 // Helper: determine division based on percentage
 export const getDivision = async (
   userId: string,
-  options: { season: Season; lang: Lang },
-  locale: Lang
+  options: { season: Season; lang: Lang }
 ): Promise<Division> => {
   const { lang, season } = options;
   try {
@@ -106,7 +105,7 @@ export const getDivision = async (
       },
     });
 
-    return determineDivision(position, totalPlayers, locale);
+    return determineDivision(position, totalPlayers);
   } catch (error) {
     console.error(`❌ [getDivision] Failed for user ${userId}:`, error);
     return getUnfetchedDivision();
@@ -119,8 +118,7 @@ const getUnDeterminedDivision = (): Division => "undetermined";
 
 export const determineDivision = (
   position: number,
-  totalPlayers: number,
-  locale: Lang
+  totalPlayers: number
 ): Division => {
   if (position === -1) return getUnDeterminedDivision();
 
