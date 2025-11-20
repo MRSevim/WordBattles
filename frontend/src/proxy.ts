@@ -68,14 +68,14 @@ export default function proxy(request: NextRequest) {
   const subdomain = extractSubdomain(host);
   // Case 1 — already valid locale subdomain -> OK
   if (subdomain && availableLocales.includes(subdomain as Lang)) {
-    console.log(subdomain);
+    console.log("subdomain:", subdomain);
     return NextResponse.next();
   }
 
   // Case 2 — Cookie locale
   const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
   if (cookieLocale && availableLocales.includes(cookieLocale)) {
-    console.log(cookieLocale);
+    console.log("cookieLocale:", cookieLocale);
     url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
@@ -83,7 +83,7 @@ export default function proxy(request: NextRequest) {
   // Case 3 — Browser locale
   const browserLocale = detectBrowserLocale(request);
   if (browserLocale) {
-    console.log(browserLocale);
+    console.log("browserLocale", browserLocale);
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
