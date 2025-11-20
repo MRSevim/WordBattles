@@ -2,7 +2,6 @@
 import { useRef, useState } from "react";
 import { Lang } from "../helpers/types";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { useRouter } from "next/navigation";
 import {
   selectGameRoomId,
   selectGameStatus,
@@ -34,7 +33,6 @@ const LangArr: LangItem[] = [
 export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const { dictionary } = useDictionaryContext();
-  const router = useRouter();
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
   const dropdownRef = useRef(null);
@@ -47,8 +45,13 @@ export default function LanguageSwitcher() {
     }
     // set cookie for persistence
     setCookie("locale", lang, 365); // 1 year
-    // refresh page
-    router.refresh();
+
+    // build new URL using same path
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
+    const newUrl = baseUrl + window.location.pathname + window.location.search;
+    console.log(baseUrl, window.location.pathname, window.location.search);
+    // navigate to new base URL without changing path
+    window.location.href = newUrl;
   };
 
   useHandleClickOutside({ dropdownRef, setOpen });
