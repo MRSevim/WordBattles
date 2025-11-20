@@ -16,7 +16,7 @@ export const auth = betterAuth({
       },
     },
   }),
-  trustedOrigins: [process.env.FRONTEND_URL!],
+  trustedOrigins: ["*.wordbattles.net", "http://localhost:3000"],
   socialProviders: {
     google: {
       clientId: process.env.AUTH_GOOGLE_ID as string,

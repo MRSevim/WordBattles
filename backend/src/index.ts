@@ -35,7 +35,7 @@ const io = new Server(server, {
 // Configure CORS middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [/\.wordbattles\.net$/, "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   })
