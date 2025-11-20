@@ -49,7 +49,6 @@ export default function LanguageSwitcher() {
     // build new URL using same path
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
     const newUrl = baseUrl + window.location.pathname + window.location.search;
-    console.log(baseUrl, window.location.pathname, window.location.search);
     // navigate to new base URL without changing path
     window.location.href = newUrl;
   };
