@@ -58,12 +58,11 @@ export const GameFinder = () => {
   const stopLooking = () => {
     socket.emit("Stopped Looking", undefined, () => {
       socket.disconnect();
+      dispatch(setGameStatus("idle"));
+      removeCookie("sessionId");
+      removeCookie("lang");
+      removeCookie("type");
     });
-
-    dispatch(setGameStatus("idle"));
-    removeCookie("sessionId");
-    removeCookie("lang");
-    removeCookie("type");
   };
 
   if (gameStatus === "playing") return null;

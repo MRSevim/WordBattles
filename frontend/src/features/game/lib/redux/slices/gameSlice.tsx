@@ -73,7 +73,7 @@ export const gameSlice = createSlice({
         socket.disconnect();
       });
 
-      return initialState;
+      return { ...initialState, dictionary: state.dictionary };
     },
     setGameState: (state, action: PayloadAction<GameState>) => {
       return {

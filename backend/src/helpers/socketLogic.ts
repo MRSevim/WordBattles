@@ -281,6 +281,10 @@ export const runSocketLogic = (io: Io) => {
     });
 
     socket.on("Leave Game", ({ state }: { state: GameState }) => {
+      //game start should remove activetimer for session, but clearing just in case
+      clearInterval(activeTimers[socket.sessionId]?.timerInterval);
+      delete activeTimers[socket.sessionId];
+
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
