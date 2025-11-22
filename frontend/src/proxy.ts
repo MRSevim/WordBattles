@@ -66,26 +66,26 @@ export default function proxy(request: NextRequest) {
   }
 
   const subdomain = extractSubdomain(host);
-  // Case 1 — already valid locale subdomain -> OK
+  // Case - already valid locale subdomain -> OK
   if (subdomain && availableLocales.includes(subdomain as Lang)) {
     return NextResponse.next();
   }
 
-  // Case 2 — Cookie locale
+  // Case - Cookie locale
   const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
   if (cookieLocale && availableLocales.includes(cookieLocale)) {
     url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
 
-  // Case 3 — Browser locale
+  // Case - Browser locale
   const browserLocale = detectBrowserLocale(request);
   if (browserLocale) {
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
 
-  // Case 4 — Default to en
+  // Case - Default to en, should be redirected by vercel but just in case
   url.hostname = `en.${stripFirstSubdomain(host)}`;
   return NextResponse.redirect(url);
 }

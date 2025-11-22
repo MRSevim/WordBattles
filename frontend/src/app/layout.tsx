@@ -22,33 +22,26 @@ const title = "WordBattles";
 
 export async function generateMetadata() {
   const dictionary = await getDictionaryFromSubdomain();
+  const locale = await getLocaleFromSubdomain();
 
   const description = dictionary.metadata.description;
 
+  const BASE_URL =
+    locale === "tr"
+      ? process.env.NEXT_PUBLIC_BASE_URL_TR!
+      : process.env.NEXT_PUBLIC_BASE_URL_EN!;
+
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
+    metadataBase: new URL(BASE_URL!),
     title: {
       template: "%s | WordBattles",
       default: title,
     },
     alternates: {
       canonical: "/",
-      languages: {
-        "en-US": "https://en.wordbattles.net",
-        "tr-TR": "https://tr.wordbattles.net",
-      },
     },
     description,
-    keywords: [
-      dictionary.metadata.keywords.onlineScrabble,
-      dictionary.metadata.keywords.competitiveScrabble,
-      dictionary.metadata.keywords.multiplayerWordGame,
-      dictionary.metadata.keywords.englishScrabble,
-      dictionary.metadata.keywords.turkishScrabble,
-      dictionary.metadata.keywords.wordBattles,
-      dictionary.metadata.keywords.rankedScrabbleOnline,
-      dictionary.metadata.keywords.vocabularyChallenge,
-    ],
+    keywords: dictionary.metadata.keywords,
     openGraph: {
       title,
       description,

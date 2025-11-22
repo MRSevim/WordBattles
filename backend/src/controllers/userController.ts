@@ -29,6 +29,22 @@ export const getUserController: RequestHandler = async (req, res) => {
   });
 };
 
+export const getAllUsersController: RequestHandler = async (req, res) => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  res.json({
+    data: users,
+  });
+};
+
 export const getUserPastGamesController: RequestHandler = async (req, res) => {
   const userId = req.params.id;
   const page = Number(req.query.page) || 1; // default to page 1

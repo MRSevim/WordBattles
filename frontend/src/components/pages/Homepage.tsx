@@ -22,7 +22,7 @@ export const Homepage = async () => {
       {/* Right side video */}
       <div className="rounded-2xl overflow-hidden shadow-xl border border-foreground border-2 shrink h-auto sm:flex-2">
         <video
-          src="/WordBattles.webm"
+          src="/how-to-play-WordBattles.webm"
           autoPlay
           loop
           muted

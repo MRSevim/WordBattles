@@ -21,21 +21,12 @@
   "points": "puan",
   "winner": "Kazanan",
   "homepage": {
-    "title": "Dereceli Scrabble",
+    "title": "Online Scrabble — Derecesiz & Dereceli Oyunlar",
     "play": "Şimdi Oyna"
   },
   "metadata": {
-    "description": "Gerçek zamanlı kelime savaşlarında rakiplerinle yarış! İngilizce ve Türkçe dillerinde oynanabilen rekabetçi Scrabble deneyimiyle kelime gücünü kanıtla ve sıralamada zirveye tırman!",
-    "keywords": {
-      "onlineScrabble": "Çevrimiçi scrabble",
-      "competitiveScrabble": "Rekabetçi scrabble",
-      "multiplayerWordGame": "Çok oyunculu kelime oyunu",
-      "englishScrabble": "İngilizce scrabble",
-      "turkishScrabble": "Türkçe scrabble",
-      "wordBattles": "Kelime savaşları",
-      "rankedScrabbleOnline": "Sıralamalı çevrimiçi scrabble",
-      "vocabularyChallenge": "Kelime bilgisi mücadelesi"
-    },
+    "description": "İster eğlenmek ister rekabet etmek için oyna! Türkçe ve İngilizce gerçek zamanlı Scrabble maçlarında kelime gücünü göster, rakiplerini geç ve liglerde yüksel!",
+    "keywords": "wordbattles, scrabble online, online scrabble, scrabble, scrabble oyunu, scrabble türkçe, türkçe scrabble, türkçe kelime oyunu, scrabble türkçe oyna, kelime oyunu, kelime oyunu oyna, ingilizce kelime oyunu",
     "about": {
       "title": "Oyun Hakkında",
       "description": "WordBattles oyunu hakkında"

@@ -5,6 +5,6 @@ export const routeStrings = {
   signin: "/signin",
   game: "/game",
   profile: "/profile",
-  contact: "contact",
-  userPage: (id: string) => `user/${id}`,
+  contact: "/contact",
+  userPage: (id: string) => `/user/${id}`,
 };
