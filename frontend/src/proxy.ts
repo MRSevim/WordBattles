@@ -75,15 +75,18 @@ export default function proxy(request: NextRequest) {
     if (subdomain !== cookieLocale) {
       url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
       return NextResponse.redirect(url);
-    } else NextResponse.next();
+    } else return NextResponse.next();
+  }
+
+  // Case - Subdomain is there
+  if (subdomain && availableLocales.includes(subdomain as Lang)) {
+    return NextResponse.next();
   }
 
   // Case - Browser locale
   if (browserLocale) {
-    if (subdomain !== browserLocale) {
-      url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
-      return NextResponse.redirect(url);
-    }
+    url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
