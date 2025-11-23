@@ -71,19 +71,19 @@ export default function proxy(request: NextRequest) {
 
   console.log(subdomain, cookieLocale, browserLocale);
   // Case - Cookie locale
-  if (
-    cookieLocale &&
-    availableLocales.includes(cookieLocale) &&
-    subdomain !== cookieLocale
-  ) {
-    url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
-    return NextResponse.redirect(url);
+  if (cookieLocale && availableLocales.includes(cookieLocale)) {
+    if (subdomain !== cookieLocale) {
+      url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
+      return NextResponse.redirect(url);
+    } else NextResponse.next();
   }
 
   // Case - Browser locale
-  if (browserLocale && subdomain !== browserLocale) {
-    url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
-    return NextResponse.redirect(url);
+  if (browserLocale) {
+    if (subdomain !== browserLocale) {
+      url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
+      return NextResponse.redirect(url);
+    }
   }
 
   return NextResponse.next();
