@@ -55,6 +55,10 @@
     "contact": {
       "title": "İletişim Sayfası",
       "description": "Herhangi bir konu hakkında WordBattles ile iletişim kur"
+    },
+    "homepageVideo": {
+      "title": "WordBattles'da Scrabble nasıl oynanır?",
+      "description": "WordBattles'da Scrabble'ın nasıl oynandığını gösteren video"
     }
   },
   "errorBoundary": {

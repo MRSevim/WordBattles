@@ -1,15 +1,19 @@
 import { routeStrings } from "@/utils/routeStrings";
 import { fetchFromBackend } from "@/utils/serverHelpers";
 import type { MetadataRoute } from "next";
-import { getBaseUrlFromSubdomain } from "@/features/language/helpers/helpersServer";
+import {
+  getBaseUrlFromSubdomain,
+  getDictionaryFromSubdomain,
+} from "@/features/language/helpers/helpersServer";
 
 const EN_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_EN!;
 const TR_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_TR!;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [promise, BASE_URL] = await Promise.all([
+  const [promise, BASE_URL, dictionary] = await Promise.all([
     fetchFromBackend("/user"),
     getBaseUrlFromSubdomain(),
+    getDictionaryFromSubdomain(),
   ]);
   const { data: users }: { data: Record<string, any>[] } = await promise.json();
 
@@ -42,6 +46,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           tr: TR_BASE_URL,
         },
       },
+      videos: [
+        {
+          title: dictionary.metadata.homepageVideo.title,
+          thumbnail_loc: BASE_URL + "/Wordbattles-screenshot.png",
+          description: dictionary.metadata.homepageVideo.description,
+          content_loc: BASE_URL + "/how-to-play-WordBattles.webm",
+        },
+      ],
     },
     {
       url: BASE_URL + routeStrings.game,

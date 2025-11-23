@@ -55,6 +55,10 @@
     "contact": {
       "title": "Contact Page",
       "description": "Contact to WordBattles about any inquiries"
+    },
+    "homepageVideo": {
+      "title": "How to Play Scrabble on WordBattles?",
+      "description": "Video showing how to play Scrabble on Wordbattles"
     }
   },
   "errorBoundary": {
