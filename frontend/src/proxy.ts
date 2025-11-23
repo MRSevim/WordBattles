@@ -69,7 +69,11 @@ export default function proxy(request: NextRequest) {
   const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
 
   // Case - Cookie locale
-  if (cookieLocale && availableLocales.includes(cookieLocale)) {
+  if (
+    cookieLocale &&
+    availableLocales.includes(cookieLocale) &&
+    subdomain !== cookieLocale
+  ) {
     url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
