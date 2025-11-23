@@ -80,7 +80,7 @@ export default function proxy(request: NextRequest) {
 
   // Case - Browser locale
   const browserLocale = detectBrowserLocale(request);
-  if (browserLocale) {
+  if (browserLocale && subdomain !== browserLocale) {
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
   }
