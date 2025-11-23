@@ -69,12 +69,10 @@ export default function proxy(request: NextRequest) {
   const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
   const browserLocale = detectBrowserLocale(request);
 
-  console.log(subdomain, cookieLocale, browserLocale);
   // Case - Cookie locale
   if (cookieLocale && availableLocales.includes(cookieLocale)) {
     if (subdomain !== cookieLocale) {
       url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
-      console.log("redirecting to cookieLocale ", url.hostname);
       return NextResponse.redirect(url, 308);
     } else return NextResponse.next();
   }
@@ -87,7 +85,6 @@ export default function proxy(request: NextRequest) {
   // Case - Browser locale
   if (browserLocale) {
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
-    console.log("redirecting to browserLocale ", url.hostname);
     return NextResponse.redirect(url, 308);
   }
 
