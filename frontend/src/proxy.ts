@@ -67,7 +67,9 @@ export default function proxy(request: NextRequest) {
 
   const subdomain = extractSubdomain(host);
   const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
+  const browserLocale = detectBrowserLocale(request);
 
+  console.log(subdomain, cookieLocale, browserLocale);
   // Case - Cookie locale
   if (
     cookieLocale &&
@@ -79,7 +81,6 @@ export default function proxy(request: NextRequest) {
   }
 
   // Case - Browser locale
-  const browserLocale = detectBrowserLocale(request);
   if (browserLocale && subdomain !== browserLocale) {
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
