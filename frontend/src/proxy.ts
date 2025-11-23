@@ -75,7 +75,7 @@ export default function proxy(request: NextRequest) {
     if (subdomain !== cookieLocale) {
       url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
       console.log("redirecting to cookieLocale ", url.hostname);
-      return NextResponse.redirect(url);
+      return NextResponse.redirect(url, 308);
     } else return NextResponse.next();
   }
 
@@ -88,7 +88,7 @@ export default function proxy(request: NextRequest) {
   if (browserLocale) {
     url.hostname = `${browserLocale}.${stripFirstSubdomain(host)}`;
     console.log("redirecting to browserLocale ", url.hostname);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 308);
   }
 
   return NextResponse.next();
