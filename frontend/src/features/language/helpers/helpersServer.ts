@@ -1,7 +1,7 @@
 "use server";
 import { headers } from "next/headers";
 import { Lang } from "../helpers/types";
-import { DictionaryType, getDictionary } from "./dictionaries";
+import { DictionaryType, getDictionary } from "../lib/dictionaries";
 import { availableLocales } from "../helpers/helpers";
 
 /**
@@ -25,4 +25,14 @@ export const getLocaleFromSubdomain = async (): Promise<Lang> => {
   return availableLocales.includes(subdomain as Lang)
     ? (subdomain as Lang)
     : "en";
+};
+
+/**
+ * Get base url from subdomain (SSR / middleware / RootLayout)
+ */
+export const getBaseUrlFromSubdomain = async (): Promise<string> => {
+  const locale = await getLocaleFromSubdomain();
+  if (locale === "tr") {
+    return process.env.NEXT_PUBLIC_BASE_URL_TR!;
+  } else return process.env.NEXT_PUBLIC_BASE_URL_EN!;
 };

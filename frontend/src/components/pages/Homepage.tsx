@@ -1,4 +1,4 @@
-import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
 import Container from "../Container";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
 
 export async function generateMetadata() {
   const dictionary = await getDictionaryFromSubdomain();

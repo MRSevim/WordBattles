@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "server": "cd ./backend && npm run dev",
-    "start": "cd ./frontend && npm run dev"
+    "dev": "cd ./frontend && npm run dev"
   },
   "author": "",
   "license": "ISC"

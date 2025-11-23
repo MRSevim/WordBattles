@@ -27,9 +27,14 @@
   "metadata": {
     "description": "İster eğlenmek ister rekabet etmek için oyna! Türkçe ve İngilizce gerçek zamanlı Scrabble maçlarında kelime gücünü göster, rakiplerini geç ve liglerde yüksel!",
     "keywords": "wordbattles, scrabble online, online scrabble, scrabble, scrabble oyunu, scrabble türkçe, türkçe scrabble, türkçe kelime oyunu, scrabble türkçe oyna, kelime oyunu, kelime oyunu oyna, ingilizce kelime oyunu",
+    "game": {
+      "title": "Oyunu oyna",
+      "description": "Gerçek zamanlı Türkçe ve İngilizce Scrabble oyna"
+    },
     "about": {
       "title": "Oyun Hakkında",
-      "description": "WordBattles oyunu hakkında"
+      "description": "WordBattles oyunu hakkında",
+      "keywords": "scrabble nasıl oynanır, scrabble kuralları, scrabble kurallar"
     },
     "ladder": {
       "title": "Skor Tablosu",

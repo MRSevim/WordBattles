@@ -5,7 +5,7 @@ import Pagination from "@/components/Paginations";
 import Games from "./Games";
 import { GameState } from "@/features/game/utils/types/gameTypes";
 import ErrorMessage from "@/components/ErrorMessage";
-import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
 
 const PastGamesWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
@@ -87,7 +87,7 @@ export const UserPastGamesSkeleton = () => {
 
       {/* Game cards skeleton */}
       <div className="space-y-3">
-        {[1, 2, 3, 4].map((i) => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
             className="flex flex-col sm:flex-row items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"

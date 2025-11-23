@@ -1,6 +1,7 @@
 "use server";
-import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
 import { headers } from "next/headers";
+
 export const fetchFromBackend = async (endpoint: string, options = {}) => {
   return await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api${endpoint}`, {
     headers: new Headers(await headers()),

@@ -3,7 +3,7 @@ import { Lang } from "@/features/language/helpers/types";
 import {
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
-} from "@/features/language/lib/helpersServer";
+} from "@/features/language/helpers/helpersServer";
 import { DictionaryType } from "@/features/language/lib/dictionaries";
 
 export const About = async () => {

@@ -9,7 +9,7 @@ import UserLink from "@/components/UserLink";
 import {
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
-} from "@/features/language/lib/helpersServer";
+} from "@/features/language/helpers/helpersServer";
 
 interface Ladder {
   position: number;

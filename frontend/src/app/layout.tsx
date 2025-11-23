@@ -9,9 +9,10 @@ import { getGameCookies } from "@/features/game/utils/serverHelpers";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
 import Script from "next/script";
 import {
+  getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
-} from "@/features/language/lib/helpersServer";
+} from "@/features/language/helpers/helpersServer";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -21,15 +22,12 @@ const geistSans = Open_Sans({
 const title = "WordBattles";
 
 export async function generateMetadata() {
-  const dictionary = await getDictionaryFromSubdomain();
-  const locale = await getLocaleFromSubdomain();
+  const [dictionary, BASE_URL] = await Promise.all([
+    getDictionaryFromSubdomain(),
+    getBaseUrlFromSubdomain(),
+  ]);
 
   const description = dictionary.metadata.description;
-
-  const BASE_URL =
-    locale === "tr"
-      ? process.env.NEXT_PUBLIC_BASE_URL_TR!
-      : process.env.NEXT_PUBLIC_BASE_URL_EN!;
 
   return {
     metadataBase: new URL(BASE_URL!),

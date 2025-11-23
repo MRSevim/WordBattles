@@ -1,8 +1,12 @@
 import Container from "@/components/Container";
-import { getDictionaryFromSubdomain } from "@/features/language/lib/helpersServer";
+import {
+  getBaseUrlFromSubdomain,
+  getDictionaryFromSubdomain,
+} from "@/features/language/helpers/helpersServer";
 import { interpolateString } from "@/features/language/lib/i18n";
 import UserPage from "@/features/user/components/pages/UserPage";
 import { fetchUser } from "@/features/user/utils/apiCalls";
+import { routeStrings } from "@/utils/routeStrings";
 import { UserSearchParams } from "@/utils/types";
 import { notFound } from "next/navigation";
 
@@ -32,8 +36,11 @@ export async function generateMetadata({
   searchParams: Promise<UserSearchParams>;
   params: Promise<{ id: string }>;
 }) {
-  const dictionary = await getDictionaryFromSubdomain();
-  const data = await fetchHelper(params, searchParams);
+  const [dictionary, BASE_URL, data] = await Promise.all([
+    getDictionaryFromSubdomain(),
+    getBaseUrlFromSubdomain(),
+    fetchHelper(params, searchParams),
+  ]);
 
   const title = interpolateString(dictionary.metadata.userPage.title, {
     username: data.name,
@@ -46,11 +53,16 @@ export async function generateMetadata({
   );
 
   return {
+    metadataBase: new URL(BASE_URL! + routeStrings.userPage(data.id)),
     title,
     description,
+    alternates: {
+      canonical: "/",
+    },
     openGraph: {
       title,
       description,
+      url: "/",
     },
   };
 }

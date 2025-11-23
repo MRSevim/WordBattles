@@ -66,13 +66,9 @@ export default function proxy(request: NextRequest) {
   }
 
   const subdomain = extractSubdomain(host);
-  // Case - already valid locale subdomain -> OK
-  if (subdomain && availableLocales.includes(subdomain as Lang)) {
-    return NextResponse.next();
-  }
+  const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
 
   // Case - Cookie locale
-  const cookieLocale = request.cookies.get("locale")?.value as Lang | undefined;
   if (cookieLocale && availableLocales.includes(cookieLocale)) {
     url.hostname = `${cookieLocale}.${stripFirstSubdomain(host)}`;
     return NextResponse.redirect(url);
@@ -85,9 +81,7 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Case - Default to en, should be redirected by vercel but just in case
-  url.hostname = `en.${stripFirstSubdomain(host)}`;
-  return NextResponse.redirect(url);
+  return NextResponse.next();
 }
 
 export const config = {

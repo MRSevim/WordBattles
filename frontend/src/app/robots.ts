@@ -1,12 +1,14 @@
+import { getBaseUrlFromSubdomain } from "@/features/language/helpers/helpersServer";
 import { routeStrings } from "@/utils/routeStrings";
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const BASE_URL = await getBaseUrlFromSubdomain();
   return {
     rules: {
       userAgent: "*",
       disallow: routeStrings.profile,
     },
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

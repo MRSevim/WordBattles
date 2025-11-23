@@ -27,9 +27,14 @@
   "metadata": {
     "description": "From casual word lovers to serious competitors — play real-time Scrabble matches online in English and Turkish. Enjoy friendly games or climb through divisions to show your word mastery!",
     "keywords": "wordbattles, scrabble online, online scrabble, scrabble, play scrabble online, scrabble online free, free scrabble online, word game, word games, free word games, free online word games, free word games for adults, free word games online, word games online free, word games for adults",
+    "game": {
+      "title": "Play the Game",
+      "description": "Play real-time Scrabble matches online in English and Turkish"
+    },
     "about": {
       "title": "About The Game",
-      "description": "Learn about the WordBattles"
+      "description": "Learn about the WordBattles",
+      "keywords": "how to play scrabble, scrabble rules, scrabble points"
     },
     "ladder": {
       "title": "Leaderboards",
