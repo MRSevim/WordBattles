@@ -6,7 +6,7 @@ import Link from "next/link";
 export const Homepage = async () => {
   const dictionary = await getDictionaryFromSubdomain();
   return (
-    <Container className="mt-20 mb-60 flex flex-col gap-10 sm:mt-0 sm:gap-20 sm:flex-row justify-between items-center">
+    <Container className="my-20 flex flex-col gap-10 sm:mt-0 sm:mb-60 sm:gap-20 sm:flex-row justify-between items-center">
       {/* Left side content */}
       <div className="flex flex-col items-center gap-6 shrink sm:flex-1 text-center">
         <h2 className="text-2xl font-semibold">{dictionary.homepage.title}</h2>
