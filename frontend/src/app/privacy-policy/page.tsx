@@ -1,4 +1,4 @@
-import { GameContainer } from "@/features/game/components/GameBoard/GameBoard";
+import PrivacyPolicy from "@/components/pages/PrivacyPolicy";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
@@ -10,11 +10,11 @@ export async function generateMetadata() {
     getDictionaryFromSubdomain(),
     getBaseUrlFromSubdomain(),
   ]);
-  const title = dictionary.metadata.game.title;
-  const description = dictionary.metadata.game.description;
+  const title = dictionary.metadata.privacyPolicy.title;
+  const description = dictionary.metadata.privacyPolicy.description;
 
   return {
-    metadataBase: new URL(BASE_URL! + routeStrings.game),
+    metadataBase: new URL(BASE_URL! + routeStrings.privacyPolicy),
     title,
     description,
     alternates: {
@@ -29,12 +29,7 @@ export async function generateMetadata() {
 }
 
 const page = () => {
-  return (
-    /* Did not put a container here to prevent horizontal padding on game */
-    <main className="flex relative pb-20 mx-auto max-w-7xl flex-1 w-full">
-      <GameContainer />
-    </main>
-  );
+  return <PrivacyPolicy />;
 };
 
 export default page;

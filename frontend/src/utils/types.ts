@@ -6,3 +6,9 @@ export interface UserSearchParams {
   season?: Season;
   page?: number;
 }
+
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
+}

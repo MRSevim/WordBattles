@@ -39,7 +39,7 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <Container className="py-10 flex flex-col justify-center items-center gap-6">
+    <Container className="py-20 flex flex-col justify-start items-center gap-6">
       {/* User Image */}
       {userImage && (
         <div className="relative">

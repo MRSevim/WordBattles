@@ -9,7 +9,9 @@ const Container = ({
 }) => {
   if (isMain) {
     return (
-      <main className={"mx-auto px-4 max-w-7xl " + className}>{children}</main>
+      <main className={"mx-auto px-4 max-w-7xl flex-1 w-full " + className}>
+        {children}
+      </main>
     );
   } else {
     return (

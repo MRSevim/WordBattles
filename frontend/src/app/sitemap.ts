@@ -68,6 +68,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
     {
+      url: BASE_URL + routeStrings.privacyPolicy,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+      alternates: {
+        languages: {
+          en: EN_BASE_URL + routeStrings.privacyPolicy,
+          tr: TR_BASE_URL + routeStrings.privacyPolicy,
+        },
+      },
+    },
+    {
       url: BASE_URL + routeStrings.signin,
       lastModified: new Date(),
       changeFrequency: "monthly",

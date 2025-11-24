@@ -6,5 +6,6 @@ export const routeStrings = {
   game: "/game",
   profile: "/profile",
   contact: "/contact",
+  privacyPolicy: "/privacy-policy",
   userPage: (id: string) => `/user/${id}`,
 };
