@@ -24,7 +24,7 @@ export default function ContactForm() {
   };
 
   return (
-    <Container className="mt-10">
+    <Container className="my-10">
       <div className="max-w-xl mx-auto mt-10 p-6 bg-primary rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6">
           {dictionary.contactForm.label}
