@@ -19,7 +19,7 @@ export async function generateMetadata() {
 export default async function NotFound() {
   const dictionary = await getDictionaryFromSubdomain();
   return (
-    <Container className="mt-20 flex flex-col items-center justify-center text-center p-6">
+    <Container className="mt-20 flex flex-col items-center justify-start text-center p-6">
       <div className="bg-white shadow-xl rounded-2xl p-10 max-w-md w-full">
         <div className="flex flex-col items-center gap-4">
           <div className="h-16 w-16 flex items-center justify-center rounded-full bg-primary text-white">
