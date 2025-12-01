@@ -4,18 +4,16 @@ import ClientWrapper from "@/utils/ClientWrapper";
 import { Header } from "@/components/Header/Header";
 import { Provider as DictionaryContext } from "@/features/language/helpers/DictionaryContext";
 import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
-import { Provider as CookieConsentBannerProvider } from "@/utils/contexts/CookieConsentBannerContext";
 import { cookies } from "next/headers";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
 import { getUserData } from "@/features/auth/utils/getServerSideSession";
-import Script from "next/script";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
 } from "@/features/language/helpers/helpersServer";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { Footer } from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Open_Sans({
   weight: ["400", "700"],
@@ -68,40 +66,9 @@ export default async function RootLayout({
     ]);
 
   const initialTheme = cookieStore.get("theme")?.value;
-  const initialCookieConsent = cookieStore.get("cookieConsent")?.value;
-  const gtag = initialCookieConsent === "true" ? "granted" : "denied";
 
   return (
     <html lang={initialLocale}>
-      <head>
-        {process.env.NODE_ENV === "production" && (
-          <>
-            <Script
-              async
-              src={
-                "https://www.googletagmanager.com/gtag/js?id=" +
-                process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
-              }
-            />
-            <Script id="google-analytics">
-              {` window.dataLayer = window.dataLayer || [];
-            function gtag() {
-            dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
-            
-            gtag('consent', 'default', {
-              'ad_storage': "${gtag}",
-              'ad_user_data': "${gtag}",
-              'ad_personalization': "${gtag}",
-              'analytics_storage': "${gtag}"
-            });
-
-            gtag("config", "${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}", { page_path: window.location.pathname });`}
-            </Script>
-          </>
-        )}
-      </head>
       <body
         className={`${
           geistSans.className
@@ -114,21 +81,19 @@ export default async function RootLayout({
           initialLocale={initialLocale}
         >
           <ThemeContextProvider initialTheme={initialTheme}>
-            <CookieConsentBannerProvider initialConsent={initialCookieConsent}>
-              <ClientWrapper
-                user={user}
-                gameCookies={gameCookies}
-                initialLocale={initialLocale}
-                dictionary={initialDictionary}
-              >
-                <Header />
-                {children}
-                <CookieConsentBanner />
-                <Footer />
-              </ClientWrapper>
-            </CookieConsentBannerProvider>
+            <ClientWrapper
+              user={user}
+              gameCookies={gameCookies}
+              initialLocale={initialLocale}
+              dictionary={initialDictionary}
+            >
+              <Header />
+              {children}
+              <Footer />
+            </ClientWrapper>
           </ThemeContextProvider>
         </DictionaryContext>
+        <Analytics />
       </body>
     </html>
   );

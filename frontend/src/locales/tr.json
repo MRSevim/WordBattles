@@ -256,16 +256,11 @@
     "send": "Gönder",
     "thanks": "Mesajınız için teşekkürler..."
   },
-  "cookieConsentBanner": {
-    "message": " Deneyiminizi geliştirmek için çerezleri kullanıyoruz. Zorunlu çerezler her zaman etkindir. Zorunlu olmayan (analitik) çerezlerin de etkinleştirilmesini ister misiniz? Daha fazla bilgi için bakınız",
-    "deny": "Reddet",
-    "accept": "Kabul Et"
-  },
   "privacyPolicyPage": {
     "welcome": "Hoş geldiniz {{title}}! Gizliliğiniz bizim için önemlidir. Bu sayfa, hangi bilgileri topladığımızı ve bunları nasıl kullandığımızı açıklar.",
     "infoWeCollect": "Topladığımız Bilgiler",
     "breakdown": {
-      "title": "Sitemiz, deneyiminizi daha sorunsuz hale getirmek ve uygulamayı geliştirmek için çerezler kullanır. İşte detaylar:",
+      "title": "Sitemiz, deneyiminizi daha sorunsuz hale getirmek ve uygulamayı geliştirmek için çerezler ve çerezsiz, gizli analitik aracı kullanır. İşte detaylar:",
       "essentials": {
         "title": "Gerekli Çerezler (Her Zaman Aktif)",
         "auth": {
@@ -274,30 +269,22 @@
         },
         "preference": {
           "title": "Tercih çerezleri:",
-          "explanation": "Temalarınızı ve tercih ettiğiniz dili hatırlar."
+          "explanation": "Tercih ettiğiniz dili ve temayı hatırlar."
         },
         "game": {
-          "title": "Oyun ve oyun arama ile ilgili çerezler",
+          "title": "Oyun ve oyun arama ile ilgili çerezler:",
           "explanation": "Kalıcı oyunlar ve oyun arama oturumlarını etkinleştirmek için sessionId, roomId, lang ve type çerezlerini içerir."
         }
       },
       "analytics": {
-        "title": "Analitik Çerezleri (İzninizle)",
-        "explanation": "Bu çerezler, sitemizi nasıl kullandığınızı anlamamıza yardımcı olur, böylece siteyi geliştirebiliriz. Bu amaçla Google Analytics kullanıyoruz. Ziyaret edilen sayfalar, sitede geçirilen süre ve etkileşim desenleri gibi verileri toplar. Tüm veriler anonimleştirilir."
+        "title": "Analitik (Çerez Kullanılmaz)",
+        "explanation": "Sitede kullanıcı etkileşimini anlamak ve deneyimi geliştirmek için Vercel Analytics kullanıyoruz. Vercel Analytics çerez kullanmaz ve kişisel olarak tanımlanabilir bilgi saklamaz."
       }
     },
     "howWeUseInfo": {
-      "title": "Verilerinizi Nasıl Kullanıyoruz",
-      "l1": "Sitemizi kalıcı olarak kullanabilmeniz ve tercihlerinizi kaydedebilmeniz için.",
-      "l2": "Site deneyimini analiz etmek ve geliştirmek için (sadece analitik çerezler için ve izninizle)."
-    },
-    "choice": {
-      "title": "Seçimleriniz",
-      "l1": "Analitik çerezleri çerez onayı popup’ı üzerinden kabul edebilir veya reddedebilirsiniz. Gerekli çerezler sitenin çalışması için zorunludur ve devre dışı bırakılamaz.",
-      "l2": {
-        "toChange": "Tercihinizi değiştirmek için tarayıcı ayarlarınızdan çerezlerinizi temizleyebilir veya",
-        "click": "buraya tıklayabilirsiniz"
-      }
+      "title": "Bilgilerinizi Nasıl Kullanıyoruz",
+      "l1": "Siteyi tutarlı ve işlevsel bir şekilde kullanabilmenizi sağlamak, tercihlerinizin korunması dahil.",
+      "l2": "Gizliliğe önem veren, çerez kullanmayan analizlerle deneyiminizi geliştirmek."
     },
     "contact": {
       "title": "İletişim",

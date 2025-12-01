@@ -255,16 +255,11 @@
     "send": "Send",
     "thanks": "Thanks for your message..."
   },
-  "cookieConsentBanner": {
-    "message": "We use cookies to improve your experience. Essential cookies are always enabled. Would you like non essential (analytics) cookies enabled as well? For more information, see our",
-    "deny": "Deny",
-    "accept": "Accept"
-  },
   "privacyPolicyPage": {
     "welcome": "Welcome to {{title}}! Your privacy is important to us. This page explains what information we collect and how we use it.",
     "infoWeCollect": "Information We Collect",
     "breakdown": {
-      "title": "Our site uses cookies to make your experience smoother and to improve the app. Here’s a breakdown:",
+      "title": "Our site uses cookies and cookie free, private analytics tool to make your experience smoother and to improve the app. Here’s a breakdown:",
       "essentials": {
         "title": "Essential Cookies (Always Active)",
         "auth": {
@@ -281,22 +276,14 @@
         }
       },
       "analytics": {
-        "title": "Analytics Cookies (With Your Permission)",
-        "explanation": "These cookies help us understand how you use our site, so we can make it better. We use Google Analytics for this purpose. It collects data like pages visited, time spent on the site, and interaction patterns. All data is anonymized."
+        "title": "Analytics (No Cookies Used)",
+        "explanation": "We use Vercel Analytics to understand how users interact with our site and to improve the experience. Vercel Analytics does not use cookies and does not store personally identifiable information."
       }
     },
     "howWeUseInfo": {
       "title": "How We Use Your Data",
-      "l1": "To allow you to use our site in a persistent manner and save your preferences.",
-      "l2": "To analyze and improve the site experience (only with your consent for analytics cookies)."
-    },
-    "choice": {
-      "title": "Your Choices",
-      "l1": "You can accept or decline analytics cookies through the cookie consent popup. Essential cookies are required for the site to function and cannot be disabled.",
-      "l2": {
-        "toChange": "To change your preference, clear your cookies in your browser settings or",
-        "click": "click here"
-      }
+      "l1": "To allow you to use our site in a consistent and functional way, including saving your preferences.",
+      "l2": "To analyze and improve your experience using privacy-friendly, cookie-free analytics."
     },
     "contact": {
       "title": "Contact Us",

@@ -3,7 +3,6 @@ import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersS
 import { interpolateReact } from "@/features/language/lib/i18n";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
-import OpenCookieConsentPopupButton from "../OpenCookieConsentPopupButton";
 
 const PrivacyPolicy = async () => {
   const dictionary = await getDictionaryFromSubdomain();
@@ -59,14 +58,6 @@ const PrivacyPolicy = async () => {
         <li>{dictionary.privacyPolicyPage.howWeUseInfo.l1}</li>
         <li>{dictionary.privacyPolicyPage.howWeUseInfo.l2}</li>
       </ul>
-      <h2 className="text-2xl font-semibold mb-3">
-        {dictionary.privacyPolicyPage.choice.title}
-      </h2>
-      <p className="mb-4">
-        {dictionary.privacyPolicyPage.choice.l1}
-        {dictionary.privacyPolicyPage.choice.l2.toChange}{" "}
-        <OpenCookieConsentPopupButton />
-      </p>
       <h2 className="text-2xl font-semibold mb-3">
         {" "}
         {dictionary.privacyPolicyPage.contact.title}
