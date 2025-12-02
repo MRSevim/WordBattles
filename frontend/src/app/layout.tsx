@@ -20,7 +20,7 @@ const geistSans = Open_Sans({
   subsets: ["latin"],
 });
 
-const title = "WordBattles - Online Scrabble";
+const title = "WordBattles";
 
 export async function generateMetadata() {
   const [dictionary, BASE_URL] = await Promise.all([
@@ -33,7 +33,7 @@ export async function generateMetadata() {
   return {
     metadataBase: new URL(BASE_URL!),
     title: {
-      template: "%s | WordBattles - Online Scrabble",
+      template: "%s | WordBattles",
       default: title,
     },
     alternates: {
