@@ -61,7 +61,11 @@ export default function proxy(request: NextRequest) {
   // -------------------------
   // Skip all subdomain logic on localhost
   // -------------------------
-  if (host.startsWith("localhost") || host.startsWith("127.")) {
+  if (
+    host.startsWith("localhost") ||
+    host.startsWith("127.") ||
+    host.includes("vercel.app")
+  ) {
     return NextResponse.next();
   }
 
