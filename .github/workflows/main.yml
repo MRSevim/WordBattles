@@ -51,7 +51,9 @@ jobs:
           port: 22
           script: |
             cd ~/wordbattles/backend
-            npm run docker
+            npm ci
+            npm run build
+            docker-compose up -d --build --remove-orphans
             docker system prune -af
       - name: revoke runner ip address
         if: always()

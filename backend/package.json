@@ -9,8 +9,7 @@
     "serve": "node dist/index.js",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:push": "prisma db push",
-    "docker": "npm run build && docker-compose up --build -d --remove-orphans"
+    "prisma:push": "prisma db push"
   },
   "keywords": [],
   "author": "",
