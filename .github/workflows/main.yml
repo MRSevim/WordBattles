@@ -13,6 +13,8 @@ jobs:
     env:
       AWS_INSTANCE_SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -29,6 +31,19 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
+      - name: Copy to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: |
+            backend/
+            types/
+          target: "/home/${{ secrets.EC2_USERNAME }}/wordbattles"
+          exclude: |
+            .env
+            **/.env
       - name: Set up SSH agent
         uses: appleboy/ssh-action@master
         with:
@@ -37,10 +52,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd wordbattles/backend
-            git pull origin main
+            cd ~/wordbattles/backend
             npm run docker
+            docker system prune -af
       - name: revoke runner ip address
+        if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
             --group-id $AWS_INSTANCE_SG_ID \
