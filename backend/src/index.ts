@@ -17,6 +17,8 @@ import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
 
 const port = process.env.PORT || 5000;
 
+console.log("first");
+
 dotenv.config();
 
 const app = express();
@@ -38,7 +40,7 @@ app.use(
     origin: [/\.wordbattles\.net$/, "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-  })
+  }),
 );
 
 // logging middleware
