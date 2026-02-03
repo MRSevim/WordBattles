@@ -14,6 +14,7 @@ RUN apt-get install -y openssl
 COPY prisma ./prisma
 
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 
 COPY dist ./dist
 COPY src/locales ./dist/locales

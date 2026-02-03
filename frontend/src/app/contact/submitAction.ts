@@ -10,13 +10,16 @@ export const submitAction = async (formData: FormData) => {
   const name = formData.get("name");
   const email = formData.get("email");
   const message = formData.get("message");
+  const options = {
+    from: process.env.RESEND_FROM!,
+    to: process.env.MY_EMAIL as string,
+    subject: "Contact Form Submitted in WordBattles",
+    text: `Name: ${name} \nEmail: ${email}\n\nMessage: ${message}`,
+  };
   try {
-    await resend.emails.send({
-      from: process.env.RESEND_FROM!,
-      to: process.env.MY_EMAIL as string,
-      subject: "Contact Form Submitted in WordBattles",
-      text: `Name: ${name} \nEmail: ${email}\n\nMessage: ${message}`,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.log("email sent :", options);
+    } else await resend.emails.send(options);
 
     return { error: "", successMessage: dictionary.contactForm.thanks };
   } catch (error: any) {
