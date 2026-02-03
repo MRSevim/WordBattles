@@ -37,9 +37,7 @@ jobs:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            backend/
-            types/
+          source: "backend,types"
           target: "/home/${{ secrets.EC2_USERNAME }}/wordbattles"
           exclude: |
             .env
