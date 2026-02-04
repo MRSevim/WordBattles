@@ -67,7 +67,7 @@ export const runSocketLogic = (io: Io) => {
 
       // If no connected socket has this sessionId → remove
       const socketStillConnected = [...io.sockets.sockets.values()].some(
-        (s) => s.sessionId === sessionId
+        (s) => s.sessionId === sessionId,
       );
 
       if (!socketStillConnected) {
@@ -203,8 +203,8 @@ export const runSocketLogic = (io: Io) => {
                 queuedSocket.searchInterval !== undefined &&
                 Math.abs(
                   (queuedSocket.rankedPoints ?? 3000) -
-                    (socket.rankedPoints ?? 3000)
-                ) <= currentTolerance
+                    (socket.rankedPoints ?? 3000),
+                ) <= currentTolerance,
             );
 
             if (matchedIndex !== -1) {
@@ -268,6 +268,7 @@ export const runSocketLogic = (io: Io) => {
         socket.searchInterval = undefined;
       }
       clearInterval(activeTimers[socket.sessionId]?.timerInterval);
+      //we don't delete the active timer here because user might reconnect and will need start time and tolerance
       if (socket.roomId) {
         socket.leave(socket.roomId);
       }
@@ -288,7 +289,7 @@ export const runSocketLogic = (io: Io) => {
       const roomId = state.roomId;
       const [player1, player2] = state.players;
       const leavingPlayer = state.players.find(
-        (player) => player.id === socket.sessionId
+        (player) => player.id === socket.sessionId,
       );
       console.log("leaving player: ", leavingPlayer?.username);
       const otherPlayer = leavingPlayer === player1 ? player2 : player1;
@@ -344,7 +345,7 @@ export const runSocketLogic = (io: Io) => {
     const preventDublicateMove = (
       roomId: string,
       cb: () => void,
-      moveId?: string
+      moveId?: string,
     ) => {
       if (!moveId)
         return console.error("Pass a moveId to preventDuplicateMove");
@@ -402,9 +403,9 @@ export const runSocketLogic = (io: Io) => {
 
             io.to(roomId).emit("Play Made", state);
           },
-          moveId
+          moveId,
         );
-      }
+      },
     );
 
     socket.on(
@@ -435,9 +436,9 @@ export const runSocketLogic = (io: Io) => {
 
             io.to(roomId).emit("Play Made", state);
           },
-          moveId
+          moveId,
         );
-      }
+      },
     );
 
     socket.on(
@@ -464,8 +465,8 @@ export const runSocketLogic = (io: Io) => {
             const invalidLetter = state.board.some((row) =>
               row.some(
                 (letter) =>
-                  letter && !getValidLetters(lang).includes(letter.letter)
-              )
+                  letter && !getValidLetters(lang).includes(letter.letter),
+              ),
             );
             if (invalidLetter) {
               io.to(id).emit("Game Error", {
@@ -476,7 +477,7 @@ export const runSocketLogic = (io: Io) => {
 
             // Check if the new words are connected to old ones (if any)
             const existingWordOnBoard = board.some((row) =>
-              row.some((cell) => cell && cell.fixed)
+              row.some((cell) => cell && cell.fixed),
             );
 
             if (existingWordOnBoard) {
@@ -514,7 +515,7 @@ export const runSocketLogic = (io: Io) => {
                 io.to(id).emit("Game Error", {
                   error: `${t(
                     locale,
-                    "invalidWords"
+                    "invalidWords",
                   )} ${checkedWords.invalidWords.join(", ")}`,
                 });
                 return;
@@ -535,13 +536,13 @@ export const runSocketLogic = (io: Io) => {
               wordsWithCoordinates,
               io,
               id,
-              currentPlayer
+              currentPlayer,
             );
 
             currentPlayer.points += playerPoints;
             currentPlayer.totalWords += checkedWords.validWords.length;
             currentPlayer.avgPerWord = Number(
-              (currentPlayer.points / currentPlayer.totalWords).toFixed(2)
+              (currentPlayer.points / currentPlayer.totalWords).toFixed(2),
             );
 
             //fix the letters
@@ -559,8 +560,8 @@ export const runSocketLogic = (io: Io) => {
                         points: cell.points,
                       },
                     ]
-                  : []
-              )
+                  : [],
+              ),
             );
 
             // Append to history
@@ -580,9 +581,9 @@ export const runSocketLogic = (io: Io) => {
 
             io.to(roomId).emit("Play Made", state); // If everything is valid, play is made
           },
-          moveId
+          moveId,
         );
-      }
+      },
     );
   });
 };

@@ -41,7 +41,7 @@ const checkGameEnd = (state: GameState) => {
     applyWinner(state);
   }
   const passedPlayer = players.find(
-    (player) => player.consecutivePassCount >= 2
+    (player) => player.consecutivePassCount >= 2,
   );
 
   if (passedPlayer) {
@@ -63,7 +63,7 @@ const checkGameEnd = (state: GameState) => {
 
 export const applyWinner = (state: GameState) => {
   const passedPlayer = state.players.find(
-    (player) => player.consecutivePassCount >= 2
+    (player) => player.consecutivePassCount >= 2,
   );
 
   // Calculate points difference
@@ -119,13 +119,13 @@ export const applyPointDifference = async (state: GameState) => {
         winner.id,
         lang,
         season,
-        pointsDifference
+        pointsDifference,
       );
       await addOrUpdatePlayerRankPoints(
         loser.id,
         lang,
         season,
-        -pointsDifference
+        -pointsDifference,
       );
     } catch (error) {
       console.error("Error updating ranked points:", error);
@@ -157,7 +157,7 @@ export const saveGame = (state: GameState, io: Io) => {
 export const switchLetters = (
   switchedIndices: number[],
   state: GameState,
-  playerHand: LettersArray
+  playerHand: LettersArray,
 ): void => {
   const lettersToReturnToPool: LettersArray = []; // Temporary array for old letters
   const { undrawnLetterPool, lang } = state;
@@ -181,10 +181,10 @@ export const switchLetters = (
   // Sort the undrawnLetterPool based on their index in the 'letters' array
   undrawnLetterPool.sort((a, b) => {
     const indexA = letters[lang].findIndex(
-      (letter) => letter.letter === a.letter
+      (letter) => letter.letter === a.letter,
     );
     const indexB = letters[lang].findIndex(
-      (letter) => letter.letter === b.letter
+      (letter) => letter.letter === b.letter,
     );
     return indexA - indexB;
   });
@@ -205,11 +205,11 @@ export const returnToHand = (playerHand: LettersArray, board: Board) => {
 // Helper function for validating words using Promise.all
 export const validateWords = async (
   words: string[],
-  lang: Lang
+  lang: Lang,
 ): Promise<CheckedWords> => {
   const fetchWithTimeout = async (
     url: string,
-    ms: number = 5000
+    ms: number = 5000,
   ): Promise<Response> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), ms);
@@ -220,14 +220,14 @@ export const validateWords = async (
       return res;
     } catch (err) {
       clearTimeout(timeout);
-      throw new Error("Fetch timeout or network error");
+      throw new Error("fetchWithTimeout error:" + err);
     }
   };
   const fetcher =
     lang === "tr"
       ? (word: string) =>
           fetchWithTimeout(
-            `https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`
+            `https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase("tr")}`,
           )
             .then((res) => res.json())
             .then((data) => {
@@ -242,8 +242,8 @@ export const validateWords = async (
       : (word: string) =>
           fetchWithTimeout(
             `https://freedictionaryapi.com/api/v1/entries/en/${word.toLocaleLowerCase(
-              "en"
-            )}`
+              "en",
+            )}`,
           )
             .then((res) => res.json())
             .then((data) => {
@@ -366,7 +366,7 @@ export const findWordsOnBoard = (board: Board): WordWithCoordinates[] => {
     getCell: (i: number) => Letter | null,
     lineLength: number,
     fixedIndex: number,
-    isHorizontal: boolean
+    isHorizontal: boolean,
   ) => {
     let word = "";
     let start = -1;
@@ -461,11 +461,7 @@ export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
   if (!isConnectedLine()) return false;
 
   // Function to check if a tile is adjacent to a fixed tile
-  const isAdjacentToFixed = (
-    board: Board,
-    row: number,
-    col: number
-  ): boolean => {
+  const isAdjacentToFixed = (row: number, col: number): boolean => {
     const directions = [
       [-1, 0], // Up
       [1, 0], // Down
@@ -492,7 +488,7 @@ export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
 
   // Check that at least one new tile is adjacent to a fixed tile
   const isConnectedToFixed = newTiles.some(({ row, col }) =>
-    isAdjacentToFixed(board, row, col)
+    isAdjacentToFixed(row, col),
   );
   return isConnectedToFixed;
 };
@@ -500,9 +496,9 @@ export const areNewWordsCorrectlyPlaced = (board: Board): boolean => {
 export const calculatePoints = (
   board: Board,
   wordsWithCoordinates: WordWithCoordinates[],
-  io: any,
+  io: Io,
   socketId: string,
-  currentPlayer: Player
+  currentPlayer: Player,
 ): number => {
   let totalPoints = 0;
 
@@ -580,7 +576,7 @@ export const calculatePoints = (
 
 export const completePlayerHand = (
   player: Player,
-  undrawnLetterPool: LettersArray
+  undrawnLetterPool: LettersArray,
 ): void => {
   const lettersNeeded = HAND_SIZE - player.hand.length;
 

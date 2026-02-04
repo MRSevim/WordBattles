@@ -51,7 +51,7 @@ jobs:
           port: 22
           script: |
             cd ~/wordbattles/backend
-            npm ci
+            npm i --only=production
             npm run build
             docker-compose up -d --build --remove-orphans
             docker system prune -af

@@ -12,7 +12,7 @@ let ongoingGames: gameWithTimerInterval[] = [];
 
 export const saveGameToMemory = (game: GameState, io: Io) => {
   const foundGameIndex = ongoingGames.findIndex(
-    (g) => g.gameState.roomId === game.roomId
+    (g) => g.gameState.roomId === game.roomId,
   );
 
   if (foundGameIndex !== -1) {
@@ -24,8 +24,7 @@ export const saveGameToMemory = (game: GameState, io: Io) => {
       timerInterval: setUpTimerInterval(game, io) || foundGame.timerInterval, // Keep timer running
     };
   } else {
-    // Create new game with fresh timer and moveIds capped to last 10
-
+    // Create new game with fresh timer
     ongoingGames.push({
       gameState: game,
       timerInterval: setUpTimerInterval(game, io),
@@ -36,7 +35,7 @@ export const saveGameToMemory = (game: GameState, io: Io) => {
 
 export const getGameFromMemory = (roomId: string) => {
   const foundGame = ongoingGames.find(
-    (game) => game.gameState.roomId === roomId
+    (game) => game.gameState.roomId === roomId,
   );
 
   return foundGame;
@@ -44,7 +43,7 @@ export const getGameFromMemory = (roomId: string) => {
 
 export const removeGameFromMemory = (roomId: string) => {
   const foundGameIndex = ongoingGames.findIndex(
-    (g) => g.gameState.roomId === roomId
+    (g) => g.gameState.roomId === roomId,
   );
 
   if (foundGameIndex !== -1) {
@@ -66,6 +65,6 @@ export async function recoverGamesToMemory(io: Io) {
   }
 
   console.log(
-    `✅ Recovered ${games.length} game(s) from the database into memory.`
+    `✅ Recovered ${games.length} game(s) from the database into memory.`,
   );
 }

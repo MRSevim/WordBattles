@@ -61,34 +61,35 @@ export const getUserPastGamesController: RequestHandler = async (req, res) => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const totalGames = await prisma.game.count({
-    where: {
-      status: "ended", // only finished games
-      type: "ranked", // only ranked games
-      lang,
-      season,
-      gamePlayers: {
-        some: { userId }, // user participated
+  const [totalGames, games] = await Promise.all([
+    prisma.game.count({
+      where: {
+        status: "ended", // only finished games
+        type: "ranked", // only ranked games
+        lang,
+        season,
+        gamePlayers: {
+          some: { userId }, // user participated
+        },
+        createdAt: { gte: thirtyDaysAgo },
       },
-      createdAt: { gte: thirtyDaysAgo },
-    },
-  });
-
-  const games = await prisma.game.findMany({
-    where: {
-      status: "ended", // only finished games
-      type: "ranked", // only ranked games
-      lang,
-      season,
-      gamePlayers: {
-        some: { userId }, // user participated
+    }),
+    prisma.game.findMany({
+      where: {
+        status: "ended", // only finished games
+        type: "ranked", // only ranked games
+        lang,
+        season,
+        gamePlayers: {
+          some: { userId }, // user participated
+        },
+        createdAt: { gte: thirtyDaysAgo },
       },
-      createdAt: { gte: thirtyDaysAgo },
-    },
-    orderBy: { createdAt: "desc" },
-    skip: (page - 1) * pageSize,
-    take: pageSize,
-  });
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
 
   res.json({
     data: {

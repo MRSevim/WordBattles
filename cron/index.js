@@ -6,7 +6,6 @@ async function applyRankDecay(client) {
   const now = new Date();
   const threshold = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  // UPDATE playerRank SET rankedPoints = rankedPoints - 20, lastPlayedAt = now WHERE ...
   const res = await client.query(
     `
     UPDATE "player_rank"

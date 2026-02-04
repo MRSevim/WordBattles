@@ -17,17 +17,16 @@ export const useSocketMiddleware = (io: Io) => {
 
       const user = session?.user as User | undefined;
 
-      let sessionId: string | undefined,
-        roomId: string | undefined,
-        siteLocale: string | undefined;
+      let sessionId: string | undefined;
 
       if (user) {
         socket.user = user;
       }
 
-      roomId = user?.currentRoomId || cookies.roomId;
       sessionId = user?.id || cookies.sessionId;
-      siteLocale = cookies.locale;
+
+      const roomId = user?.currentRoomId || cookies.roomId;
+      const siteLocale = cookies.locale;
 
       if (siteLocale) {
         socket.siteLocale = convertToLangType(siteLocale);
@@ -37,9 +36,11 @@ export const useSocketMiddleware = (io: Io) => {
         socket.roomId = roomId;
         socket.join(roomId);
       }
+
       if (!sessionId) {
         sessionId = uuidv6();
       }
+
       socket.sessionId = sessionId;
 
       next();
