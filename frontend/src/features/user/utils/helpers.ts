@@ -18,7 +18,6 @@ function addFormsNewWords(board: Board, row: number, col: number) {
   }
 }
 
-// Deep clone board template
 function emptyBoard(baseBoard: Board): Board {
   return baseBoard.map((row) => row.map(() => null));
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
@@ -8,9 +8,8 @@ interface PaginationProps {
   pageSize: number;
 }
 
-const buttonClasses = "px-3 py-1 rounded-md text-sm font-medium transition";
-const activeButtonClasses = "text-gray-700 hover:bg-gray-100 cursor-pointer";
-const disabledButtonClasses = "text-gray-400 cursor-not-allowed";
+const buttonClasses =
+  "px-3 py-1 rounded-md text-sm font-medium transition text-gray-700 hover:bg-gray-100 cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed";
 
 export default function Pagination({
   currentPage,
@@ -46,9 +45,7 @@ export default function Pagination({
           onClick={() => handlePageChange(1)}
           aria-label={dictionary.pagination.goToFirst}
           disabled={currentPage === 1}
-          className={`${buttonClasses} ${
-            currentPage === 1 ? disabledButtonClasses : activeButtonClasses
-          }`}
+          className={buttonClasses}
         >
           <i className="bi bi-chevron-double-left"></i>
         </button>
@@ -58,9 +55,7 @@ export default function Pagination({
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           aria-label={dictionary.pagination.goToPrev}
-          className={`${buttonClasses} ${
-            currentPage === 1 ? disabledButtonClasses : activeButtonClasses
-          }`}
+          className={buttonClasses}
         >
           <i className="bi bi-chevron-left"></i>
         </button>
@@ -70,9 +65,7 @@ export default function Pagination({
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`${buttonClasses} ${
-              currentPage === page ? disabledButtonClasses : activeButtonClasses
-            }`}
+            className={buttonClasses}
           >
             {page}
           </button>
@@ -83,11 +76,7 @@ export default function Pagination({
           onClick={() => handlePageChange(currentPage + 1)}
           aria-label={dictionary.pagination.goToNext}
           disabled={currentPage === totalPages}
-          className={`${buttonClasses} ${
-            currentPage === totalPages
-              ? disabledButtonClasses
-              : activeButtonClasses
-          }`}
+          className={buttonClasses}
         >
           <i className="bi bi-chevron-right"></i>
         </button>
@@ -97,11 +86,7 @@ export default function Pagination({
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
           aria-label={dictionary.pagination.goToLast}
-          className={`${buttonClasses} ${
-            currentPage === totalPages
-              ? disabledButtonClasses
-              : activeButtonClasses
-          }`}
+          className={buttonClasses}
         >
           <i className="bi bi-chevron-double-right"></i>
         </button>

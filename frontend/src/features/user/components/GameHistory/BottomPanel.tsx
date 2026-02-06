@@ -1,7 +1,7 @@
 import { useLetterPoolToggleContext } from "../../utils/contexts/LetterPoolToggleContext";
 import NakedLetterSkeleton from "@/features/game/components/GameBoard/LetterRelated/NakedLetterSkeleton";
 import { LetterAndPoints } from "@/features/game/utils/types/gameTypes";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const BottomPanel = ({
   undrawnLettersLength,

@@ -7,7 +7,7 @@ import {
   pass,
 } from "@/features/game/lib/redux/slices/gameSlice";
 import { selectIsSwitching } from "@/features/game/lib/redux/selectors";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const RightPanel = () => {
   const dispatch = useAppDispatch();

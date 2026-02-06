@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 
 const EN_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_EN!;
 const TR_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_TR!;

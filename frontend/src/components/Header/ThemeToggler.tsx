@@ -1,6 +1,6 @@
 "use client";
 
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { useThemeContext } from "@/utils/contexts/ThemeContext";
 
 export const ThemeToggler = () => {

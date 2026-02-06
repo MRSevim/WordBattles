@@ -6,7 +6,7 @@ import { OngoingWarning } from "@/features/game/components/OngoingWarning";
 import { useRef } from "react";
 import { User } from "@/features/auth/utils/types";
 import { setUser } from "@/features/auth/lib/redux/slices/userSlice";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import {
   setDictionary,

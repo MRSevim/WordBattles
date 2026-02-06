@@ -2,7 +2,7 @@
 import Container from "@/components/Container";
 import { submitAction } from "./submitAction";
 import { useState } from "react";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const initialState = {
   error: "",
@@ -79,7 +79,7 @@ export default function ContactForm() {
           {state.successMessage && (
             <div
               className="text-center mt-2 p-3 text-sm text-green-800 rounded-lg bg-green-50"
-              role="alert"
+              role="status"
             >
               <span className="font-small">{state.successMessage}</span>
             </div>

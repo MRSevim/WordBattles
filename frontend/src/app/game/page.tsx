@@ -2,7 +2,7 @@ import { GameContainer } from "@/features/game/components/GameBoard/GameBoard";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { routeStrings } from "@/utils/routeStrings";
 
 export async function generateMetadata() {

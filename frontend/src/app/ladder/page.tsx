@@ -2,7 +2,7 @@ import { Ladder } from "@/features/ladder/components/Ladder";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { routeStrings } from "@/utils/routeStrings";
 import { UserSearchParams } from "@/utils/types";
 

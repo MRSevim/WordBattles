@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { Season } from "@/features/game/utils/types/gameTypes";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const LangAndSeasonSelectors = ({
   searchParams,

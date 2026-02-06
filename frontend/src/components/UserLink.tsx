@@ -1,6 +1,6 @@
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 
 const UserLink = ({
   id,

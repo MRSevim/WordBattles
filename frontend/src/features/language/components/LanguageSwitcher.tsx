@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { Lang } from "../helpers/types";
+import { Lang } from "../utils/types";
 import { useAppSelector } from "@/lib/redux/hooks";
 import {
   selectGameRoomId,
@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import useHandleClickOutside from "@/utils/hooks/useHandleClickOutside";
 import { setCookie } from "@/utils/helpers";
-import { useDictionaryContext } from "../helpers/DictionaryContext";
+import { useDictionaryContext } from "../utils/DictionaryContext";
 
 type LangItem = {
   lang: Lang;

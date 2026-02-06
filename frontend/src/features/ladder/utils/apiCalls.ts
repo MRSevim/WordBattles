@@ -1,7 +1,7 @@
 "use server";
 
 import { Season } from "@/features/game/utils/types/gameTypes";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { fetchFromBackend } from "@/utils/serverHelpers";
 
 export const fetchLadder = async ({
@@ -16,7 +16,7 @@ export const fetchLadder = async ({
   season: Season;
 }) => {
   const response = await fetchFromBackend(
-    `/ladder/ladder?page=${page}&limit=${limit}&lang=${lang}&season=${season}`
+    `/ladder/ladder?page=${page}&limit=${limit}&lang=${lang}&season=${season}`,
   );
   const json = await response.json();
 

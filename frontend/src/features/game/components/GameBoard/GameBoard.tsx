@@ -33,8 +33,9 @@ export const GameContainer = () => {
       activationConstraint: {
         distance: 1,
       },
-    })
+    }),
   );
+
   const activeLetter = useAppSelector(selectDraggedLetter);
 
   return (

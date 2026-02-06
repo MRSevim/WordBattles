@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { routeStrings } from "./utils/routeStrings";
 import { getSessionCookie } from "better-auth/cookies";
 import { Lang } from "../../types";
-import { availableLocales } from "./features/language/helpers/helpers";
+import { availableLocales } from "./features/language/utils/helpers";
 
 const authenticatedRoutes = [routeStrings.profile];
 
@@ -37,7 +37,7 @@ export default function proxy(request: NextRequest) {
    * ==============================
    */
   const requiresAuth = authenticatedRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
+    request.nextUrl.pathname.startsWith(route),
   );
   const sessionCookie = getSessionCookie(request);
   if (!sessionCookie && requiresAuth) {

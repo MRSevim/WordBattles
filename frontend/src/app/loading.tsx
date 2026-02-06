@@ -1,6 +1,6 @@
 import Container from "@/components/Container";
 import Spinner from "@/components/Spinner";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 
 export default async function Loading() {
   const dictionary = await getDictionaryFromSubdomain();

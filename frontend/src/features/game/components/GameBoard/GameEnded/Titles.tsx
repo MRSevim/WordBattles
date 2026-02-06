@@ -1,4 +1,4 @@
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { capitalizeFirstLetter } from "@/utils/helpers";
 import React from "react";
 

@@ -2,7 +2,7 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import ClientWrapper from "@/utils/ClientWrapper";
 import { Header } from "@/components/Header/Header";
-import { Provider as DictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { Provider as DictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { Provider as ThemeContextProvider } from "@/utils/contexts/ThemeContext";
 import { cookies } from "next/headers";
 import { getGameCookies } from "@/features/game/utils/serverHelpers";
@@ -11,7 +11,7 @@ import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
 

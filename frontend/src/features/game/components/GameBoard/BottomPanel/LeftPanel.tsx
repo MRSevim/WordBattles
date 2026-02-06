@@ -10,7 +10,7 @@ import {
   returnEverythingToHand,
   shuffleHand,
 } from "@/features/game/lib/redux/slices/gameSlice";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const LeftPanel = () => {
   const dispatch = useAppDispatch();

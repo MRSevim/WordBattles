@@ -1,9 +1,9 @@
 import Container from "../Container";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import {
   getDictionaryFromSubdomain,
   getLocaleFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { DictionaryType } from "@/features/language/lib/dictionaries";
 
 export const About = async () => {

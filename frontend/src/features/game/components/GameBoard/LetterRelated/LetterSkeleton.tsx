@@ -5,7 +5,7 @@ import {
 import { changeEmptyLetter } from "@/features/game/lib/redux/slices/gameSlice";
 import { responsiveLetterSizesTailwind } from "@/features/game/utils/helpers";
 import { Letter } from "@/features/game/utils/types/gameTypes";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { toast } from "react-toastify";
 
@@ -50,7 +50,7 @@ export const LetterSkeleton = ({ letter }: { letter: Letter }) => {
                 changeEmptyLetter({
                   newLetter,
                   targetId: id,
-                })
+                }),
               );
             }}
           />

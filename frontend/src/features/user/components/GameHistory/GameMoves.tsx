@@ -7,7 +7,7 @@ import {
 
 import { RefObject, useEffect, useRef, useState } from "react";
 import { useReplayIndexContext } from "../../utils/contexts/replayIndexContext";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { interpolateReact } from "@/features/language/lib/i18n";
 
 export const GameMoves = ({ game }: { game: GameState }) => {
@@ -48,8 +48,8 @@ const HistoryItem = ({
         isActive
           ? "bg-blue-200 dark:bg-blue-700"
           : i % 2 === 0
-          ? "bg-slate-300"
-          : "bg-transparent"
+            ? "bg-slate-300"
+            : "bg-transparent"
       } hover:bg-blue-200 dark:hover:bg-blue-600`}
     >
       <div className="ms-4 p-2">

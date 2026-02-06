@@ -9,7 +9,6 @@ import { LetterSkeleton } from "../../LetterRelated/LetterSkeleton";
 type StringOrUnd = string | undefined;
 
 interface Props {
-  id: string | number;
   letter: Letter;
   draggable: boolean;
   translateX: StringOrUnd;
@@ -18,7 +17,6 @@ interface Props {
 }
 
 export function Draggable({
-  id,
   letter,
   draggable,
   translateX,
@@ -27,7 +25,7 @@ export function Draggable({
 }: Props) {
   const dispatch = useAppDispatch();
   const isSwitching = useAppSelector(selectIsSwitching);
-
+  const id = letter.id;
   const { isDragging, active, attributes, listeners, setNodeRef } =
     useDraggable({
       id,
@@ -48,7 +46,7 @@ export function Draggable({
         setDraggingValues({
           active: active.id.toString(),
           activeLetter: active.data?.current?.letter,
-        })
+        }),
       );
     }
   }, [active]);

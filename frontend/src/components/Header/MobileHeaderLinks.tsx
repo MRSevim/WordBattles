@@ -15,7 +15,7 @@ const MobileHeaderLinks = () => {
       <div
         className={`fixed top-[48px] lg:hidden right-0 w-full sm:w-1/2 bg-primary z-50 transition-all duration-300 ${
           menuOpen
-            ? "translate-0 opacity-100 "
+            ? "translate-0 opacity-100"
             : "translate-x-full opacity-0 translate-y-[-10px]"
         } `}
       >

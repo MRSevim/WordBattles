@@ -13,7 +13,7 @@ import Titles from "./Titles";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import EndingPlayerDisplay from "./EndingPlayerDisplay";
 import UserLink from "@/components/UserLink";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const GameEnded = () => {
   const gameStatus = useAppSelector(selectGameStatus);

@@ -1,4 +1,4 @@
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { cookies } from "next/headers";
 import { GameType } from "./types/gameTypes";
 

@@ -2,16 +2,16 @@ import { InitialData } from "@/features/game/utils/types/gameTypes";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+const initialState: InitialData = {
   players: [],
   validLetters: [],
-} as InitialData;
+};
 
 export const initialDataSlice = createSlice({
   name: "initialData",
   initialState: initialState,
   reducers: {
-    setInitialData: (state, action: PayloadAction<InitialData>) => {
+    setInitialData: (_state, action: PayloadAction<InitialData>) => {
       return action.payload;
     },
   },

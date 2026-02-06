@@ -5,7 +5,7 @@ import {
   Letter,
 } from "@/features/game/utils/types/gameTypes";
 import { LetterSkeleton } from "./LetterSkeleton";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const BoardComp = ({ board }: { board: Board }) => {
   return (

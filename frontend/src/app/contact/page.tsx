@@ -1,7 +1,7 @@
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import ContactForm from "./ContactForm";
 import { routeStrings } from "@/utils/routeStrings";
 

@@ -5,7 +5,16 @@ import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { ThemeToggler } from "./ThemeToggler";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
+
+const linkBase =
+  "transition-all duration-200 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-400";
+const mobileLinks =
+  "w-full text-center py-2 rounded-md hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:translate-x-1 transition-transform";
+
+const mobileLine = (
+  <div className="h-px w-2/3 bg-gray-300/70 dark:bg-gray-700/70" />
+);
 
 export const Links = ({
   mobile,
@@ -16,14 +25,6 @@ export const Links = ({
 }) => {
   const { dictionary, locale } = useDictionaryContext();
 
-  const linkBase =
-    "transition-all duration-200 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-400";
-  const mobileLinks =
-    "w-full text-center py-2 rounded-md hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:translate-x-1 transition-transform";
-
-  const mobileLine = (
-    <div className="h-px w-2/3 bg-gray-300/70 dark:bg-gray-700/70" />
-  );
   return (
     <nav
       className={`flex items-center ${

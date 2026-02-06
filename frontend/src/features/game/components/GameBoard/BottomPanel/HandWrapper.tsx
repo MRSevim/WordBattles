@@ -58,7 +58,7 @@ const LastLetterSpot = ({ droppable }: { droppable: boolean }) => {
       <div
         ref={setNodeRef}
         className={
-          responsiveLetterSizesTailwind + " " + (isOver ? "bg-green-400" : "")
+          responsiveLetterSizesTailwind + (isOver ? " bg-green-400" : "")
         }
       ></div>
     );

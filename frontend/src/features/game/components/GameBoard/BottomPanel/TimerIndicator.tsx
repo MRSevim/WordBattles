@@ -2,8 +2,6 @@ import { findSocketPlayer } from "@/features/game/utils/helpers";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { RootState } from "@/lib/redux/store";
 
-import React from "react";
-
 const TimerIndicator = () => {
   const playerTurn: boolean | null =
     useAppSelector((state: RootState) => {
@@ -25,8 +23,8 @@ const TimerIndicator = () => {
             (playerTimer > 30
               ? "text-green-700"
               : playerTimer > 10
-              ? "text-yellow-700"
-              : "text-red-700")
+                ? "text-yellow-700"
+                : "text-red-700")
           }
         >
           {playerTimer}
@@ -37,8 +35,8 @@ const TimerIndicator = () => {
             (playerTimer > 30
               ? "bg-green-700"
               : playerTimer > 10
-              ? "bg-yellow-700"
-              : "bg-red-700")
+                ? "bg-yellow-700"
+                : "bg-red-700")
           }
         />
       </div>

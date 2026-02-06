@@ -1,4 +1,4 @@
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 import Container from "../Container";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";
@@ -13,14 +13,14 @@ export const Homepage = async () => {
 
         <Link
           href={routeStrings.game}
-          className="py-6 px-10 bg-primary text-white text-lg rounded-xl transition-transform transition-shadow duration-300 hover:scale-105 hover:shadow-xl"
+          className="py-6 px-10 bg-primary text-white text-lg rounded-xl transition-shadow duration-300 hover:scale-105 hover:shadow-xl"
         >
           {dictionary.homepage.play}
         </Link>
       </div>
 
       {/* Right side video */}
-      <div className="rounded-2xl overflow-hidden shadow-xl border border-foreground border-2 shrink h-auto sm:flex-2">
+      <div className="rounded-2xl overflow-hidden shadow-xl border-foreground border-2 shrink h-auto sm:flex-2">
         <video
           src="/how-to-play-WordBattles.webm"
           autoPlay

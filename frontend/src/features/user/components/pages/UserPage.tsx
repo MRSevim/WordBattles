@@ -5,7 +5,7 @@ import { DivisionComp } from "@/features/game/components/DivisionComp";
 import UserPastGames, { UserPastGamesSkeleton } from "../UserPastGames";
 import { Suspense } from "react";
 import LangAndSeasonSelectors from "@/components/LangAndSeasonSelectors";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 import { interpolateString } from "@/features/language/lib/i18n";
 
 interface User {
@@ -97,9 +97,9 @@ const UserPage = async ({
                   dictionary.publicUserPage.stats.winrateNumber,
                   {
                     number: roundTo2Decimals(
-                      (stats.wins / stats.totalGames) * 100
+                      (stats.wins / stats.totalGames) * 100,
                     ),
-                  }
+                  },
                 )}
               </div>
               <div>

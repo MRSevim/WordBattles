@@ -4,9 +4,9 @@ import { useState } from "react";
 import { PlayerCompInner } from "@/features/game/components/GameBoard/GameEnded/GameEnded";
 import Titles from "@/features/game/components/GameBoard/GameEnded/Titles";
 import { EndingPlayerDisplayInner } from "@/features/game/components/GameBoard/GameEnded/EndingPlayerDisplay";
-import { GameHistoryDisplayWrapper } from "./GameHistory.tsx/GameHistoryDisplay";
+import { GameHistoryDisplayWrapper } from "./GameHistory/GameHistoryDisplay";
 import { GameState } from "@/features/game/utils/types/gameTypes";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export type ModalType = "history" | "stats" | "";
 

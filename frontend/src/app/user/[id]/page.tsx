@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { interpolateString } from "@/features/language/lib/i18n";
 import UserPage from "@/features/user/components/pages/UserPage";
 import { fetchUser } from "@/features/user/utils/apiCalls";
@@ -15,14 +15,14 @@ type ParamsPromise = Promise<{ id: string }>;
 
 const fetchHelper = async (
   params: ParamsPromise,
-  searchParams: SearchParamsPromise
+  searchParams: SearchParamsPromise,
 ) => {
   const { id } = await params;
   const searchParamsAwaited = await searchParams;
   const { data } = await fetchUser(
     id,
     searchParamsAwaited.lang || "en",
-    searchParamsAwaited.season || "Season1"
+    searchParamsAwaited.season || "Season1",
   );
   if (!data) return notFound();
 
@@ -49,7 +49,7 @@ export async function generateMetadata({
     dictionary.metadata.userPage.description,
     {
       username: data.name,
-    }
+    },
   );
 
   return {

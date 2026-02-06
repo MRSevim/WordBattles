@@ -1,7 +1,7 @@
 "use client"; // Error boundaries must be Client Components
 
 import Container from "@/components/Container";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { useEffect } from "react";
 
 export default function ErrorBoundary({

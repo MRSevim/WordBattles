@@ -29,7 +29,7 @@ export const LetterOnHand = ({ letter, droppable, draggable, i }: Props) => {
   const draggingOver = useAppSelector(selectDraggingOver);
 
   const isSwitchingActive = useAppSelector((state) =>
-    selectIsSwitchingActive(state)(i)
+    selectIsSwitchingActive(state)(i),
   );
 
   const isSwitching = useAppSelector(selectIsSwitching);
@@ -89,7 +89,6 @@ export const LetterOnHand = ({ letter, droppable, draggable, i }: Props) => {
         onClick={() => {
           if (isSwitching) dispatch(changeSwitchValue(i));
         }}
-        id={letter.id}
         letter={letter}
         draggable={draggable}
         translateX={translateX}
@@ -109,7 +108,7 @@ export const Droppable = ({
   const dispatch = useAppDispatch();
   const isSwitching = useAppSelector(selectIsSwitching);
 
-  const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
+  const { isOver, setNodeRef } = useDroppable({
     id,
     disabled: !droppable || isSwitching,
   });
@@ -122,7 +121,7 @@ export const Droppable = ({
 
   return (
     <div
-      ref={setDroppableNodeRef}
+      ref={setNodeRef}
       className={`w-full h-full absolute ${
         isOver ? "bg-green-400 " + responsiveLetterSizesTailwind : ""
       }`}

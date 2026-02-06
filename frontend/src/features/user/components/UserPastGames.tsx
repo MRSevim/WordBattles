@@ -5,10 +5,10 @@ import Pagination from "@/components/Paginations";
 import Games from "./Games";
 import { GameState } from "@/features/game/utils/types/gameTypes";
 import ErrorMessage from "@/components/ErrorMessage";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 
 const PastGamesWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
+  <div className="flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px]">
     {children}
   </div>
 );
@@ -35,7 +35,7 @@ const UserPastGames = async ({
     } = await fetchPastGames(
       id,
       searchParams.lang || "en",
-      searchParams.season || "Season1"
+      searchParams.season || "Season1",
     );
     data = dataInner;
   } catch (error) {
@@ -81,7 +81,7 @@ const UserPastGames = async ({
 
 export const UserPastGamesSkeleton = () => {
   return (
-    <div className="flex-1 flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px] animate-pulse">
+    <div className="flex-2 mt-6 md:mt-0 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 w-full min-h-[200px] animate-pulse">
       {/* Title skeleton */}
       <div className="h-5 w-40 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
 

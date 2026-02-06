@@ -11,7 +11,7 @@ import {
 import { toast } from "react-toastify";
 import { removeCookie, setCookie } from "@/utils/helpers";
 import { setInitialData } from "../../lib/redux/slices/initialDataSlice";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export default function useGameSockets() {
   const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ export default function useGameSockets() {
       ({ currentPlayerId }: { currentPlayerId: string }) => {
         if (currentPlayerId === socket.sessionId)
           toast.error(dictionary.timeIsUp);
-      }
+      },
     );
 
     socket.on("Start Game", (game: GameState) => {

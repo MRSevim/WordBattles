@@ -1,5 +1,5 @@
 "use server";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 import { headers } from "next/headers";
 
 export const fetchFromBackend = async (endpoint: string, options = {}) => {
@@ -12,6 +12,6 @@ export const fetchFromBackend = async (endpoint: string, options = {}) => {
 //Helper func to return error messages compatible with ts
 export const returnErrorFromUnknown = async (error: unknown) => {
   const dictionary = await getDictionaryFromSubdomain();
-  if (error instanceof Error) return { error: error.message };
+  if (error instanceof Error && error.message) return { error: error.message };
   return { error: dictionary.unexpectedError };
 };

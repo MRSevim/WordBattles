@@ -25,7 +25,7 @@ import {
   returnEverythingToHandHelper,
   shuffle,
 } from "@/features/game/utils/reduxSliceHelpers";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { v4 as uuidv4 } from "uuid";
 import { DictionaryType } from "@/features/language/lib/dictionaries";
 
@@ -97,7 +97,6 @@ export const gameSlice = createSlice({
         }
       });
     },
-
     moveLetter: (state, action: PayloadAction<Coordinates | undefined>) => {
       const player = findSocketPlayer(state);
 
@@ -238,13 +237,12 @@ export const gameSlice = createSlice({
         moveId,
       });
     },
-
     changeEmptyLetter: (
       state,
       action: PayloadAction<{
         newLetter: string;
         targetId: string;
-      }>
+      }>,
     ) => {
       const player = findSocketPlayer(state);
       const isPlaying = checkPlaying(state);
@@ -267,7 +265,7 @@ export const gameSlice = createSlice({
     },
     setDraggingValues: (
       state,
-      action: PayloadAction<Partial<DraggingValues>>
+      action: PayloadAction<Partial<DraggingValues>>,
     ) => {
       const isPlaying = checkPlaying(state);
       if (!isPlaying) return;

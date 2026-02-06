@@ -2,7 +2,7 @@ import Signin from "@/features/auth/components/Signin";
 import {
   getBaseUrlFromSubdomain,
   getDictionaryFromSubdomain,
-} from "@/features/language/helpers/helpersServer";
+} from "@/features/language/utils/helpersServer";
 import { routeStrings } from "@/utils/routeStrings";
 
 export async function generateMetadata() {

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { setUser } from "../lib/redux/slices/userSlice";
 import { routeStrings } from "@/utils/routeStrings";
 import UserLink from "@/components/UserLink";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -112,12 +112,7 @@ const Profile = () => {
                     confirmation !== dictionary.auth.profile.confirmText ||
                     isPending
                   }
-                  className={`px-4 py-2 rounded-md text-white font-medium transition ${
-                    confirmation !== dictionary.auth.profile.confirmText ||
-                    isPending
-                      ? "bg-red-400 cursor-not-allowed"
-                      : "bg-red-600 hover:bg-red-700 cursor-pointer"
-                  }`}
+                  className={`px-4 py-2 rounded-md text-white font-medium transition bg-red-600 hover:bg-red-700 cursor-pointer disabled:bg-red-400 disabled:cursor-not-allowed`}
                 >
                   {isPending
                     ? dictionary.auth.profile.deleting

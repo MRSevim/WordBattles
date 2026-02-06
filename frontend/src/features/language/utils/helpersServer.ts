@@ -1,8 +1,8 @@
 "use server";
 import { headers } from "next/headers";
-import { Lang } from "../helpers/types";
+import { Lang } from "../utils/types";
 import { DictionaryType, getDictionary } from "../lib/dictionaries";
-import { availableLocales } from "../helpers/helpers";
+import { availableLocales } from "../utils/helpers";
 
 /**
  * Get dictionary from subdomain on the server (SSR / middleware / RootLayout)

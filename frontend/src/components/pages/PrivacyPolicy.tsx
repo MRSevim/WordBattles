@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 import { interpolateReact } from "@/features/language/lib/i18n";
 import { routeStrings } from "@/utils/routeStrings";
 import Link from "next/link";

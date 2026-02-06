@@ -14,7 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { interpolateReact } from "@/features/language/lib/i18n";
 
 const HistoryLengthContext = createContext<number | null>(null);

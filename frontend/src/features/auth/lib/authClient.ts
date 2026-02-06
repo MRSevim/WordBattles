@@ -7,7 +7,6 @@ export const authClient = createAuthClient({
     inferAdditionalFields({
       user: {
         currentRoomId: { type: "string", optional: true, input: false },
-        rankedPoints: { type: "number", optional: false, input: false },
       },
     }),
   ],

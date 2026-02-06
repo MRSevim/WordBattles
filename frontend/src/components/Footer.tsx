@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { routeStrings } from "@/utils/routeStrings";
 import Container from "./Container";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 
 export const Footer = async () => {
   const currentYear = new Date().getFullYear();

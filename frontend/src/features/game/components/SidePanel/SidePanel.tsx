@@ -18,7 +18,7 @@ import { removeCookie } from "@/utils/helpers";
 import { Button } from "../GameBoard/BottomPanel/Button";
 import { DivisionComp } from "../DivisionComp";
 import UserLink from "@/components/UserLink";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const SidePanel = () => {
   const sidePanelOpen = useAppSelector(selectSidePanelOpen);
@@ -133,8 +133,8 @@ const PlayerContainer = ({ player }: { player: Player }) => {
             (timer > 30
               ? "text-green-500"
               : timer > 10
-              ? "text-yellow-500"
-              : "text-red-500")
+                ? "text-yellow-500"
+                : "text-red-500")
           }
         >
           {timer} {timer > 1 ? dictionary.game.seconds : dictionary.game.second}

@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { User } from "@/features/auth/utils/types";
 
 type InitialState = { value: User };
-const initialState: InitialState = { value: null };
+const initialState: InitialState = { value: undefined };
 
 export const userSlice = createSlice({
   name: "user",

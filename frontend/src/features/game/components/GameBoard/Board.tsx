@@ -7,7 +7,7 @@ import {
 } from "../../lib/redux/selectors";
 import { initialBoard } from "../../utils/helpers";
 import { Cell } from "./Cell/Cell";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const Board = () => {
   const [bingo, setBingo] = useState<boolean>(false);

@@ -1,5 +1,5 @@
 import "server-only";
-import { Lang } from "../helpers/types";
+import { Lang } from "../utils/types";
 
 const dictionaries = {
   en: () => import("@/locales/en.json").then((module) => module.default),

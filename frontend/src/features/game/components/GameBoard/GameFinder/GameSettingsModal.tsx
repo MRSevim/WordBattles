@@ -1,5 +1,5 @@
 import { FindButton } from "./FindButton";
-import { Lang } from "@/features/language/helpers/types";
+import { Lang } from "@/features/language/utils/types";
 import { socket } from "@/features/game/lib/socket.io/socketio";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/features/game/lib/redux/selectors";
 import { GameType } from "@/features/game/utils/types/gameTypes";
 import { selectUser } from "@/features/auth/lib/redux/selectors";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 const selectClasses =
   "w-full px-4 py-2 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -34,6 +34,7 @@ const GameSettingsModal = ({ cancel }: { cancel: () => void }) => {
     socket.emit("Started Looking", { lang, type });
     dispatch(setGameStatus("looking"));
   };
+
   return (
     <>
       <h2 className="text-lg font-semibold">

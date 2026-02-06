@@ -8,7 +8,7 @@ import {
 
 import { computeClass } from "@/features/game/utils/helpers";
 import { Coordinates } from "@/features/game/utils/types/gameTypes";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 
 export const Cell = ({ row, col }: Coordinates) => {
   const cls = computeClass(row, col);
@@ -23,7 +23,7 @@ export const Cell = ({ row, col }: Coordinates) => {
   const active = useAppSelector(selectDraggingActive);
 
   const letter = useAppSelector((state) =>
-    getLetterOnBoard(state)(coordinates)
+    getLetterOnBoard(state)(coordinates),
   );
 
   const { setNodeRef } = useDroppable({

@@ -1,5 +1,5 @@
 "use server";
-import { getDictionaryFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getDictionaryFromSubdomain } from "@/features/language/utils/helpersServer";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);

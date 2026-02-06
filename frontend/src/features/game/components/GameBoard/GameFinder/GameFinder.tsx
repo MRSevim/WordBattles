@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 
 import { buttonClasses, FindButton } from "./FindButton";
 import GameSettingsModal from "./GameSettingsModal";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { interpolateReact } from "@/features/language/lib/i18n";
 
 export const GameFinder = () => {
@@ -76,6 +76,7 @@ export const GameFinder = () => {
       </Modal>
     );
   }
+
   if (looking) {
     return <LookingModal stopLooking={stopLooking} />;
   }
@@ -115,7 +116,6 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
 
   return (
     <>
-      {user === null && <Spinner variant="white" dictionary={dictionary} />}
       {user && (
         <FindButton
           onClick={openGameSettings}
@@ -124,7 +124,7 @@ const UserPanel = ({ openGameSettings }: { openGameSettings: () => void }) => {
           })}
         />
       )}
-      {user === undefined && (
+      {!user && (
         <>
           <Link href={routeStrings.signin} className={buttonClasses}>
             {dictionary.game.signInToAccount}{" "}

@@ -5,18 +5,18 @@ import { routeStrings } from "@/utils/routeStrings";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { selectGameRoomId, selectGameStatus } from "../lib/redux/selectors";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
+
+const game = routeStrings.game;
 
 export const OngoingWarning = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const gameStatus = useAppSelector(selectGameStatus);
   const roomId = useAppSelector(selectGameRoomId);
-  const gameIsOngoing = roomId || gameStatus === "ended";
+  const gameIsOngoing = roomId;
   const lookingForGame = gameStatus === "looking";
   const { dictionary } = useDictionaryContext();
-
-  const game = routeStrings.game;
 
   useEffect(() => {
     if (pathname !== game && (gameIsOngoing || lookingForGame)) {

@@ -1,5 +1,5 @@
 "use client";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
 import { Division } from "../utils/types/gameTypes";
 
 interface DivisionEmojiProps {

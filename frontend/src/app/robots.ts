@@ -1,4 +1,4 @@
-import { getBaseUrlFromSubdomain } from "@/features/language/helpers/helpersServer";
+import { getBaseUrlFromSubdomain } from "@/features/language/utils/helpersServer";
 import { routeStrings } from "@/utils/routeStrings";
 import type { MetadataRoute } from "next";
 

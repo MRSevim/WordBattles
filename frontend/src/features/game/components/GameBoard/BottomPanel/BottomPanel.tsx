@@ -18,7 +18,7 @@ export const BottomPanel = () => {
         </div>
 
         <HandWrapper />
-        <div className="block md:hidden flex pt-2 justify-between">
+        <div className="md:hidden flex pt-2 justify-between">
           <LeftPanel />
           <RightPanel />
         </div>

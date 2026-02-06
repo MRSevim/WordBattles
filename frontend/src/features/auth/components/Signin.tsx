@@ -1,7 +1,8 @@
 "use client";
 import Container from "@/components/Container";
 import { signInWithGoogle } from "../utils/apiCallsClient";
-import { useDictionaryContext } from "@/features/language/helpers/DictionaryContext";
+import { useDictionaryContext } from "@/features/language/utils/DictionaryContext";
+import { toast } from "react-toastify";
 
 const Signin = () => {
   const { dictionary } = useDictionaryContext();
@@ -14,7 +15,10 @@ const Signin = () => {
 
         {/* Google Login */}
         <button
-          onClick={async () => await signInWithGoogle()}
+          onClick={async () => {
+            const { error } = await signInWithGoogle();
+            if (error) toast.error(error);
+          }}
           type="button"
           className="flex items-center justify-center gap-2 w-full py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer"
         >
