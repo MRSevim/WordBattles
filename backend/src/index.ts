@@ -18,7 +18,6 @@ import { recoverGamesToMemory } from "./helpers/memoryGameHelpers";
 const port = process.env.PORT || 5000;
 
 dotenv.config();
-console.log("trigger ci");
 
 const app = express();
 const server = http.createServer(app);
