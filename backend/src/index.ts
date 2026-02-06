@@ -60,7 +60,7 @@ app.use("/api/ladder", ladderRoutes);
 app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
-  res.send("This is WordBattles backend.");
+  res.send("This is WordBattles backend...");
 });
 
 runSocketLogic(io);
