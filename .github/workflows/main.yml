@@ -53,6 +53,7 @@ jobs:
             cd ~/wordbattles/backend
             npm i 
             npm run build
+            npx prisma migrate deploy
             docker-compose up -d --build --remove-orphans
             docker system prune -af
       - name: revoke runner ip address
